@@ -1,0 +1,70 @@
+<?php
+
+namespace King\Frontend;
+
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Routing\Router;
+
+class FrontendServiceProvider extends ServiceProvider {
+
+    /**
+     * Bootstrap the application services.
+     *
+     * @return void
+     */
+    public function boot() {
+        
+        //Include file helpers
+        Include_once realpath(__DIR__ . '/support/helpers.php');
+        
+        //Load views
+        $this->loadViewsFrom(realpath(__DIR__ . '/../resources/views'), 'frontend');
+
+        //Load translation
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'frontend');
+        
+        //Set up routes
+        $this->setupRoutes($this->app->router);
+
+        //Publish config
+//        $this->publishes([
+//            __DIR__ . '/config/frontend.php' => config_path('frontend.php'),
+//        ]);
+
+        //Publish assets
+        $this->publishes([
+            __DIR__ . '/../public' => public_path('packages/king/frontend'),
+        ], 'public');
+    }
+
+    /**
+     * Define the routes for the application.
+     *
+     * @param  \Illuminate\Routing\Router $router
+     * @return void
+     */
+    public function setupRoutes(Router $router) {
+        $router->group(['namespace' => 'King\Frontend\Http\Controllers'], function($router) {
+            require __DIR__ . '/Http/routes.php';
+        });
+    }
+
+    /**
+     * Register the application services.
+     *
+     * @return void
+     */
+    public function register() {
+        $this->registerFrontend();
+        config([
+            'config/frontend.php',
+        ]);
+    }
+
+    private function registerFrontend() {
+        $this->app->bind('frontend', function($app) {
+            return new Frontend($app);
+        });
+    }
+
+}
