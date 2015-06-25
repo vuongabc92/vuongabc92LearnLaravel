@@ -26,10 +26,10 @@ class FrontendServiceProvider extends ServiceProvider {
         //Set up routes
         $this->setupRoutes($this->app->router);
 
-        //Publish config
-//        $this->publishes([
-//            __DIR__ . '/config/frontend.php' => config_path('frontend.php'),
-//        ]);
+        //Merge config
+        $this->mergeConfigFrom(
+            __DIR__ . '/config/frontend.php', 'front'
+        );
 
         //Publish assets
         $this->publishes([

@@ -13,21 +13,29 @@
         <div class="_fwfl _bgw header">
             <div class="_mw970 _ma">
                 <div class="_fwfl _mt10 header-inside">
-                    <div class="col-lg-2 col-md-2 col-sm-1 col-xs-1  _p0"></div>
-                    <div class="col-lg-7 col-md-7 col-sm-8 col-xs-9 _p0">
-                        <form class="_fl _fwb _fs13 header-search-form">
-                            <input type="text" class="_fwfl _fh _ff0 _r2 header-search-input" placeholder="{{ _t('head-search-placeholder') }}">
-                            <button type="submit" class="_ff0 _fl _fh _fs17 _tb header-search-btn"><i class="fa fa-search"></i></button>
-                        </form>
-                        <a class="btn _btn _btn-blue _r2 head-location-btn">
-                            <i class="glyphicon glyphicon-map-marker"></i> 
-                            Ho Chi Minh 
-                            <i class="caret"></i>
-                        </a>
+                    <div class="_fl head-left-col">
+                        a
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-2 _p0">
-                        <a href="#" class="btn _btn _btn-white _fwn _r0 _fr">{{ _t('signup') }}</a>
-                        <a href="#" class="btn _btn _btn-white _fwn _r0 _fr head-signin">{{ _t('signin') }}</a>
+                    <div class="_fr head-right-col">
+                        <div class="_fl head-search-location">
+                            <form class="_fl _fwb _fs13 header-search-form">
+                                <input type="text" class="_fwfl _fh _ff0 _r2 header-search-input" placeholder="{{ _t('head-search-placeholder') }}">
+                                <button type="submit" class="_ff0 _fl _fh _fs17 _tb header-search-btn"><i class="fa fa-search"></i></button>
+                            </form>
+                            <span class="btn _btn _btn-blue _r2 head-location-btn">
+                                <i class="glyphicon glyphicon-map-marker"></i> 
+                                Ho Chi Minh 
+                                <i class="caret"></i>
+                            </span>
+                        </div>
+                        <div class="_fr">
+                            @if (auth()->check())
+                            <img src="{{ get_avatar() }}" style="width:34px;"/>
+                            @else
+                                <a href="{{ route('front_register') }}" class="btn _btn _btn-white _r2 _fr head-signup">{{ _t('signup') }}</a>
+                                <a href="{{ route('front_login') }}" class="btn _btn _btn-white _r2 _fr head-signin">{{ _t('signin') }}</a>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>

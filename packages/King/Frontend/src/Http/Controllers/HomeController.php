@@ -6,7 +6,6 @@ class HomeController extends FrontController
 {
     public function index()
     {
-        auth()->logout();
         return view('frontend::home.index');
     }
 }
