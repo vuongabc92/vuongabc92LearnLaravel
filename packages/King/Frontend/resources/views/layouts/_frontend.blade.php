@@ -30,10 +30,57 @@
                         </div>
                         <div class="_fr">
                             @if (auth()->check())
-                            <img src="{{ get_avatar() }}" style="width:34px;"/>
+                            <div class="btn-group avatar-dropdown">
+                                <button type="button" class="btn dropdown-toggle _bgw _p0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="{{ get_avatar() }}" class="_fl img-circle head-avatar-img"/>
+                                </button>
+                                <ul class="dropdown-menu _r2">
+                                    <li>
+                                        <a href="#" class="short-profile-nav">
+                                            <span class="_fwfl">
+                                                <img src="{{ get_avatar() }}" class="_fl _r3 avatar-popup-img" />
+                                                <div class="_fl short-profile">
+                                                    <span class="_fwfl _tb _fwb _fs13 short-info-name">
+                                                        bui vuong
+                                                    </span>
+                                                    <span class="_fwfl  _tb _fwb _fs13">
+                                                        master@wiki.com
+                                                    </span>
+                                                </div>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li role="separator" class="divider"></li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="fa fa-eye"></i>
+                                            <span>{{ _t('view_store') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="fa fa-gear"></i>
+                                            <span>{{ _t('setting') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="fa fa-life-ring"></i>
+                                            <span>{{ _t('help') }}</span>
+                                        </a>
+                                    </li>
+                                    <li role="separator" class="divider"></li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="fa fa-sign-out"></i>
+                                            <span>{{ _t('signout') }}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                             @else
-                                <a href="{{ route('front_register') }}" class="btn _btn _btn-white _r2 _fr head-signup">{{ _t('signup') }}</a>
-                                <a href="{{ route('front_login') }}" class="btn _btn _btn-white _r2 _fr head-signin">{{ _t('signin') }}</a>
+                            <a href="{{ route('front_register') }}" class="btn _btn _btn-white _r2 _fr head-signup">{{ _t('signup') }}</a>
+                            <a href="{{ route('front_login') }}" class="btn _btn _btn-white _r2 _fr head-signin">{{ _t('signin') }}</a>
                             @endif
                         </div>
                     </div>
@@ -41,6 +88,10 @@
             </div>
         </div>
 
+        <div class="_fwfl _mt55">
+            @yield('content')
+        </div>
+        
         <script src="{{ asset('packages/king/frontend/js/jquery_v1.11.1.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/bootstrap.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/script.js') }}"></script>

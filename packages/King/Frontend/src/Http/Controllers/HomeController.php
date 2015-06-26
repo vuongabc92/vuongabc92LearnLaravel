@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * FrontendController
+ *
+ * @author vuongabc92@gmail.com
+ */
+
 namespace King\Frontend\Http\Controllers;
 
 class HomeController extends FrontController

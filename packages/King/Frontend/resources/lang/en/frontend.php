@@ -4,6 +4,7 @@ return [
     //Auth
     'signin' => 'Sign in',
     'signup' => 'Sign up',
+    'signout' => 'Sign out',
     'signin_title' => 'SIGN IN TO SURIS',
     'signup_title' => 'CREATE SURIS ACCOUNT',
     'username' => 'User name',
@@ -26,4 +27,7 @@ return [
     
     //Home
     'head-search-placeholder' => 'Search stores, locations and everythings...',
+    'view_store' => 'View my store',
+    'setting' => 'Setting',
+    'help' => 'Help',
 ];

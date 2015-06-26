@@ -1,3 +1,5 @@
+body{background-color:#f5f8fa;}
+._mt55{margin-top:55px;}
 /** Auth */
 .auth-page{background-color: #fff;}
 .auth-page .header{height:64px;border-bottom: solid 1px #e5e5e5;padding:0 15px;}
@@ -13,7 +15,7 @@
 .auth-field:focus{border-color:#007aff;}
 
 /** Header */
-.header{height:55px;border-bottom:solid 1px #007aff;padding:0 15px;}
+.header{height:55px;border-bottom:solid 1px #007aff;padding:0 15px;position:fixed;}
 .head-left-col{width:20%;}
 .head-right-col{width:80%;}
 .header-search-form{width:400px;margin-right:10px;}
@@ -23,6 +25,31 @@ background-color:rgba(0, 122, 255, 0.04);color:#007aff;}
 .head-location-btn{padding:7px 10px;}
 .head-signup{margin-left:5px;display:none;}
 .head-search-location{display:none;}
+/** Avatar header */
+.head-avatar-img{width:34px;height:34px;}
+.avatar-dropdown .dropdown-toggle,
+.avatar-dropdown.open .dropdown-toggle{box-shadow:none;-webkit-box-shadow:none;}
+.avatar-dropdown .dropdown-menu{width:275px;left:-240px;border-color:#ddd;
+-webkit-box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);
+box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);}
+.avatar-dropdown .dropdown-menu>li{width:100%;float:left;}
+.avatar-dropdown .dropdown-menu>li>a{width:100%;float:left;color:#666;
+padding:7px 15px;font-size:15px;font-weight:400;outline:none;}
+.avatar-dropdown .dropdown-menu>li>a:hover{color:#007aff}
+.avatar-dropdown .dropdown-menu>li>a>i{width:20px;float:left;padding-top:3px;}
+.avatar-dropdown .dropdown-menu>li>a>span{float:left;margin-left:3px;}
+.avatar-dropdown .avatar-popup-img{width:64px;height:64px;}
+.short-profile-nav span{margin-left:0px !important;}
+.short-profile{width:172px;margin-left:7px;}
+.short-profile .short-info-name{margin-top:28px;}
+.short-profile-nav:hover{background-color:#fff !important;}
+
+.setting-container{margin:30px 0;}
+.setting-left-col{width:650px;padding:30px 20px 20px 20px;
+border: solid 1px #e4e4e4;}
+.setting-header{height:55px;border-bottom:solid 2px #ddd;}
+.setting-header>h1{font-size:22px;}
+.setting-group{padding:20px 10px;border-bottom:solid 1px #eee;}
 
 @media screen and (min-width: 320px){
     .header-search-form{width:300px;}
