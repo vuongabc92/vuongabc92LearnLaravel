@@ -1,6 +1,6 @@
 /vendor
+/storage
 /node_modules
+/nbproject
+/test
 .env
-
-/nbproject/
-/test/
