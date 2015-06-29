@@ -190,8 +190,38 @@ class SettingController extends FrontController
         }
     }
 
-    public function ajaxChangeAvatar() {
+    public function ajaxChangeAvatar(Request $request) {
 
+        $rules = [
+            'avatar' => 'required|image|mimes:jpg,png,jpeg,gif,size:10000'
+        ];
+
+        $messages = [
+            'avatar.required' => 'Avatar is empty.',
+            'avatar.image'    => 'Avatar must be image.',
+            'avatar.mimes'    => 'Avatar must be in (jpg, png, jpeg, gif).',
+            'avatar.size'     => 'Avatar size must be lower than 10 megabyte.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            ajax_response([
+                'status'   => AJAX_ERROR,
+                'messages' => $validator->messages()
+            ]);
+        }
+
+        $user = auth()->user();
+
+        /**
+         * If current user avatar exists then remove it
+         */
+        if ($user->avatar !== null) {
+            $currentAvatar = '.' . $user->avatar;
+            if ( ! is_dir($currentAvatar) && file_exists($currentAvatar)) {
+                
+            }
+        }
     }
 
 //    git config core.filemode false

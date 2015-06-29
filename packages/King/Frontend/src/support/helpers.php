@@ -59,10 +59,26 @@ if ( ! function_exists('str_equal')) {
      *
      * @param  string  $knownString
      * @param  string  $userInput
-     * 
+     *
      * @return bool
      */
     function str_equal($knownString, $userInput) {
         return \Illuminate\Support\Str::equals($knownString, $userInput);
+    }
+}
+
+if ( ! function_exists('generate_filename')) {
+    function generate_filename($prefix = '') {
+        $userId    = 0;
+        $microtime = microtime(true);
+        $randStr   = str_random(10);
+
+        if (auth()->check()) {
+            $userId = auth()->user()->id;
+        }
+
+        $hashingName = bcrypt($userId . $microtime . $randStr);
+
+        return $prefix . '_' . $hashingName;
     }
 }
