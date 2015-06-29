@@ -2,6 +2,6 @@
 /storage
 /node_modules
 /nbproject
-/test
+/tests
 .env
 composer.lock
