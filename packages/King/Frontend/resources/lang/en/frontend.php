@@ -30,4 +30,21 @@ return [
     'view_store' => 'View my store',
     'setting' => 'Setting',
     'help' => 'Help',
+    
+    //Setting
+    'acc' => 'Account',
+    'bussiness' => 'Bussiness',
+    'buss_note' => 'Want to put your store online?',
+    'create_store' => 'Create your store',
+    'avatar' => 'Avatar',
+    'avatar_note1' => 'Allow: png, jpg, gif, jpeg',
+    'avatar_note2' => 'Dimensions: 256 x 256',
+    'avatar_browser' => 'Choose an image',
+    'pass_note' => 'A good password should be hard to guess and contain: number, letter, special characters, uppercase,...',
+    'change_pass' => 'Change password',
+    'basic_info' => 'Basic info',
+    'fname' => 'First name',
+    'lname' => 'Last name',
+    'save' => 'Save',
+    'cancel' => 'Cancel',
 ];

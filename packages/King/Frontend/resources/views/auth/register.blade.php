@@ -5,7 +5,7 @@ Register
 @stop
 
 @section('head-link')
-<a class="btn _btn _btn-white _fr _r2 auth-head-btn" href="{{ url(route('front_login')) }}">{{ _t('signin') }}</a>
+<a class="btn _btn _btn-white-link _fr auth-head-btn" href="{{ url(route('front_login')) }}">{{ _t('signin') }}</a>
 @stop
 
 @section('body')
@@ -51,7 +51,7 @@ Register
             {{ _t('agreed') }}
         </div>
         <div class="_fwfl auth-field-group">
-            <button class="_fwfl btn _btn _btn-blue _r2"><i class="fa fa-arrow-right"></i></button>
+            <button class="_fwfl btn _btn _btn-blue"><i class="fa fa-arrow-right"></i></button>
         </div>
     {!! Form::close() !!}
 @stop

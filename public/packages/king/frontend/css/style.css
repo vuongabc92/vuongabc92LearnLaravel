@@ -2,7 +2,8 @@ body{background-color:#f5f8fa;}
 ._mt55{margin-top:55px;}
 /** Auth */
 .auth-page{background-color: #fff;}
-.auth-page .header{height:64px;border-bottom: solid 1px #e5e5e5;padding:0 15px;}
+.auth-page .header{height:64px;border-bottom: solid 1px #e5e5e5;padding:0 15px;
+position:relative;}
 .auth-page .header-inside{height:34px;}
 .auth-head-btn{font-weight:normal;padding:6px 12px;font-size:14px;}
 .auth-container{padding:0 15px;}
@@ -18,13 +19,20 @@ body{background-color:#f5f8fa;}
 .header{height:55px;border-bottom:solid 1px #007aff;padding:0 15px;position:fixed;}
 .head-left-col{width:20%;}
 .head-right-col{width:80%;}
-.header-search-form{width:400px;margin-right:10px;}
+.head-logo-nav{width:100%;height:34px;background-color:#007aff;}
+.head-search-location{width:100%;position:absolute;left:0;right:0;top:0;height:100%;
+z-index:100;background-color:#fff;display:none;}
+.head-search-inside{padding:10px 15px;}
+.head-right-nav{width:100%;}
+.header-search-form{width:87%;}
 .header-search-input{height:34px;border:solid 1px #007aff;padding:0 31px 0 17px;
 background-color:rgba(0, 122, 255, 0.04);color:#007aff;}
 .header-search-btn{height:34px;width:30px;margin-left:-31px;}
-.head-location-btn{padding:7px 10px;}
+.head-location-btn{float:right;display:none;}
 .head-signup{margin-left:5px;display:none;}
-.head-search-location{display:none;}
+.head-signin{display:none;}
+.mobile-head-icon{display:inline-block;color:#007aff;}
+.mobile-head-icon:hover{text-decoration:none;color:#007aff;}
 /** Avatar header */
 .head-avatar-img{width:34px;height:34px;}
 .avatar-dropdown .dropdown-toggle,
@@ -44,46 +52,73 @@ padding:7px 15px;font-size:15px;font-weight:400;outline:none;}
 .short-profile .short-info-name{margin-top:28px;}
 .short-profile-nav:hover{background-color:#fff !important;}
 
+/** Setting */
+.biggest-container{padding:0 15px;}
 .setting-container{margin:30px 0;}
-.setting-left-col{width:650px;padding:30px 20px 20px 20px;
+.setting-left-col{width:70%;padding:30px 20px 20px 20px;
 border: solid 1px #e4e4e4;}
 .setting-header{height:55px;border-bottom:solid 2px #ddd;}
 .setting-header>h1{font-size:22px;}
 .setting-group{padding:20px 10px;border-bottom:solid 1px #eee;}
+.setting-field-left{width:28%;}
+.setting-field-right{width:72%;}
+.setting-avatar-img{width:74px;height:74px;}
+.setting-form{float:left;width:80%;}
+.setting-form-group{margin-bottom:15px;}
+.setting-form-label{font-weight:normal;color:#777;}
+.setting-form-field{padding:5px 15px;border:solid 2px #ddd;color:#555;
+outline:none;
+-webkit-border-radius:2px;
+-moz-border-radius:2px;
+-ms-border-radius:2px;
+-o-border-radius:2px;}
+.setting-form-field:focus{border-color:#007aff;}
 
 @media screen and (min-width: 320px){
-    .header-search-form{width:300px;}
+    .header-search-form{width:90%;}
+    .mobile-head-location{display:block;}
 }
 
 @media screen and (min-width: 481px){
+    .header-search-form{width:72%;}
+    .head-location-btn>i.glyphicon{display:none;}
+    .head-location-btn{display:block;}
+    .mobile-head-location{display:none;}
 }
 
 @media screen and (min-width: 641px){
+    .header-search-form{width:77%;}
+    .head-location-btn>i.glyphicon{display:inline-block;}
 }
 
 @media screen and (min-width: 769px){
-    .head-left-col{width:13%;}
-    .head-right-col{width:87%;}
-    .head-search-location{display:block;}
-    .head-signup{display:block;}
-    .header-search-form{width:330px;}
-    .head-location-btn{padding:7px;}
+    .head-left-col{width:15%;}
+    .head-right-col{width:85%;}
+    .head-logo-nav{width:90%;}
+    .header-search-form{width:68%;margin-right:10px;}
+    .head-search-location{width:73%;position:relative;background-color:transparent;
+    display:block;}
+    .head-right-nav{width:27%;}
+    .header-search-input{padding:0 31px 0 12px;}
+    .head-location-btn{padding:7px;float:left;}
+    .head-search-inside{padding:0;}
+    .head-signin, .head-signup{display:inline-block;}
+    .mobile-head-signin{display:none;}
 }
 
 @media screen and (min-width: 841px){
-    .header-search-form{width:370px;}
+    .header-search-form{width:70%;}
+    .head-logo-nav{width:80%;}
+    .header-search-input{padding:0 31px 0 17px;}
+    .head-location-btn{padding:7px 14px;}
 }
 
 @media screen and (min-width: 941px){
-    .head-left-col{width:16%;}
-    .head-right-col{width:84%;}
-    .header-search-form{width:400px;}
-    .head-location-btn{padding:7px 12px;}
+    .head-left-col{width:20%;}
+    .head-right-col{width:80%;}
 }
 
 @media screen and (min-width: 1025px){
-    .head-left-col{width:20%;}
-    .head-right-col{width:80%;}
 }
 
 @media screen and (min-width: 1281px){
