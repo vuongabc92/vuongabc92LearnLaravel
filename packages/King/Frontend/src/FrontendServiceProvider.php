@@ -13,16 +13,19 @@ class FrontendServiceProvider extends ServiceProvider {
      * @return void
      */
     public function boot() {
-        
-        //Include file helpers
+
+        //Load helpers
         Include_once realpath(__DIR__ . '/support/helpers.php');
-        
+
+        //Load constants
+        Include_once realpath(__DIR__ . '/config/constants.php');
+
         //Load views
         $this->loadViewsFrom(realpath(__DIR__ . '/../resources/views'), 'frontend');
 
         //Load translation
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'frontend');
-        
+
         //Set up routes
         $this->setupRoutes($this->app->router);
 
