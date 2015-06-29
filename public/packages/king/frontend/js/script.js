@@ -140,3 +140,79 @@
     });
 
 }(jQuery, window));
+
+/**
+ *  @name Save form
+ *  @description
+ *  @version 1.0
+ *  @options
+ *    option
+ *  @events
+ *    event
+ *  @methods
+ *    init
+ *    publicMethod
+ *    destroy
+ */
+;
+(function($, window, undefined) {
+    var pluginName = 'save-form';
+
+    function Plugin(element, options) {
+        this.element = $(element);
+        this.options = $.extend({}, $.fn[pluginName].defaults, options);
+        this.init();
+    }
+
+    Plugin.prototype = {
+        init: function() {
+            var current = this.element,
+                that    = this;
+            
+            current.on('submit', function(){
+                $.ajax({
+                    type: 'post',
+                    url: current.attr('action'),
+                    data: current.serialize(),
+                    success: function(response){
+                        if (response.status === 'ERROR') {
+                            that.showErrors(response.messages);
+                        }
+                    }
+                });
+                
+                return false;
+            });
+        },
+        showErrors: function(messages, fields) {
+            $.each(fields, function(k, v){
+                $('#' + k + '-label').html(v);
+            });
+        },
+        destroy: function() {
+            $.removeData(this.element[0], pluginName);
+        }
+    };
+
+    $.fn[pluginName] = function(options, params) {
+        return this.each(function() {
+            var instance = $.data(this, pluginName);
+            if (!instance) {
+                $.data(this, pluginName, new Plugin(this, options));
+            } else if (instance[options]) {
+                instance[options](params);
+            } else {
+                window.console && console.log(options ? options + ' method is not exists in ' + pluginName : pluginName + ' plugin has been initialized');
+            }
+        });
+    };
+
+    $.fn[pluginName].defaults = {
+        option: 'value'
+    };
+
+    $(function() {
+        $('[data-' + pluginName + ']')[pluginName]();
+    });
+
+}(jQuery, window));

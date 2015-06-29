@@ -13,6 +13,7 @@ return [
     'remember_me' => 'Remember me',
     'forgot_pass' => 'Forgot your password?',
     'agreed' => 'By registering, you have agreed to all terms and services from suris.com.',
+    'login_fails' => 'Email or password is incorrect.',
     'auth_email_req' => 'Email is required.',
     'auth_email_email' => 'Email is invalid.',
     'auth_email_max' => 'Email is too long (128).',
@@ -24,6 +25,7 @@ return [
     'auth_uname_min' => 'User name is too short (6).',
     'auth_uname_max' => 'User name is too long (32).',
     'auth_uname_uni' => 'User name has been used.',
+    'opp' => 'Opp!! Something went wrong. Please try again.',
     
     //Home
     'head-search-placeholder' => 'Search stores, locations and everythings...',

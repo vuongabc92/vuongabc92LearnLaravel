@@ -58,22 +58,25 @@ Setting > Account
                         <b class="_fwfl _fs13 _tg5">{{ _t('basic_info') }}</b>
                     </div>
                     <div class="_fr setting-field-right">
-                        {!! Form::open(['route' => 'front_login', 'method' => 'POST', 'class' => '_fl setting-form', 'data-required' => 'username|email']) !!}
+                        {!! Form::model($user, ['route' => 'front_setting_save_basic', 'method' => 'POST', 'class' => '_fl setting-form', 'data-required' => 'username|email', 'data-save-form' => 'user_name|email|first_name|last_name']) !!}
                         <div class="_fwfl setting-form-group">
-                            <label class="_fwfl setting-form-label" for="username">{{ _t('username') }}</label>
-                            {!! Form::text('user_name', '', ['class' => '_fwfl setting-form-field', 'id' => 'username', 'maxlength' => '32']) !!}
+                            <label class="_fwfl setting-form-label" for="username" id="user_name-label">
+                                <span class="_fwfl label-text">{{ _t('username') }}</span>
+                                <span class="_fwfl _tr5 _dn label-error"></span>
+                            </label>
+                            {!! Form::text('user_name', null, ['class' => '_fwfl setting-form-field', 'id' => 'username', 'maxlength' => '32']) !!}
                         </div>
                         <div class="_fwfl setting-form-group">
-                            <label class="_fwfl setting-form-label" for="email">{{ _t('email') }}</label>
-                            {!! Form::text('email', '', ['class' => '_fwfl setting-form-field', 'id' => 'email', 'maxlength' => '128']) !!}
+                            <label class="_fwfl setting-form-label" for="email" id="email-label">{{ _t('email') }}</label>
+                            {!! Form::text('email', null, ['class' => '_fwfl setting-form-field', 'id' => 'email', 'maxlength' => '128']) !!}
                         </div>
                         <div class="_fwfl setting-form-group">
-                            <label class="_fwfl setting-form-label" for="firstname">{{ _t('fname') }}</label>
-                            {!! Form::text('first_name', '', ['class' => '_fwfl setting-form-field', 'id' => 'firstname', 'maxlength' => '16']) !!}
+                            <label class="_fwfl setting-form-label" for="firstname" id="first_name-label">{{ _t('fname') }}</label>
+                            {!! Form::text('first_name', null, ['class' => '_fwfl setting-form-field', 'id' => 'firstname', 'maxlength' => '16']) !!}
                         </div>
                         <div class="_fwfl setting-form-group">
-                            <label class="_fwfl setting-form-label" for="lastname">{{ _t('lname') }}</label>
-                            {!! Form::text('last_name', '', ['class' => '_fwfl setting-form-field', 'id' => 'lastname', 'maxlength' => '32']) !!}
+                            <label class="_fwfl setting-form-label" for="lastname" id="last_name-label">{{ _t('lname') }}</label>
+                            {!! Form::text('last_name', null, ['class' => '_fwfl setting-form-field', 'id' => 'lastname', 'maxlength' => '32']) !!}
                         </div>
                         <div class="_fwfl setting-form-group">
                             <button type="submit" class="_fl _mr10 btn _btn _btn-blue1">{{ _t('save') }}</button>

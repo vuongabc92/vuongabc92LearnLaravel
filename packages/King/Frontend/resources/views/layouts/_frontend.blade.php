@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> @yield('title') - Suris - The world of online store</title>
+        <title> @yield('title') - {{ config('front.sitename') }} - {{ config('front.sitedesc') }}</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{ asset('packages/king/frontend/css/bootstrap.css') }}">
@@ -61,7 +61,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="#">
+                                        <a href="{{ route('front_setting_account') }}">
                                             <i class="fa fa-gear"></i>
                                             <span>{{ _t('setting') }}</span>
                                         </a>
@@ -95,7 +95,7 @@
         <div class="_fwfl _mt55 biggest-container">
             @yield('content')
         </div>
-        
+
         <script src="{{ asset('packages/king/frontend/js/jquery_v1.11.1.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/bootstrap.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/script.js') }}"></script>

@@ -46,10 +46,10 @@ font-weight:bold;
 ._btn-blue1:active{color:#fff;background-color:#219CC2;border-color:#239EC3;}
 ._btn-blue1:focus{color:#fff;background-color:#219CC2;}
 
-._btn-red{color:#fff;background-color:#f66;border-color:#f66;}
+._btn-red{color:#fff;background-color:#f66;border-color:#f55;}
 ._btn-red:hover{color:#fff;background-color:#f77;border-color:#f66;}
-._btn-red:active{color:#fff;background-color:#f55;border-color:#f66;}
-._btn-red:focus{color:#fff;background-color:#f55;border-color:#f66;}
+._btn-red:active{color:#fff;background-color:#f55;border-color:#f44;}
+._btn-red:focus{color:#fff;background-color:#f55;border-color:#f44;}
 
 ._btn-gray{color:#fff;background-color:#999;border-color:#888;}
 ._btn-gray:hover{color:#fff;background-color:#aaa;border-color:#999;}
