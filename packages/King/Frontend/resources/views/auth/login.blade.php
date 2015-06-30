@@ -5,7 +5,7 @@ Sign In
 @stop
 
 @section('head-link')
-<a class="btn _btn _btn-white _fr _r2 auth-head-btn" href="{{ url(route('front_register')) }}">{{ _t('signup') }}</a>
+<a class="btn _btn _btn-white-link _fr auth-head-btn" href="{{ url(route('front_register')) }}">{{ _t('signup') }}</a>
 @stop
 
 @section('body')
@@ -42,7 +42,7 @@ Sign In
             </label>
         </div>
         <div class="_fwfl auth-field-group">
-            <button class="_fwfl btn _btn _btn-blue _r2"><i class="fa fa-arrow-right"></i></button>
+            <button class="_fwfl btn _btn _btn-blue"><i class="fa fa-arrow-right"></i></button>
         </div>
         <div class="_fwfl">
             <a href="#" class="_fr _tb">{{ _t('forgot_pass') }}</a>

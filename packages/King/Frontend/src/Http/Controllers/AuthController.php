@@ -111,4 +111,15 @@ class AuthController extends FrontController
         return view('frontend::auth.register');
     }
 
+    /**
+     * Logout
+     *
+     * @return response
+     */
+    public function logout()
+    {
+        auth()->logout();
+
+        return redirect(route('front_home'));
+    }
 }

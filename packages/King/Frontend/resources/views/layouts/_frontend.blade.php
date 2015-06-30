@@ -14,23 +14,26 @@
             <div class="_mw970 _ma">
                 <div class="_fwfl _mt10 header-inside">
                     <div class="_fl head-left-col">
-                        a
+                        <a class="_fl head-logo-nav"></a>
                     </div>
                     <div class="_fr head-right-col">
                         <div class="_fl head-search-location">
-                            <form class="_fl _fwb _fs13 header-search-form">
-                                <input type="text" class="_fwfl _fh _ff0 _r2 header-search-input" placeholder="{{ _t('head-search-placeholder') }}">
-                                <button type="submit" class="_ff0 _fl _fh _fs17 _tb header-search-btn"><i class="fa fa-search"></i></button>
-                            </form>
-                            <span class="btn _btn _btn-blue _r2 head-location-btn">
-                                <i class="glyphicon glyphicon-map-marker"></i>
-                                Ho Chi Minh
-                                <i class="caret"></i>
-                            </span>
+                            <div class="_fwfl head-search-inside">
+                                <form class="_fl _fwb _fs13 header-search-form">
+                                    <input type="text" class="_fwfl _fh _ff0 _r2 header-search-input" placeholder="{{ _t('head-search-placeholder') }}">
+                                    <button type="submit" class="_ff0 _fl _fh _fs17 _tb header-search-btn"><i class="fa fa-search"></i></button>
+                                </form>
+                                <span class="btn _btn _btn-blue head-location-btn">
+                                    <i class="glyphicon glyphicon-map-marker"></i>
+                                    <span>Ho Chi Minh</span>
+                                    <i class="caret"></i>
+                                </span>
+                                <span class="_fr glyphicon glyphicon-map-marker _tb _fs20 _mt6 _cp mobile-head-location"></span>
+                            </div>
                         </div>
-                        <div class="_fr">
+                        <div class="_fr head-right-nav">
                             @if (auth()->check())
-                            <div class="btn-group avatar-dropdown">
+                            <div class="_fr btn-group avatar-dropdown">
                                 <button type="button" class="btn dropdown-toggle _bgw _p0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <img src="{{ get_avatar() }}" class="_fl img-circle head-avatar-img"/>
                                 </button>
@@ -71,7 +74,7 @@
                                     </li>
                                     <li role="separator" class="divider"></li>
                                     <li>
-                                        <a href="#">
+                                        <a href="{{ route('front_logout') }}">
                                             <i class="fa fa-sign-out"></i>
                                             <span>{{ _t('signout') }}</span>
                                         </a>
@@ -79,16 +82,17 @@
                                 </ul>
                             </div>
                             @else
-                            <a href="{{ route('front_register') }}" class="btn _btn _btn-white _r2 _fr head-signup">{{ _t('signup') }}</a>
-                            <a href="{{ route('front_login') }}" class="btn _btn _btn-white _r2 _fr head-signin">{{ _t('signin') }}</a>
+                            <a href="{{ route('front_register') }}" class="btn _btn _btn-white-link _fr head-signup">{{ _t('signup') }}</a>
+                            <a href="{{ route('front_login') }}" class="btn _btn _btn-white-link _fr head-signin">{{ _t('signin') }}</a>
                             @endif
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="_fwfl _mt55">
+        <div class="_fwfl _mt55 biggest-container">
             @yield('content')
         </div>
 

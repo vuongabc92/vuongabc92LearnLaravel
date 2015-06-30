@@ -1,6 +1,7 @@
 <?php
 
 Route::get('/', ['as' => 'front_home', 'uses' => 'HomeController@index']);
+Route::get('logout', ['as' => 'front_logout', 'uses' => 'AuthController@logout']);
 
 Route::group(['middleware' => 'guest'], function($route){
     $route->match(['get', 'post'], 'login', ['as' => 'front_login', 'uses' => 'AuthController@authenticate']);
