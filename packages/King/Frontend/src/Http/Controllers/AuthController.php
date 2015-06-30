@@ -20,7 +20,6 @@ class AuthController extends FrontController
 
     protected $user;
 
-
     public function __construct(User $user)
     {
         $this->user = $user;
@@ -68,6 +67,15 @@ class AuthController extends FrontController
         return view('frontend::auth.login');
     }
 
+    /**
+     * User registering
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return response
+     *
+     * @throws Exception
+     */
     public function register(Request $request)
     {
         if ($request->isMethod('POST')) {
