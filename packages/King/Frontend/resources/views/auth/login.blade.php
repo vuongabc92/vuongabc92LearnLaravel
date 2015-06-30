@@ -9,7 +9,7 @@ Sign In
 @stop
 
 @section('body')
-    {!! Form::open(['route' => 'front_login', 'method' => 'POST', 'class' => '_ma auth-form', 'data-requireds' => 'email|password']) !!}
+    {!! Form::open(['route' => 'front_login', 'method' => 'POST', 'class' => '_ma auth-form', 'data-required' => 'email|password']) !!}
         <h1 class="_fwfl _m0 _p0 auth-form-title">{{ _t('signin_title') }}</h1>
         <div class="_fwfl auth-field-group first-field-group">
             <label class="_fwfl _fs14 _fwn _tg5" for="email">

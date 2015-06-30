@@ -9,26 +9,27 @@
 namespace King\Frontend\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use Validator;
 use Hash;
 
 class SettingController extends FrontController
 {
 
-    /**
+    protected $user;
+
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
+
+        /**
      * Display account setting page
      *
      * @return response
      */
     public function index()
     {
-        $rules = [
-                'user_name'  => 'required|alpha_dash|min:6|max:32|unique:users,user_name',
-                'email'      => 'required|max:128|email|unique:users,email',
-                'first_name' => 'max:16',
-                'last_name'  => 'max:32',
-            ];
-
         return view('frontend::setting.account', ['user' => auth()->user()]);
     }
 
@@ -108,29 +109,8 @@ class SettingController extends FrontController
         //Only accept ajax request.
         if ($request->ajax()) {
 
-            $rules = [
-                'user_name'  => 'required|alpha_dash|min:6|max:32|unique:users,user_name',
-                'email'      => 'required|max:128|email|unique:users,email',
-                'first_name' => 'max:16',
-                'last_name'  => 'max:32',
-            ];
-
-            $rules = remove_rules($rules, 'user_name.unique:users,user_name');
-            dd($rules);
-
-            $messages = [
-                'email.required'       => _t('auth_email_req'),
-                'email.email'          => _t('auth_email_email'),
-                'email.max'            => _t('auth_email_max'),
-                'email.unique'         => _t('auth_email_uni'),
-                'user_name.required'   => _t('auth_uname_req'),
-                'user_name.alpha_dash' => _t('auth_uname_alpha'),
-                'user_name.min'        => _t('auth_uname_min'),
-                'user_name.max'        => _t('auth_uname_max'),
-                'user_name.unique'     => _t('auth_uname_uni'),
-                'first_name.max'       => _t('fname_long'),
-                'last_name.max'        => _t('lname_long'),
-            ];
+            $rules           = remove_rules($this->user->getRules(), 'password');
+            $messages        = $this->user->getMessages();
 
             $user            = auth()->user();
             $currentUsername = $user->user_name;
@@ -151,14 +131,14 @@ class SettingController extends FrontController
              * is the owner.
              */
             if (str_equal($currentUsername, $username)) {
-                $rules['user_name'] = 'required|min:6|max:32';
+                $rules = remove_rules($rules, 'user_name.unique:users,user_name');
             } else {
                 $checkPass = true;
             }
 
             //Email is same with username.
             if (str_equal($currentEmail, $email)) {
-                $rules['email'] = 'required|max:128|email';
+                $rules = remove_rules($rules, 'email.unique:users,email');
             } else {
                 $checkPass = true;
             }

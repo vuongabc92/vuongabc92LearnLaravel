@@ -54,20 +54,20 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function getMessages()
     {
         $messages = [
-            'user_name.required'   => 'User name is required.',
-            'user_name.alpha_dash' => 'Only allow a-z, 0-9 and underscore.',
-            'user_name.min'        => 'User name is too short (6).',
-            'user_name.max'        => 'User name is too long (32).',
-            'user_name.unique'     => 'User name has been used.',
-            'email.required'       => 'Email is required.',
-            'email.email'          => 'Email is wrong format.',
-            'email.max'            => 'Email is too long (128).',
-            'email.unique'         => 'Email has been used.',
-            'password.required'    => 'Password is required.',
-            'password.min'         => 'Password is too short (6).',
-            'password.max'         => 'Password is too long (60).',
-            'first_name.max'       => 'First name is too long (16).',
-            'last_name.max'        => 'Last name is too long (32).',
+            'user_name.required'   => _t('user_uname_req'),
+            'user_name.alpha_dash' => _t('user_uname_alpha'),
+            'user_name.min'        => _t('user_uname_min'),
+            'user_name.max'        => _t('user_uname_max'),
+            'user_name.unique'     => _t('user_uname_uni'),
+            'email.required'       => _t('user_email_req'),
+            'email.email'          => _t('user_email_email'),
+            'email.max'            => _t('user_email_max'),
+            'email.unique'         => _t('user_email_uni'),
+            'password.required'    => _t('user_pass_req'),
+            'password.min'         => _t('user_pass_min'),
+            'password.max'         => _t('user_pass_max'),
+            'first_name.max'       => _t('user_fname_max'),
+            'last_name.max'        => _t('user_lname_max'),
         ];
 
         return $messages;
