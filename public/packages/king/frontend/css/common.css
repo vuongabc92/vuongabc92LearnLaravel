@@ -13,17 +13,11 @@
 ._fhfl{height: 100%;float: left;}
 ._fhfr{height: 100%;float: right;}
 
-._btn{font-size:13px;padding:7px 14px;outline:none !important;border-radius:3px;
-font-weight:bold;
--webkit-border-radius:2px;
--moz-border-radius:2px;
--ms-border-radius:2px;
--o-border-radius:2px;}
-._btn:active{box-shadow:none;
--webkit-box-shadow:none;
--moz-box-shadow:none;
--ms-box-shadow:none;
--o-box-shadow:none;}
+._btn{font-size:13px;padding:7px 14px;outline:none !important;
+font-weight:bold;border-radius:2px;-webkit-border-radius:2px;
+-moz-border-radius:2px;-ms-border-radius:2px;-o-border-radius:2px;}
+._btn:active{box-shadow:none;-webkit-box-shadow:none;
+-moz-box-shadow:none;-ms-box-shadow:none;-o-box-shadow:none;}
 
 
 ._btn-white{color:#999;background-color:#fff;border-color:#eee;}
