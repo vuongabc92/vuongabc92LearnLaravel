@@ -22,6 +22,13 @@ class SettingController extends FrontController
      */
     public function index()
     {
+        $rules = [
+                'user_name'  => 'required|alpha_dash|min:6|max:32|unique:users,user_name',
+                'email'      => 'required|max:128|email|unique:users,email',
+                'first_name' => 'max:16',
+                'last_name'  => 'max:32',
+            ];
+
         return view('frontend::setting.account', ['user' => auth()->user()]);
     }
 
@@ -51,7 +58,7 @@ class SettingController extends FrontController
 
             $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->fails()) {
-                ajax_response([
+                return ajax_response([
                     'status'   => AJAX_ERROR,
                     'messages' => $validator->messages()
                 ]);
@@ -70,19 +77,19 @@ class SettingController extends FrontController
                 try {
                     auth()->user()->save();
                 } catch (Exception $ex) {
-                    ajax_response([
+                    return ajax_response([
                         'status'   => AJAX_ERROR,
                         'messages' => _t('opp')
                     ]);
                 }
 
-                ajax_response([
+                return ajax_response([
                     'status'   => AJAX_OK,
                     'messages' => _t('saved_pass')
                 ]);
             }
 
-            ajax_response([
+            return ajax_response([
                 'status'   => AJAX_ERROR,
                 'messages' => _t('curr_pass_wrong')
             ]);
@@ -102,23 +109,27 @@ class SettingController extends FrontController
         if ($request->ajax()) {
 
             $rules = [
-                'user_name'  => 'required|min:6|max:32|unique:users,user_name',
+                'user_name'  => 'required|alpha_dash|min:6|max:32|unique:users,user_name',
                 'email'      => 'required|max:128|email|unique:users,email',
                 'first_name' => 'max:16',
                 'last_name'  => 'max:32',
             ];
 
+            $rules = remove_rules($rules, 'user_name.unique:users,user_name');
+            dd($rules);
+
             $messages = [
-                'email.required'     => _t('auth_email_req'),
-                'email.email'        => _t('auth_email_email'),
-                'email.max'          => _t('auth_email_max'),
-                'email.unique'       => _t('auth_email_uni'),
-                'user_name.required' => _t('auth_uname_req'),
-                'user_name.min'      => _t('auth_uname_min'),
-                'user_name.max'      => _t('auth_uname_max'),
-                'user_name.unique'   => _t('auth_uname_uni'),
-                'first_name.max'     => 'First name is too long.',
-                'last_name.max'      => 'Last name is too long.',
+                'email.required'       => _t('auth_email_req'),
+                'email.email'          => _t('auth_email_email'),
+                'email.max'            => _t('auth_email_max'),
+                'email.unique'         => _t('auth_email_uni'),
+                'user_name.required'   => _t('auth_uname_req'),
+                'user_name.alpha_dash' => _t('auth_uname_alpha'),
+                'user_name.min'        => _t('auth_uname_min'),
+                'user_name.max'        => _t('auth_uname_max'),
+                'user_name.unique'     => _t('auth_uname_uni'),
+                'first_name.max'       => _t('fname_long'),
+                'last_name.max'        => _t('lname_long'),
             ];
 
             $user            = auth()->user();
@@ -154,7 +165,7 @@ class SettingController extends FrontController
 
             $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->fails()) {
-                ajax_response([
+                return ajax_response([
                     'status' => AJAX_ERROR,
                     'messages' => $validator->messages()
                 ]);
@@ -163,9 +174,10 @@ class SettingController extends FrontController
             //Check does password from input match to password in DB.
             if ($checkPass) {
                 if ( ! Hash::check($password, $hashingPass)) {
-                    ajax_response([
+                    $validator->errors()->add('password', _t('pass_incorrect'));
+                    return ajax_response([
                         'status' => AJAX_ERROR,
-                        'messages' => 'Password is incorrect.'
+                        'messages' => $validator->messages()
                     ]);
                 }
             }
@@ -177,15 +189,15 @@ class SettingController extends FrontController
             try {
                 $user->save();
             } catch (Exception $ex) {
-                ajax_response([
+                return ajax_response([
                     'status'   => AJAX_ERROR,
                     'messages' => _t('opp')
                 ]);
             }
 
-            ajax_response([
+            return ajax_response([
                 'status'   => AJAX_OK,
-                'messages' => 'Saved info.'
+                'messages' => _t('saved_info')
             ]);
         }
     }
@@ -219,7 +231,7 @@ class SettingController extends FrontController
         if ($user->avatar !== null) {
             $currentAvatar = '.' . $user->avatar;
             if ( ! is_dir($currentAvatar) && file_exists($currentAvatar)) {
-                
+
             }
         }
     }

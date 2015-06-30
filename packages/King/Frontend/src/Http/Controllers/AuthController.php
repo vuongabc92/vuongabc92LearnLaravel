@@ -18,6 +18,15 @@ use App\Models\User;
 class AuthController extends FrontController
 {
 
+    protected $user;
+
+
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
+
+
     /**
      * Login
      *
@@ -30,18 +39,14 @@ class AuthController extends FrontController
 
         if ($request->isMethod('POST')) {
 
-            $rules = [
-                'email'    => 'required|email|max:128',
-                'password' => 'required|max:60',
-            ];
-
-            $messages = [
-                'email.required'    => _t('auth_email_req'),
-                'email.email'       => _t('auth_email_email'),
-                'email.max'         => _t('auth_email_max'),
-                'password.required' => _t('auth_pass_req'),
-                'password.max'      => _t('auth_pass_max'),
-            ];
+            $rules = remove_rules($this->user->getRules(), [
+                'user_name',
+                'first_name',
+                'last_name',
+                'password.min:6',
+                'email.unique:users,email',
+            ]);
+            $messages = $this->user->getMessages();
 
             $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->passes()) {
@@ -65,34 +70,17 @@ class AuthController extends FrontController
 
     public function register(Request $request)
     {
-
         if ($request->isMethod('POST')) {
-            $rules = [
-                'email'     => 'required|max:128|email|unique:users,email',
-                'user_name' => 'required|min:6|max:32|unique:users,user_name',
-                'password'  => 'required|min:6|max:60'
-            ];
 
-            $messages = [
-                'email.required'     => _t('auth_email_req'),
-                'email.email'        => _t('auth_email_email'),
-                'email.max'          => _t('auth_email_max'),
-                'email.unique'       => _t('auth_email_uni'),
-                'password.required'  => _t('auth_pass_req'),
-                'password.min'       => _t('auth_pass_min'),
-                'password.max'       => _t('auth_pass_max'),
-                'user_name.required' => _t('auth_uname_req'),
-                'user_name.min'      => _t('auth_uname_min'),
-                'user_name.max'      => _t('auth_uname_max'),
-                'user_name.unique'   => _t('auth_uname_uni'),
-            ];
+            $rules    = remove_rules($this->user->getRules(), ['first_name', 'last_name']);
+            $messages = $this->user->getMessages();
 
             $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->fails()) {
                 return back()->withInput()->withErrors($validator, 'auth');
             }
 
-            $user = $this->bind(new User(), $request->all());
+            $user = $this->bind($this->user, $request->all());
             try {
                 $user->save();
             } catch (Exception $ex) {

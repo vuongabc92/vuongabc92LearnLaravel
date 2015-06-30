@@ -9,12 +9,12 @@ Sign In
 @stop
 
 @section('body')
-    {!! Form::open(['route' => 'front_login', 'method' => 'POST', 'class' => '_ma auth-form', 'data-required' => 'email|password']) !!}
+    {!! Form::open(['route' => 'front_login', 'method' => 'POST', 'class' => '_ma auth-form', 'data-requireds' => 'email|password']) !!}
         <h1 class="_fwfl _m0 _p0 auth-form-title">{{ _t('signin_title') }}</h1>
         <div class="_fwfl auth-field-group first-field-group">
             <label class="_fwfl _fs14 _fwn _tg5" for="email">
                 @if ($errors->auth->first('email') !== '')
-                <span class="_fwfl _tr3 _fs13 _mt2">{{ $errors->auth->first('email') }}</span>
+                <span class="_tr5">{{ $errors->auth->first('email') }}</span>
                 @else
                 {{ _t('email') }}
                 @endif
@@ -26,7 +26,7 @@ Sign In
         <div class="_fwfl auth-field-group">
             <label class="_fwfl _fs14 _fwn _tg5" for="password">
                 @if ($errors->auth->first('password') !== '')
-                <span class="_fwfl _tr3 _fs13 _mt2">{{ $errors->auth->first('password') }}</span>
+                <span class="_tr5">{{ $errors->auth->first('password') }}</span>
                 @else
                 {{ _t('password') }}
                 @endif

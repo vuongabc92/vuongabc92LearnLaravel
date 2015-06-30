@@ -13,6 +13,7 @@ return [
     'remember_me' => 'Remember me',
     'forgot_pass' => 'Forgot your password?',
     'agreed' => 'By registering, you have agreed to all terms and services from suris.com.',
+    'login_fails' => 'Email or Password is incorrect.',
     'auth_email_req' => 'Email is required.',
     'auth_email_email' => 'Email is invalid.',
     'auth_email_max' => 'Email is too long (128).',
@@ -21,16 +22,17 @@ return [
     'auth_pass_min' => 'Password is too short (6).',
     'auth_pass_max' => 'Password is too long (64).',
     'auth_uname_req' => 'User name is required.',
+    'auth_uname_alpha' => 'User name should only has alpha-numeric characters and underscores.',
     'auth_uname_min' => 'User name is too short (6).',
     'auth_uname_max' => 'User name is too long (32).',
     'auth_uname_uni' => 'User name has been used.',
-    
+
     //Home
     'head-search-placeholder' => 'Search stores, locations and everythings...',
     'view_store' => 'View my store',
     'setting' => 'Setting',
     'help' => 'Help',
-    
+
     //Setting
     'acc' => 'Account',
     'bussiness' => 'Bussiness',
@@ -47,4 +49,8 @@ return [
     'lname' => 'Last name',
     'save' => 'Save',
     'cancel' => 'Cancel',
+    'pass_incorrect' => 'Password is incorrect.',
+    'fname_long' => 'First name is too long.',
+    'lname_long' => 'Last name is too long.',
+    'saved_info' => 'Saved info.',
 ];
