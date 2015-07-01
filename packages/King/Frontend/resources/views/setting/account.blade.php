@@ -49,12 +49,12 @@ Setting > Account
                         <b class="_fwfl _fs13 _tg5">{{ _t('password') }}</b>
                     </div>
                     <div class="_fr setting-field-right">
-<!--                        <div class="_fwfl">
+                        <div class="_fwfl change-pass-btn">
                             <span class="_fwfl _fs13 _tg9">{{ _t('pass_note') }}</span>
-                            <span class="btn _btn _btn-red _mt10">{{ _t('change_pass') }}</span>
-                        </div>-->
+                            <span class="btn _btn _btn-red _mt10 show-pass-form">{{ _t('change_pass') }}</span>
+                        </div>
 
-                        {!! Form::open(['route' => 'front_setting_change_pass', 'method' => 'POST', 'class' => '_fl setting-form', 'data-ajax-form' => 'password|new_password']) !!}
+                        {!! Form::open(['route' => 'front_setting_change_pass', 'method' => 'POST', 'class' => '_fl _dn setting-form setting-form-pass', 'data-ajax-form' => 'password|new_password']) !!}
                         <div class="_fwfl setting-form-group">
                             <label class="_fwfl setting-form-label" for="password" data-title="{{ _t('cur_pass') }}">{{ _t('cur_pass') }}</label>
                             {!! Form::password('password', ['class' => '_fwfl setting-form-field', 'id' => 'password', 'maxlength' => '60']) !!}
@@ -69,7 +69,7 @@ Setting > Account
                                 <b class="btn-text">{{ _t('save') }}</b>
                                 <i class="fa fa-check _dn"></i>
                             </button>
-                            <button type="reset" class="_fl btn _btn _btn-gray">{{ _t('close') }}</button>
+                            <button type="reset" class="_fl btn _btn _btn-gray close-form-pass">{{ _t('cancel') }}</button>
                         </div>
                         {!! Form::close() !!}
                     </div>
@@ -116,4 +116,18 @@ Setting > Account
         </div>
     </div>
 </div>
+@stop
+
+@section('js')
+<script>
+    $('.show-pass-form').on('click', function(){
+        $('.setting-form-pass').show();
+        $('.change-pass-btn').hide();
+    });
+    
+    $('.close-form-pass').on('click', function(){
+        $('.setting-form-pass').hide();
+        $('.change-pass-btn').show();
+    });
+</script>
 @stop

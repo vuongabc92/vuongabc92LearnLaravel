@@ -115,7 +115,7 @@ if ( ! function_exists('remove_rules')) {
 
         //Remove a rule string
         if (is_string($rulesRemove)) {
-            //If remove string contain dot "." mean
+            //If rule string to removing contain dot "." mean
             //remove a rule after dot in field before dot
             if (str_contains($rulesRemove, '.')) {
                 $ruleInField = explode('.', $rulesRemove);
@@ -144,5 +144,19 @@ if ( ! function_exists('remove_rules')) {
 
         return $rules;
     }
+}
 
+if ( ! function_exists('get_display_name')) {
+    function get_display_name() {
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->first_name !== '') {
+                return $user->first_name . ' ' . $user->last_name;
+            }
+            
+            return $user->user_name;
+        }
+        
+        return '';
+    }
 }

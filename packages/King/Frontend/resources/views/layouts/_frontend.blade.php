@@ -44,10 +44,10 @@
                                                 <img src="{{ get_avatar() }}" class="_fl _r3 avatar-popup-img" />
                                                 <div class="_fl short-profile">
                                                     <span class="_fwfl _tb _fwb _fs13 short-info-name">
-                                                        bui vuong
+                                                        {{ get_display_name() }}
                                                     </span>
                                                     <span class="_fwfl  _tb _fwb _fs13">
-                                                        master@wiki.com
+                                                        {{ auth()->user()->email }}
                                                     </span>
                                                 </div>
                                             </span>
