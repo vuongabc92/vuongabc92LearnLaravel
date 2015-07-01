@@ -21,9 +21,9 @@ Setting > Account
                             {{ _t('buss_note') }}
                             <!--<b class="_fs13 _tup _tb">Shop Quần Áo Liên Liên</b>-->
                         </span>
-                        
+
                         <div class="_fwfl _mt10">
-                            <a class="btn _btn _btn-blue1 _r2" href="#">+ {{ _t('create_store') }}</a>
+                            <a class="btn _btn _btn-blue1" href="#">+ {{ _t('create_store') }}</a>
                         </div>
                     </div>
                 </div>
@@ -40,7 +40,7 @@ Setting > Account
                             </span>
                         </span>
                         <div class="_fwfl _mt15">
-                            <button class="btn _btn _btn-white">{{ _t('avatar_browser') }}</button>
+                            <span class="btn _btn _btn-white">{{ _t('avatar_browser') }}</span>
                         </div>
                     </div>
                 </div>
@@ -49,8 +49,29 @@ Setting > Account
                         <b class="_fwfl _fs13 _tg5">{{ _t('password') }}</b>
                     </div>
                     <div class="_fr setting-field-right">
-                        <span class="_fwfl _fs13 _tg9">{{ _t('pass_note') }}</span>
-                        <span class="btn _btn _btn-red _mt10">{{ _t('change_pass') }}</span>
+<!--                        <div class="_fwfl">
+                            <span class="_fwfl _fs13 _tg9">{{ _t('pass_note') }}</span>
+                            <span class="btn _btn _btn-red _mt10">{{ _t('change_pass') }}</span>
+                        </div>-->
+
+                        {!! Form::open(['route' => 'front_setting_change_pass', 'method' => 'POST', 'class' => '_fl setting-form', 'data-ajax-form' => 'password|new_password']) !!}
+                        <div class="_fwfl setting-form-group">
+                            <label class="_fwfl setting-form-label" for="password" data-title="{{ _t('cur_pass') }}">{{ _t('cur_pass') }}</label>
+                            {!! Form::password('password', ['class' => '_fwfl setting-form-field', 'id' => 'password', 'maxlength' => '60']) !!}
+                        </div>
+                        <div class="_fwfl setting-form-group">
+                            <label class="_fwfl setting-form-label" for="new-password" data-title="{{ _t('new_pass') }}">{{ _t('new_pass') }}</label>
+                            {!! Form::password('new_password', ['class' => '_fwfl setting-form-field', 'id' => 'new-password', 'maxlength' => '60']) !!}
+                        </div>
+                        <div class="_fwfl setting-form-group">
+                            <button type="submit" class="_fl _mr10 btn _btn _btn-blue1">
+                                <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-white-blue1.gif') }}" />
+                                <b class="btn-text">{{ _t('save') }}</b>
+                                <i class="fa fa-check _dn"></i>
+                            </button>
+                            <button type="reset" class="_fl btn _btn _btn-gray">{{ _t('close') }}</button>
+                        </div>
+                        {!! Form::close() !!}
                     </div>
                 </div>
                 <div class="_fwfl setting-group">
@@ -58,28 +79,34 @@ Setting > Account
                         <b class="_fwfl _fs13 _tg5">{{ _t('basic_info') }}</b>
                     </div>
                     <div class="_fr setting-field-right">
-                        {!! Form::model($user, ['route' => 'front_setting_save_basic', 'method' => 'POST', 'class' => '_fl setting-form', 'data-required' => 'username|email', 'data-save-form' => 'user_name|email|first_name|last_name']) !!}
+                        {!! Form::model($user, ['route' => 'front_setting_acc_basic', 'method' => 'POST', 'class' => '_fl setting-form', 'data-ajax-form' => 'user_name|email|first_name|last_name|password']) !!}
                         <div class="_fwfl setting-form-group">
-                            <label class="_fwfl setting-form-label" for="username" id="user_name-label">
-                                <span class="_fwfl label-text">{{ _t('username') }}</span>
-                                <span class="_fwfl _tr5 _dn label-error"></span>
-                            </label>
+                            <label class="_fwfl setting-form-label" for="username" data-title="{{ _t('username') }}">{{ _t('username') }}</label>
                             {!! Form::text('user_name', null, ['class' => '_fwfl setting-form-field', 'id' => 'username', 'maxlength' => '32']) !!}
                         </div>
                         <div class="_fwfl setting-form-group">
-                            <label class="_fwfl setting-form-label" for="email" id="email-label">{{ _t('email') }}</label>
+                            <label class="_fwfl setting-form-label" for="email" data-title="{{ _t('email') }}">{{ _t('email') }}</label>
                             {!! Form::text('email', null, ['class' => '_fwfl setting-form-field', 'id' => 'email', 'maxlength' => '128']) !!}
                         </div>
                         <div class="_fwfl setting-form-group">
-                            <label class="_fwfl setting-form-label" for="firstname" id="first_name-label">{{ _t('fname') }}</label>
+                            <label class="_fwfl setting-form-label" for="firstname" data-title="{{ _t('fname') }}">{{ _t('fname') }}</label>
                             {!! Form::text('first_name', null, ['class' => '_fwfl setting-form-field', 'id' => 'firstname', 'maxlength' => '16']) !!}
                         </div>
                         <div class="_fwfl setting-form-group">
-                            <label class="_fwfl setting-form-label" for="lastname" id="last_name-label">{{ _t('lname') }}</label>
+                            <label class="_fwfl setting-form-label" for="lastname" data-title="{{ _t('lname') }}">{{ _t('lname') }}</label>
                             {!! Form::text('last_name', null, ['class' => '_fwfl setting-form-field', 'id' => 'lastname', 'maxlength' => '32']) !!}
                         </div>
                         <div class="_fwfl setting-form-group">
-                            <button type="submit" class="_fl _mr10 btn _btn _btn-blue1">{{ _t('save') }}</button>
+                            <label class="_fwfl setting-form-label" for="password" data-title="{{ _t('pass_confirm') }}">{{ _t('pass_confirm') }}</label>
+                            {!! Form::password('password', ['class' => '_fwfl setting-form-field', 'id' => 'password', 'maxlength' => '60']) !!}
+                            <span class="_fwfl _fs13 _tg5 _mt5">(*) Password for change user name or email</span>
+                        </div>
+                        <div class="_fwfl setting-form-group">
+                            <button type="submit" class="_fl _mr10 btn _btn _btn-blue1">
+                                <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-white-blue1.gif') }}" />
+                                <b class="btn-text">{{ _t('save') }}</b>
+                                <i class="fa fa-check _dn"></i>
+                            </button>
                             <button type="reset" class="_fl btn _btn _btn-gray">{{ _t('cancel') }}</button>
                         </div>
                         {!! Form::close() !!}

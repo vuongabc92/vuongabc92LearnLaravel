@@ -67,6 +67,15 @@ if ( ! function_exists('str_equal')) {
 }
 
 if ( ! function_exists('generate_filename')) {
+    /**
+     * Generate a string that is very very hard to be duplidated.
+     * The string consist of current user id (0 for unauthenticated),
+     * current microtime, a random string.
+     *
+     * @param type $prefix
+     *
+     * @return string
+     */
     function generate_filename($prefix = '') {
         $userId    = 0;
         $microtime = microtime(true);
@@ -80,4 +89,60 @@ if ( ! function_exists('generate_filename')) {
 
         return $prefix . '_' . $hashingName;
     }
+}
+
+if ( ! function_exists('remove_rules')) {
+    /**
+     * Remove one or many rules in a list of rules
+     *
+     * @param type $rules       List of rules will be removed out
+     * @param type $rulesRemove Rule to be found in $rules to remove
+     *
+     * @return array
+     */
+    function remove_rules($rules, $rulesRemove) {
+
+        //Remove list rules
+        if (is_array($rulesRemove)) {
+            if (count($rulesRemove)) {
+                foreach ($rulesRemove as $one) {
+                    $rules = remove_rules($rules, $one);
+                }
+            }
+
+            return $rules;
+        }
+
+        //Remove a rule string
+        if (is_string($rulesRemove)) {
+            //If remove string contain dot "." mean
+            //remove a rule after dot in field before dot
+            if (str_contains($rulesRemove, '.')) {
+                $ruleInField = explode('.', $rulesRemove);
+                if (isset($rules[$ruleInField[0]])) {
+                    $ruleSplit = explode('|', $rules[$ruleInField[0]]);
+                    $ruleFlip  = array_flip($ruleSplit);
+
+                    if (isset($ruleFlip[$ruleInField[1]])) {
+                        unset($ruleSplit[$ruleFlip[$ruleInField[1]]]);
+                    }
+
+                    if (count($ruleSplit)) {
+                        $rules[$ruleInField[0]] = implode('|', $ruleSplit);
+                    } else {
+                        unset($rules[$ruleInField[0]]);
+                    }
+                }
+            } else {
+                if (isset($rules[$rulesRemove])) {
+                    unset($rules[$rulesRemove]);
+                }
+            }
+
+            return $rules;
+        }
+
+        return $rules;
+    }
+
 }

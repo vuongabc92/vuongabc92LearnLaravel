@@ -24,8 +24,8 @@
                                     <button type="submit" class="_ff0 _fl _fh _fs17 _tb header-search-btn"><i class="fa fa-search"></i></button>
                                 </form>
                                 <span class="btn _btn _btn-blue head-location-btn">
-                                    <i class="glyphicon glyphicon-map-marker"></i> 
-                                    <span>Ho Chi Minh</span> 
+                                    <i class="glyphicon glyphicon-map-marker"></i>
+                                    <span>Ho Chi Minh</span>
                                     <i class="caret"></i>
                                 </span>
                                 <span class="_fr glyphicon glyphicon-map-marker _tb _fs20 _mt6 _cp mobile-head-location"></span>
@@ -85,7 +85,7 @@
                             <a href="{{ route('front_register') }}" class="btn _btn _btn-white-link _fr head-signup">{{ _t('signup') }}</a>
                             <a href="{{ route('front_login') }}" class="btn _btn _btn-white-link _fr head-signin">{{ _t('signin') }}</a>
                             @endif
-                            
+
                         </div>
                     </div>
                 </div>
@@ -99,5 +99,6 @@
         <script src="{{ asset('packages/king/frontend/js/jquery_v1.11.1.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/bootstrap.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/script.js') }}"></script>
+        @yield('js')
     </body>
 </html>

@@ -14,7 +14,7 @@ Register
         <div class="_fwfl auth-field-group first-field-group">
             <label class="_fwfl _fs14 _fwn _tg5" for="username">
                 @if ($errors->auth->first('user_name') !== '')
-                <span class="_fwfl _tr3 _fs13 _mt2">{{ $errors->auth->first('user_name') }}</span>
+                <span class="_tr5">{{ $errors->auth->first('user_name') }}</span>
                 @else
                 {{ _t('username') }}
                 @endif
@@ -26,7 +26,7 @@ Register
         <div class="_fwfl auth-field-group">
             <label class="_fwfl _fs14 _fwn _tg5" for="email">
                 @if ($errors->auth->first('email') !== '')
-                <span class="_fwfl _tr3 _fs13 _mt2">{{ $errors->auth->first('email') }}</span>
+                <span class="_tr5">{{ $errors->auth->first('email') }}</span>
                 @else
                 {{ _t('email') }}
                 @endif
@@ -38,7 +38,7 @@ Register
         <div class="_fwfl auth-field-group">
             <label class="_fwfl _fs14 _fwn _tg5" for="password">
                 @if ($errors->auth->first('password') !== '')
-                <span class="_fwfl _tr3 _fs13 _mt2">{{ $errors->auth->first('password') }}</span>
+                <span class="_tr5">{{ $errors->auth->first('password') }}</span>
                 @else
                 {{ _t('password') }}
                 @endif

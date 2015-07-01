@@ -9,13 +9,21 @@
 namespace King\Frontend\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use Validator;
 use Hash;
 
 class SettingController extends FrontController
 {
 
-    /**
+    protected $user;
+
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
+
+        /**
      * Display account setting page
      *
      * @return response
@@ -43,15 +51,15 @@ class SettingController extends FrontController
             ];
 
             $messages = [
-                'password.required'     => _t('auth_pass_req'),
-                'password_new.required' => _t('auth_pass_req'),
-                'password_new.min'      => _t('auth_pass_min'),
-                'password_new.max'      => _t('auth_pass_max'),
+                'password.required'     => _t('user_pass_req'),
+                'new_password.required' => _t('user_pass_req'),
+                'new_password.min'      => _t('user_pass_min'),
+                'new_password.max'      => _t('user_pass_max'),
             ];
 
             $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->fails()) {
-                ajax_response([
+                return ajax_response([
                     'status'   => AJAX_ERROR,
                     'messages' => $validator->messages()
                 ]);
@@ -66,25 +74,28 @@ class SettingController extends FrontController
              * to the password that has been hashed and save in DB
              */
             if (Hash::check($password, $hashingPass)) {
+
                 auth()->user()->password = bcrypt($newPass);
+
                 try {
                     auth()->user()->save();
                 } catch (Exception $ex) {
-                    ajax_response([
+                    return ajax_response([
                         'status'   => AJAX_ERROR,
                         'messages' => _t('opp')
                     ]);
                 }
 
-                ajax_response([
+                return ajax_response([
                     'status'   => AJAX_OK,
                     'messages' => _t('saved_pass')
                 ]);
             }
 
-            ajax_response([
+            $validator->errors()->add('password', _t('pass_wrong'));
+            return ajax_response([
                 'status'   => AJAX_ERROR,
-                'messages' => _t('curr_pass_wrong')
+                'messages' => $validator->messages()
             ]);
         }
     }
@@ -101,25 +112,8 @@ class SettingController extends FrontController
         //Only accept ajax request.
         if ($request->ajax()) {
 
-            $rules = [
-                'user_name'  => 'required|min:6|max:32|unique:users,user_name',
-                'email'      => 'required|max:128|email|unique:users,email',
-                'first_name' => 'max:16',
-                'last_name'  => 'max:32',
-            ];
-
-            $messages = [
-                'email.required'     => _t('auth_email_req'),
-                'email.email'        => _t('auth_email_email'),
-                'email.max'          => _t('auth_email_max'),
-                'email.unique'       => _t('auth_email_uni'),
-                'user_name.required' => _t('auth_uname_req'),
-                'user_name.min'      => _t('auth_uname_min'),
-                'user_name.max'      => _t('auth_uname_max'),
-                'user_name.unique'   => _t('auth_uname_uni'),
-                'first_name.max'     => 'First name is too long.',
-                'last_name.max'      => 'Last name is too long.',
-            ];
+            $rules           = remove_rules($this->user->getRules(), 'password.min:6');
+            $messages        = $this->user->getMessages();
 
             $user            = auth()->user();
             $currentUsername = $user->user_name;
@@ -140,16 +134,20 @@ class SettingController extends FrontController
              * is the owner.
              */
             if (str_equal($currentUsername, $username)) {
-                $rules['user_name'] = 'required|min:6|max:32';
+                $rules = remove_rules($rules, 'user_name.unique:users,user_name');
             } else {
                 $checkPass = true;
             }
 
             //Email is same with username.
             if (str_equal($currentEmail, $email)) {
-                $rules['email'] = 'required|max:128|email';
+                $rules = remove_rules($rules, 'email.unique:users,email');
             } else {
                 $checkPass = true;
+            }
+
+            if ( ! $checkPass) {
+                $rules = remove_rules($rules, 'password');
             }
 
             $validator = Validator::make($request->all(), $rules, $messages);
@@ -163,9 +161,10 @@ class SettingController extends FrontController
             //Check does password from input match to password in DB.
             if ($checkPass) {
                 if ( ! Hash::check($password, $hashingPass)) {
-                    ajax_response([
+                    $validator->errors()->add('password', _t('pass_incorrect'));
+                    return ajax_response([
                         'status' => AJAX_ERROR,
-                        'messages' => 'Password is incorrect.'
+                        'messages' => $validator->messages()
                     ]);
                 }
             }
@@ -177,15 +176,15 @@ class SettingController extends FrontController
             try {
                 $user->save();
             } catch (Exception $ex) {
-                ajax_response([
+                return ajax_response([
                     'status'   => AJAX_ERROR,
                     'messages' => _t('opp')
                 ]);
             }
 
-            ajax_response([
+            return ajax_response([
                 'status'   => AJAX_OK,
-                'messages' => 'Saved info.'
+                'messages' => _t('saved_info')
             ]);
         }
     }
@@ -219,7 +218,7 @@ class SettingController extends FrontController
         if ($user->avatar !== null) {
             $currentAvatar = '.' . $user->avatar;
             if ( ! is_dir($currentAvatar) && file_exists($currentAvatar)) {
-                
+
             }
         }
     }
