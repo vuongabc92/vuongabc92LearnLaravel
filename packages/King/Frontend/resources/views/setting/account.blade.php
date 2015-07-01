@@ -131,3 +131,69 @@ Setting > Account
     });
 </script>
 @stop
+
+@section('importJs')
+{{ HTML::script('packages/king/front/js/webtoolkit.aim.js') }}
+@stop
+
+
+{{ Form::open(['route' => 'front_setting_acc_avatar', 'files' => true, 'method' => 'POST', 'id' => 'upload-image-form', 'onsubmit' => "return AIM.submit(this, {'onStart': startCallback, 'onComplete': completeCallback})", 'data-upload-image' => '']) }}
+                                    {{ Form::file('setting_user_avatar', ['class' => 'field-file-hidden', 'id' => 'user-setting-avatar-file', 'data-trigger-event' => '#upload-image-form', 'data-first-called' => 'change|submit']) }}
+                                {{ Form::close() }}
+                                
+                                <script type="text/javascript">
+    function startCallback() {
+        //$('.setting-avatar-response-error').hide();
+        //$('.setting-acc-avatar-loading').show();
+        
+        browserAvatarLoading(1)
+        
+        return true;
+    }
+ 
+    function completeCallback(response) {
+        browserAvatarLoading(0);
+        response = JSON.parse(response);
+        //$('.setting-acc-avatar-loading').hide();
+        if (response.status === 'OK') {
+            //$('.setting-avatar-response-error').hide();
+            //$('.setting-avatar-response-ok').show();
+            
+            $('.setting-avatar-img').attr('src', response.data);
+            $('.header-avatar-img').attr('src', response.data);
+            $('.header-profile-popup-avatar').attr('src', response.data);
+            browserAvatarOk(1);
+            setTimeout(function() {
+                $('.setting-avatar-response-ok').hide();
+            }, 2000);
+        } else {
+            var error = response.data;
+            $('.setting-avatar-response-error').show();
+            $('.upload-avatar-msg').html(error.setting_user_avatar);
+        }
+    }
+    
+    function browserAvatarLoading(status) {
+        if (status === 1) {
+            $('.browse-avatar-text').hide();
+            $('.browse-avatar-ok').hide();
+            $('.browse-avatar-gray-loading').show();
+            $('.setting-submit-text-loading').show();
+            $('.setting-acc-browse-img-btn').addClass('browse-avatar-loading-btn');
+        } else {
+            $('.browse-avatar-text').show();
+            $('.browse-avatar-gray-loading').hide();
+            $('.setting-submit-text-loading').hide();
+            $('.setting-acc-browse-img-btn').removeClass('browse-avatar-loading-btn');
+        }
+    }
+    
+    function browserAvatarOk(status) {
+        if (status === 1) {
+            $('.browse-avatar-ok').show();
+            setTimeout(function() {
+                $('.browse-avatar-ok').hide();
+            }, 2000);
+        }
+    }
+</script>

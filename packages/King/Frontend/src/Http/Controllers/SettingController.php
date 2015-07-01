@@ -223,6 +223,4 @@ class SettingController extends FrontController
         }
     }
 
-//    git config core.filemode false
-//    git config --global core.autocrlf true
 }
