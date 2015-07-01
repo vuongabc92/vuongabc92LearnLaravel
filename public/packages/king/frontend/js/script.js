@@ -1,3 +1,7 @@
+var settings = {
+    ajax_ok: 'OK',
+    ajax_error: 'ERROR'
+};
 /**
  *  @name Required
  *  @description
@@ -23,16 +27,17 @@
 
     Plugin.prototype = {
         init: function() {
-            var current = this.element,
-                    listId = current.attr('data-required'),
-                    idArr = listId.split('|');
+            var current    = this.element,
+                fields     = current.attr('data-required'),
+                fieldArray = fields.split('|'),
+                empty      = false;
 
             current.on('submit', function() {
-                var empty = false;
-                $.each(idArr, function(k, v) {
+                $.each(fieldArray, function(k, v) {
                     if ($('#' + v).val().trim() === '') {
                         $('#' + v).focus();
                         empty = true;
+
                         return false;
                     }
                 });
@@ -97,13 +102,13 @@
         init: function() {
             var current    = this.element,
                 target     = $(current.attr('data-event-trigger')),
-                event      = current.attr('data-event'),
-                eventSplit = event.split('|'),
-                eventLast  = eventSplit[0],
-                eventFirst = eventSplit[1];
+                events     = current.attr('data-event'),
+                eventArray = events.split('|'),
+                firstEvent = eventArray[0],
+                lastEvent  = eventArray[1];
 
-            current.on(eventFirst, function(){
-                switch(eventLast) {
+            current.on(firstEvent, function(){
+                switch(lastEvent) {
                     case 'click':
                         target.click();
                         break;
@@ -167,35 +172,46 @@
     Plugin.prototype = {
         init: function() {
             var current = this.element,
+                that    = this,
                 labels  = current.attr('data-ajax-form').split('|'),
-                that    = this;
+                submit  = current.find(':submit'),
+                img     = submit.children('img'),
+                text    = submit.children('b'),
+                check   = submit.children('i');
 
             current.on('submit', function(){
                 $.ajax({
                     type: current.attr('method'),
                     url: current.attr('action'),
                     data: current.serialize(),
-                    beforeSubmit: function(){},
+                    beforeSend: function(){
+                        that.loading(true, img, text, check);
+                    },
                     success: function(response){
                         var status   = response.status,
                             messages = response.messages;
+
                         if (status === 'ERROR') {
-                            that.showFormLabels(labels, messages);
-                        } else {
-                            that.showFormLabels(labels, messages);
+                            that.loading(false, img, text, check, false);
                         }
+                        if (status === 'OK') {
+                            that.loading(false, img, text, check, true);
+                        }
+
+                        that.showFormLabels(current, labels, messages);
                     }
                 });
 
                 return false;
             });
         },
-        showFormLabels: function(labels, messages){
+        showFormLabels: function(currents, labels, messages){
+            var current = this.element;
             $.each(labels, function(k, v) {
-                var field  = $('input[name^=' + v + ']'),
+                var field  = current.find('input[name^=' + v + ']'),
                     parent = field.parent('div'),
                     label  = parent.children('label');
-
+                    
                 if (messages.hasOwnProperty(v)) {
                     var errorHtml = '<span class="_fwfl _tr5">' + messages[v] + '</span>'
                     label.html(errorHtml);
@@ -204,6 +220,21 @@
                     label.html(originalText);
                 }
             });
+        },
+        loading: function(start, img, text, check, success) {
+            if (start) {
+                img.show();
+                text.hide();
+            } else {
+                img.hide();
+                text.show();
+                if (success) {
+                    check.show(200);
+                    setTimeout(function(){
+                        check.hide(200);
+                    }, 3000);
+                }
+            }
         },
         destroy: function() {
             $.removeData(this.element[0], pluginName);

@@ -30,18 +30,6 @@ return [
     'user_fname_max' => 'First name is too long (16).',
     'user_lname_max' => 'Last name is too long (32).',
 
-    'auth_email_req' => 'Email is required.',
-    'auth_email_email' => 'Email is invalid.',
-    'auth_email_max' => 'Email is too long (128).',
-    'auth_email_uni' => 'Email has been used.',
-    'auth_pass_req' => 'Password is required.',
-    'auth_pass_min' => 'Password is too short (6).',
-    'auth_pass_max' => 'Password is too long (64).',
-    'auth_uname_req' => 'User name is required.',
-    'auth_uname_alpha' => 'User name should only has alpha-numeric characters and underscores.',
-    'auth_uname_min' => 'User name is too short (6).',
-    'auth_uname_max' => 'User name is too long (32).',
-    'auth_uname_uni' => 'User name has been used.',
 
     //Home
     'head-search-placeholder' => 'Search stores, locations and everythings...',
@@ -69,4 +57,9 @@ return [
     'fname_long' => 'First name is too long.',
     'lname_long' => 'Last name is too long.',
     'saved_info' => 'Saved info.',
+    'pass_confirm' => 'Password confirmation',
+    'cur_pass' => 'Current password',
+    'new_pass' => 'New password',
+    'close' => 'Close',
+    'pass_wrong' => 'Password is incorrect.',
 ];

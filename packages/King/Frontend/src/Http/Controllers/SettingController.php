@@ -51,10 +51,10 @@ class SettingController extends FrontController
             ];
 
             $messages = [
-                'password.required'     => _t('auth_pass_req'),
-                'password_new.required' => _t('auth_pass_req'),
-                'password_new.min'      => _t('auth_pass_min'),
-                'password_new.max'      => _t('auth_pass_max'),
+                'password.required'     => _t('user_pass_req'),
+                'new_password.required' => _t('user_pass_req'),
+                'new_password.min'      => _t('user_pass_min'),
+                'new_password.max'      => _t('user_pass_max'),
             ];
 
             $validator = Validator::make($request->all(), $rules, $messages);
@@ -74,7 +74,9 @@ class SettingController extends FrontController
              * to the password that has been hashed and save in DB
              */
             if (Hash::check($password, $hashingPass)) {
+
                 auth()->user()->password = bcrypt($newPass);
+
                 try {
                     auth()->user()->save();
                 } catch (Exception $ex) {
@@ -90,9 +92,10 @@ class SettingController extends FrontController
                 ]);
             }
 
+            $validator->errors()->add('password', _t('pass_wrong'));
             return ajax_response([
                 'status'   => AJAX_ERROR,
-                'messages' => _t('curr_pass_wrong')
+                'messages' => $validator->messages()
             ]);
         }
     }
@@ -109,7 +112,7 @@ class SettingController extends FrontController
         //Only accept ajax request.
         if ($request->ajax()) {
 
-            $rules           = remove_rules($this->user->getRules(), 'password');
+            $rules           = remove_rules($this->user->getRules(), 'password.min:6');
             $messages        = $this->user->getMessages();
 
             $user            = auth()->user();
@@ -141,6 +144,10 @@ class SettingController extends FrontController
                 $rules = remove_rules($rules, 'email.unique:users,email');
             } else {
                 $checkPass = true;
+            }
+
+            if ( ! $checkPass) {
+                $rules = remove_rules($rules, 'password');
             }
 
             $validator = Validator::make($request->all(), $rules, $messages);

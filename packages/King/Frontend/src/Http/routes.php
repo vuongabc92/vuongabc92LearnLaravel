@@ -11,6 +11,7 @@ Route::group(['middleware' => 'guest'], function($route){
 Route::group(['middleware' => 'auth'], function(){
     Route::group(['prefix' => 'setting'], function($route){
         $route->get('account', ['as' => 'front_setting_account', 'uses' => 'SettingController@index']);
-        $route->post('account/basic', ['as' => 'front_setting_acc_basic', 'uses' => 'SettingController@ajaxSaveBasicInfo']);
+        $route->post('account/change-basic', ['as' => 'front_setting_acc_basic', 'uses' => 'SettingController@ajaxSaveBasicInfo']);
+        $route->post('account/change-pass', ['as' => 'front_setting_change_pass', 'uses' => 'SettingController@ajaxChangePassword']);
     });
 });
