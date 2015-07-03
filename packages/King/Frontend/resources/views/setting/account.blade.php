@@ -40,7 +40,12 @@ Setting > Account
                             </span>
                         </span>
                         <div class="_fwfl _mt15">
-                            <span class="btn _btn _btn-white">{{ _t('avatar_browser') }}</span>
+                            <span class="btn _btn _btn-white" data-event-trigger="#avatar-file" data-event="click|click">{{ _t('avatar_browser') }}</span>
+                        </div>
+                        <div class="_fwfl _dn">
+                            {!! Form::open(['route' => 'front_setting_change_avatar', 'files' => true, 'method' => 'POST', 'id' => 'upload-avatar-form', 'data-upload-avatar']) !!}
+                            {!! Form::file('avatar', ['class' => 'field-file-hidden', 'id' => 'avatar-file', 'data-event-trigger' => '#upload-avatar-form', 'data-event' => 'change|submit']) !!}
+                            {!! Form::close() !!}
                         </div>
                     </div>
                 </div>
@@ -120,37 +125,32 @@ Setting > Account
 
 @section('js')
 <script>
+    /**
+     * Display form change password or hide it.
+     */
     $('.show-pass-form').on('click', function(){
         $('.setting-form-pass').show();
         $('.change-pass-btn').hide();
     });
-    
+
     $('.close-form-pass').on('click', function(){
         $('.setting-form-pass').hide();
         $('.change-pass-btn').show();
     });
+    /** END */
 </script>
 @stop
 
-@section('importJs')
-{{ HTML::script('packages/king/front/js/webtoolkit.aim.js') }}
-@stop
-
-
-{{ Form::open(['route' => 'front_setting_acc_avatar', 'files' => true, 'method' => 'POST', 'id' => 'upload-image-form', 'onsubmit' => "return AIM.submit(this, {'onStart': startCallback, 'onComplete': completeCallback})", 'data-upload-image' => '']) }}
-                                    {{ Form::file('setting_user_avatar', ['class' => 'field-file-hidden', 'id' => 'user-setting-avatar-file', 'data-trigger-event' => '#upload-image-form', 'data-first-called' => 'change|submit']) }}
-                                {{ Form::close() }}
-                                
-                                <script type="text/javascript">
+<!--                                <script type="text/javascript">
     function startCallback() {
         //$('.setting-avatar-response-error').hide();
         //$('.setting-acc-avatar-loading').show();
-        
+
         browserAvatarLoading(1)
-        
+
         return true;
     }
- 
+
     function completeCallback(response) {
         browserAvatarLoading(0);
         response = JSON.parse(response);
@@ -158,7 +158,7 @@ Setting > Account
         if (response.status === 'OK') {
             //$('.setting-avatar-response-error').hide();
             //$('.setting-avatar-response-ok').show();
-            
+
             $('.setting-avatar-img').attr('src', response.data);
             $('.header-avatar-img').attr('src', response.data);
             $('.header-profile-popup-avatar').attr('src', response.data);
@@ -172,7 +172,7 @@ Setting > Account
             $('.upload-avatar-msg').html(error.setting_user_avatar);
         }
     }
-    
+
     function browserAvatarLoading(status) {
         if (status === 1) {
             $('.browse-avatar-text').hide();
@@ -187,7 +187,7 @@ Setting > Account
             $('.setting-acc-browse-img-btn').removeClass('browse-avatar-loading-btn');
         }
     }
-    
+
     function browserAvatarOk(status) {
         if (status === 1) {
             $('.browse-avatar-ok').show();
@@ -196,4 +196,4 @@ Setting > Account
             }, 2000);
         }
     }
-</script>
+</script>-->

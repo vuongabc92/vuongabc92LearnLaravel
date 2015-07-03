@@ -35,7 +35,7 @@ AIM = {
         } else {
             var d = window.frames[id].document;
         }
-        //alert(d.location.href);        
+        //alert(d.location.href);
         if (d.location.href == "about:blank")
             return;
         if (typeof (i.onComplete) == 'function') {

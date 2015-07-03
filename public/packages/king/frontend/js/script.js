@@ -211,7 +211,7 @@ var settings = {
                 var field  = current.find('input[name^=' + v + ']'),
                     parent = field.parent('div'),
                     label  = parent.children('label');
-                    
+
                 if (messages.hasOwnProperty(v)) {
                     var errorHtml = '<span class="_fwfl _tr5">' + messages[v] + '</span>'
                     label.html(errorHtml);
@@ -235,6 +235,77 @@ var settings = {
                     }, 3000);
                 }
             }
+        },
+        destroy: function() {
+            $.removeData(this.element[0], pluginName);
+        }
+    };
+
+    $.fn[pluginName] = function(options, params) {
+        return this.each(function() {
+            var instance = $.data(this, pluginName);
+            if (!instance) {
+                $.data(this, pluginName, new Plugin(this, options));
+            } else if (instance[options]) {
+                instance[options](params);
+            } else {
+                window.console && console.log(options ? options + ' method is not exists in ' + pluginName : pluginName + ' plugin has been initialized');
+            }
+        });
+    };
+
+    $.fn[pluginName].defaults = {
+        option: 'value'
+    };
+
+    $(function() {
+        $('[data-' + pluginName + ']')[pluginName]();
+    });
+
+}(jQuery, window));
+
+
+/**
+ *  @name Upload Avatar
+ *  @description
+ *  @version 1.0
+ *  @options
+ *    option
+ *  @events
+ *    event
+ *  @methods
+ *    init
+ *    publicMethod
+ *    destroy
+ */
+;
+(function($, window, undefined) {
+    var pluginName = 'upload-avatar';
+
+    function Plugin(element, options) {
+        this.element = $(element);
+        this.options = $.extend({}, $.fn[pluginName].defaults, options);
+        this.init();
+    }
+
+    Plugin.prototype = {
+        init: function() {
+            var current = this.element,
+                that    = this;
+
+            current.on('submit', function(){
+
+                return AIM.submit(this, {
+                    'onStart': that.startCallback,
+                    'onComplete': that.completeCallback
+                });
+            });
+        },
+        startCallback: function(){
+
+        },
+        completeCallback: function (){
+            
         },
         destroy: function() {
             $.removeData(this.element[0], pluginName);

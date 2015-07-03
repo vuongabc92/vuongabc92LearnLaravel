@@ -13,5 +13,6 @@ Route::group(['middleware' => 'auth'], function(){
         $route->get('account', ['as' => 'front_setting_account', 'uses' => 'SettingController@index']);
         $route->post('account/change-basic', ['as' => 'front_setting_acc_basic', 'uses' => 'SettingController@ajaxSaveBasicInfo']);
         $route->post('account/change-pass', ['as' => 'front_setting_change_pass', 'uses' => 'SettingController@ajaxChangePassword']);
+        $route->post('account/change-avatar', ['as' => 'front_setting_change_avatar', 'uses' => 'SettingController@ajaxChangeAvatar']);
     });
 });

@@ -24,7 +24,7 @@ if ( ! function_exists('get_avatar')) {
     function get_avatar() {
         $currentAvatar = auth()->user()->avatar;
         if ($currentAvatar !== null) {
-            $avatarPath = config('front.avatar_path') . '/' . $currentAvatar;
+            $avatarPath = config('front.avatar_path') . $currentAvatar;
             if ( ! is_dir($avatarPath) && file_exists($avatarPath)) {
                 return $avatarPath;
             }
@@ -153,10 +153,10 @@ if ( ! function_exists('get_display_name')) {
             if ($user->first_name !== '') {
                 return $user->first_name . ' ' . $user->last_name;
             }
-            
+
             return $user->user_name;
         }
-        
+
         return '';
     }
 }

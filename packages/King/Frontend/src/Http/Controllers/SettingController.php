@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Validator;
 use Hash;
+use File;
 
 class SettingController extends FrontController
 {
@@ -69,10 +70,7 @@ class SettingController extends FrontController
             $newPass     = $request->get('new_password');
             $hashingPass = auth()->user()->password;
 
-            /*
-             * Check whether the current password that user input is match
-             * to the password that has been hashed and save in DB
-             */
+            /** Check confirm password */
             if (Hash::check($password, $hashingPass)) {
 
                 auth()->user()->password = bcrypt($newPass);
@@ -93,6 +91,7 @@ class SettingController extends FrontController
             }
 
             $validator->errors()->add('password', _t('pass_wrong'));
+
             return ajax_response([
                 'status'   => AJAX_ERROR,
                 'messages' => $validator->messages()
@@ -191,34 +190,38 @@ class SettingController extends FrontController
 
     public function ajaxChangeAvatar(Request $request) {
 
-        $rules = [
-            'avatar' => 'required|image|mimes:jpg,png,jpeg,gif,size:10000'
-        ];
+        if ($request->isMethod('POST')) {
+            $rules = [
+                'avatar' => 'required|image|mimes:jpg,png,jpeg,gif|max:10000'
+            ];
 
-        $messages = [
-            'avatar.required' => 'Avatar is empty.',
-            'avatar.image'    => 'Avatar must be image.',
-            'avatar.mimes'    => 'Avatar must be in (jpg, png, jpeg, gif).',
-            'avatar.size'     => 'Avatar size must be lower than 10 megabyte.',
-        ];
+            $messages = [
+                'avatar.required' => 'No image was chose.',
+                'avatar.image'    => 'Avatar is not an image.',
+                'avatar.mimes'    => 'Image must be in (jpg, png, jpeg, gif).',
+                'avatar.max'      => 'Image size is too big (10M).',
+            ];
 
-        $validator = Validator::make($request->all(), $rules, $messages);
-        if ($validator->fails()) {
-            ajax_response([
-                'status'   => AJAX_ERROR,
-                'messages' => $validator->messages()
-            ]);
-        }
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return ajax_response([
+                    'status'   => AJAX_ERROR,
+                    'messages' => $validator->messages()
+                ]);
+            }
+            die('pass rules');
+            $user = auth()->user();
 
-        $user = auth()->user();
-
-        /**
-         * If current user avatar exists then remove it
-         */
-        if ($user->avatar !== null) {
-            $currentAvatar = '.' . $user->avatar;
-            if ( ! is_dir($currentAvatar) && file_exists($currentAvatar)) {
-
+            /** Remove current user avatar if exist. */
+            if ($user->avatar !== null) {
+                $currentAvatarPath = config('front.avatar_path') . $user->avatar;
+                if ( ! is_dir($currentAvatarPath) && file_exists($currentAvatarPath)) {
+//                    try {
+//                        //File::delete($currentAvatarPath)
+//                    } catch (Exception $ex) {
+//
+//                    }
+                }
             }
         }
     }
