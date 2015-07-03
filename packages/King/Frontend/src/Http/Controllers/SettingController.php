@@ -1,11 +1,4 @@
 <?php
-
-/**
- * FrontendController
- *
- * @author vuongabc92@gmail.com
- */
-
 namespace King\Frontend\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -24,7 +17,7 @@ class SettingController extends FrontController
         $this->user = $user;
     }
 
-        /**
+    /**
      * Display account setting page
      *
      * @return response
@@ -191,15 +184,15 @@ class SettingController extends FrontController
     public function ajaxChangeAvatar(Request $request) {
 
         if ($request->isMethod('POST')) {
+
             $rules = [
-                'avatar' => 'required|image|mimes:jpg,png,jpeg,gif|max:10000'
+                '__file' => 'required|mimes:jpg,png,jpeg,gif|max:10000'
             ];
 
             $messages = [
-                'avatar.required' => 'No image was chose.',
-                'avatar.image'    => 'Avatar is not an image.',
-                'avatar.mimes'    => 'Image must be in (jpg, png, jpeg, gif).',
-                'avatar.max'      => 'Image size is too big (10M).',
+                '__file.required' => 'No image was chose.',
+                '__file.mimes'    => 'Image must be in (jpg, png, jpeg, gif).',
+                '__file.max'      => 'Image size is too big (10M).',
             ];
 
             $validator = Validator::make($request->all(), $rules, $messages);
@@ -209,20 +202,13 @@ class SettingController extends FrontController
                     'messages' => $validator->messages()
                 ]);
             }
-            die('pass rules');
-            $user = auth()->user();
 
-            /** Remove current user avatar if exist. */
-            if ($user->avatar !== null) {
-                $currentAvatarPath = config('front.avatar_path') . $user->avatar;
-                if ( ! is_dir($currentAvatarPath) && file_exists($currentAvatarPath)) {
-//                    try {
-//                        //File::delete($currentAvatarPath)
-//                    } catch (Exception $ex) {
-//
-//                    }
-                }
-            }
+            $currentAvatar = auth()->user()->avatar;
+            $pathToAvatar  = config('front.avatar_path');
+
+            upload($request, $pathToAvatar, $currentAvatar);
+
+
         }
     }
 

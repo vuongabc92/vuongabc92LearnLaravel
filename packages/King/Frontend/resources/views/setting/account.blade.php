@@ -34,9 +34,10 @@ Setting > Account
                     <div class="_fr setting-field-right">
                         <span class="_fwfl">
                             <img class="_fl img-circle setting-avatar-img" src="{{ get_avatar() }}" />
-                            <span class="_fl _m20 _fs12 _tga">
+                            <span class="_fl _ml20 _mt11 _fs12 _tga">
                                 <p class="_m0">+ {{ _t('avatar_note1') }}</p>
                                 <p class="_m0">+ {{ _t('avatar_note2') }}</p>
+                                <p class="_m0">+ {{ _t('avatar_note3') }}</p>
                             </span>
                         </span>
                         <div class="_fwfl _mt15">
@@ -44,7 +45,7 @@ Setting > Account
                         </div>
                         <div class="_fwfl _dn">
                             {!! Form::open(['route' => 'front_setting_change_avatar', 'files' => true, 'method' => 'POST', 'id' => 'upload-avatar-form', 'data-upload-avatar']) !!}
-                            {!! Form::file('avatar', ['class' => 'field-file-hidden', 'id' => 'avatar-file', 'data-event-trigger' => '#upload-avatar-form', 'data-event' => 'change|submit']) !!}
+                            {!! Form::file('__file', ['class' => 'field-file-hidden', 'id' => 'avatar-file', 'data-event-trigger' => '#upload-avatar-form', 'data-event' => 'change|submit']) !!}
                             {!! Form::close() !!}
                         </div>
                     </div>

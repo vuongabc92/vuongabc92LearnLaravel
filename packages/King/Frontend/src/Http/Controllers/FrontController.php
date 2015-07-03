@@ -11,13 +11,14 @@ namespace King\Frontend\Http\Controllers;
 use App\Http\Controllers\Controller;
 
 class FrontController extends Controller{
-    
+
     /**
      * Bind form data into the present entity
-     * 
-     * @param object $entity Some entity
-     * @param array  $form Form data
-     * 
+     *
+     * @param object $entity Object to bind data into
+     * @param array  $form   Form data
+     * @param array  $except The data wont be bind
+     *
      * @return object
      */
     public function bind($entity, $form, $except = array('_token', 'id'))
@@ -29,7 +30,7 @@ class FrontController extends Controller{
                 }
             }
         }
-        
+
         return $entity;
     }
 }

@@ -43,6 +43,7 @@ return [
     'avatar' => 'Avatar',
     'avatar_note1' => 'Allow: png, jpg, gif, jpeg',
     'avatar_note2' => 'Dimensions: 256 x 256',
+    'avatar_note3' => 'Max file size: 10 megabytes',
     'avatar_browser' => 'Choose an image',
     'pass_note' => 'A good password should be hard to guess and contain: number, letter, special characters, uppercase,...',
     'change_pass' => 'Change password',

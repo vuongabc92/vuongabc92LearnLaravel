@@ -25,7 +25,7 @@ if ( ! function_exists('get_avatar')) {
         $currentAvatar = auth()->user()->avatar;
         if ($currentAvatar !== null) {
             $avatarPath = config('front.avatar_path') . $currentAvatar;
-            if ( ! is_dir($avatarPath) && file_exists($avatarPath)) {
+            if (check_file($avatarPath)) {
                 return $avatarPath;
             }
         }
@@ -76,7 +76,7 @@ if ( ! function_exists('generate_filename')) {
      *
      * @return string
      */
-    function generate_filename($prefix = '') {
+    function generate_filename($directory, $currentFile, $extension, $prefix = '') {
         $userId    = 0;
         $microtime = microtime(true);
         $randStr   = str_random(10);
@@ -85,9 +85,9 @@ if ( ! function_exists('generate_filename')) {
             $userId = auth()->user()->id;
         }
 
-        $hashingName = bcrypt($userId . $microtime . $randStr);
+        $nameEncoding = md5($userId . '_' . $microtime . '_' . $randStr);
 
-        return $prefix . '_' . $hashingName;
+        return $nameEncoding;
     }
 }
 
@@ -147,7 +147,15 @@ if ( ! function_exists('remove_rules')) {
 }
 
 if ( ! function_exists('get_display_name')) {
+    /**
+     * Get user display name
+     * get first name and last name or get user name if
+     * first name last name does not exist.
+     *
+     * @return string
+     */
     function get_display_name() {
+
         if (auth()->check()) {
             $user = auth()->user();
             if ($user->first_name !== '') {
@@ -158,5 +166,44 @@ if ( ! function_exists('get_display_name')) {
         }
 
         return '';
+    }
+}
+
+if ( ! function_exists('check_file')) {
+    /**
+     * Check does the present file exist
+     *
+     * @param string $file Path to file
+     *
+     * @return boolean
+     */
+    function check_file($file) {
+        if ( ! is_dir($file) && file_exists($file)) {
+            return true;
+        }
+
+        return false;
+    }
+}
+
+if ( ! function_exists('upload')) {
+    function upload ($request, $directory, $oldFile) {
+
+        var_dump($request->file('__file'));die;
+
+        /** Remove current user avatar if exist. */
+        if ($oldFile !== null) {
+            $oldFilePath = $directory . $oldFile;
+            if (check_file($oldFilePath)) {
+                try {
+                    \Illuminate\Support\Facades\File::delete($oldFilePath);
+                } catch (Exception $ex) {
+                    throw new \Exception(_t('opp'));
+                }
+            }
+        }
+
+
+
     }
 }

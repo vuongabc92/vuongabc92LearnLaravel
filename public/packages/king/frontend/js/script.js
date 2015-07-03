@@ -296,8 +296,8 @@ var settings = {
             current.on('submit', function(){
 
                 return AIM.submit(this, {
-                    'onStart': that.startCallback,
-                    'onComplete': that.completeCallback
+                    onStart: that.startCallback,
+                    onComplete: that.completeCallback
                 });
             });
         },
@@ -305,7 +305,7 @@ var settings = {
 
         },
         completeCallback: function (){
-            
+
         },
         destroy: function() {
             $.removeData(this.element[0], pluginName);
