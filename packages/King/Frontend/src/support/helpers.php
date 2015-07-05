@@ -1,16 +1,21 @@
 <?php
 
 if ( ! function_exists('_t')) {
+
     /**
-     * Return the sring was translated
+     * Translate the given message.
      *
-     * @param string $string
-     *
+     * @param  string  $id
+     * @param  array   $parameters
+     * @param  string  $domain
+     * @param  string  $locale
+     * 
      * @return string
      */
-    function _t($string) {
-        return trans("frontend::frontend.{$string}");
+    function _t($id = null, $parameters = [], $domain = 'messages', $locale = null) {
+        return trans("frontend::frontend.{$id}", $parameters = [], $domain = 'messages', $locale = null);
     }
+
 }
 
 if ( ! function_exists('get_avatar')) {
@@ -26,29 +31,35 @@ if ( ! function_exists('get_avatar')) {
         if ($currentAvatar !== null) {
             $avatarPath = config('front.avatar_path') . $currentAvatar;
             if (check_file($avatarPath)) {
-                return $avatarPath;
+                return asset($avatarPath);
             }
         }
 
         return asset(config('front.default_avatar_path'));
     }
+
 }
 
 if ( ! function_exists('ajax_response')) {
+
     /**
      * Return a new JSON response from the application.
      *
      * @param  string|array  $data
      * @param  int           $status
-     *
+     * @param  array         $headers
+     * @param  int           $options
+     * 
      * @return \Illuminate\Http\JsonResponse
      */
-    function ajax_response($data = [], $status = 200) {
-        return response()->json($data, $status);
+    function ajax_response($data = [], $status = 200, array $headers = [], $options = 0) {
+        return response()->json($data, $status, $headers, $options);
     }
+
 }
 
 if ( ! function_exists('str_equal')) {
+
     /**
      * Compares two strings using a constant-time algorithm.
      *
@@ -64,34 +75,11 @@ if ( ! function_exists('str_equal')) {
     function str_equal($knownString, $userInput) {
         return \Illuminate\Support\Str::equals($knownString, $userInput);
     }
-}
 
-if ( ! function_exists('generate_filename')) {
-    /**
-     * Generate a string that is very very hard to be duplidated.
-     * The string consist of current user id (0 for unauthenticated),
-     * current microtime, a random string.
-     *
-     * @param type $prefix
-     *
-     * @return string
-     */
-    function generate_filename($directory, $currentFile, $extension, $prefix = '') {
-        $userId    = 0;
-        $microtime = microtime(true);
-        $randStr   = str_random(10);
-
-        if (auth()->check()) {
-            $userId = auth()->user()->id;
-        }
-
-        $nameEncoding = md5($userId . '_' . $microtime . '_' . $randStr);
-
-        return $nameEncoding;
-    }
 }
 
 if ( ! function_exists('remove_rules')) {
+
     /**
      * Remove one or many rules in a list of rules
      *
@@ -103,20 +91,23 @@ if ( ! function_exists('remove_rules')) {
     function remove_rules($rules, $rulesRemove) {
 
         //Remove list rules
-        if (is_array($rulesRemove)) {
-            if (count($rulesRemove)) {
-                foreach ($rulesRemove as $one) {
-                    $rules = remove_rules($rules, $one);
-                }
+        if (is_array($rulesRemove) && count($rulesRemove)) {
+            foreach ($rulesRemove as $one) {
+                $rules = remove_rules($rules, $one);
             }
 
             return $rules;
         }
 
-        //Remove a rule string
+        /**
+         * Remove rule string
+         * 1. If rule contains dot "." then remove rule after dot for rule name
+         *    before the dot.
+         * 2. If rule doesn't contain dot then remove the rule name present
+         * 
+         */
         if (is_string($rulesRemove)) {
-            //If rule string to removing contain dot "." mean
-            //remove a rule after dot in field before dot
+            
             if (str_contains($rulesRemove, '.')) {
                 $ruleInField = explode('.', $rulesRemove);
                 if (isset($rules[$ruleInField[0]])) {
@@ -126,17 +117,17 @@ if ( ! function_exists('remove_rules')) {
                     if (isset($ruleFlip[$ruleInField[1]])) {
                         unset($ruleSplit[$ruleFlip[$ruleInField[1]]]);
                     }
-
+                    
+                    //Remove the rule name if it contains no rule 
                     if (count($ruleSplit)) {
                         $rules[$ruleInField[0]] = implode('|', $ruleSplit);
                     } else {
                         unset($rules[$ruleInField[0]]);
                     }
                 }
-            } else {
-                if (isset($rules[$rulesRemove])) {
-                    unset($rules[$rulesRemove]);
-                }
+                
+            } elseif (isset($rules[$rulesRemove])) {
+                unset($rules[$rulesRemove]);
             }
 
             return $rules;
@@ -144,9 +135,11 @@ if ( ! function_exists('remove_rules')) {
 
         return $rules;
     }
+
 }
 
-if ( ! function_exists('get_display_name')) {
+if (!function_exists('get_display_name')) {
+
     /**
      * Get user display name
      * get first name and last name or get user name if
@@ -167,9 +160,46 @@ if ( ! function_exists('get_display_name')) {
 
         return '';
     }
+
+}
+
+if ( ! function_exists('generate_filename')) {
+
+    /**
+     * Generate the file name base on current user id, time 
+     * to get a unique file in present folder
+     * 
+     * @param string $directory Path to the upload directory
+     * @param string $extension File extension
+     * @param string $prefix    File prefix
+     * @param string $suffix    File suffix
+     * 
+     * @return string   File name
+     */
+    function generate_filename($directory, $extension, $prefix = '', $suffix = '') {
+
+        $userId    = 0;
+        $microtime = microtime(true);
+        $randStr   = str_random(10);
+
+        if (auth()->check()) {
+            $userId = auth()->user()->id;
+        }
+
+        $nameEncoding = md5($userId . $microtime . $randStr);
+        $fileName     = $prefix . $nameEncoding . $suffix . '.' . $extension;
+
+        while (check_file($directory . $fileName)) {
+            $fileName = generate_filename($directory, $extension . $prefix);
+        }
+
+        return $fileName;
+    }
+
 }
 
 if ( ! function_exists('check_file')) {
+
     /**
      * Check does the present file exist
      *
@@ -178,32 +208,70 @@ if ( ! function_exists('check_file')) {
      * @return boolean
      */
     function check_file($file) {
+
         if ( ! is_dir($file) && file_exists($file)) {
             return true;
         }
 
         return false;
     }
+
 }
 
 if ( ! function_exists('upload')) {
-    function upload ($request, $directory, $oldFile) {
+    /**
+     * 
+     * @param Illuminate\Http\Request $request
+     * @param string                  $directory
+     * @param string                  $oldFile
+     * 
+     * @return string
+     * 
+     * @throws \Exception
+     */
+    function upload($request, $directory, $oldFile) {
 
-        var_dump($request->file('__file'));die;
-
-        /** Remove current user avatar if exist. */
+        /** Remove current file if exist. */
         if ($oldFile !== null) {
-            $oldFilePath = $directory . $oldFile;
-            if (check_file($oldFilePath)) {
-                try {
-                    \Illuminate\Support\Facades\File::delete($oldFilePath);
-                } catch (Exception $ex) {
-                    throw new \Exception(_t('opp'));
-                }
+            delete_file($directory . $oldFile);
+        }
+
+        $file        = $request->file('__file');
+        $fileExt     = $file->getClientOriginalExtension();
+        $newFileName = generate_filename($directory, $fileExt);
+
+        try {
+            $file->move($directory, $newFileName);
+        } catch (Exception $ex) {
+            throw new \Exception(_t('opp'));
+        }
+
+        return $newFileName;
+    }
+
+}
+
+if ( ! function_exists('delete_file')) {
+
+    /**
+     * 
+     * @param string $path
+     * 
+     * @return boolean
+     * 
+     * @throws \Exception
+     */
+    function delete_file($path) {
+
+        if (check_file($path)) {
+            try {
+                \Illuminate\Support\Facades\File::delete($path);
+            } catch (Exception $ex) {
+                throw new \Exception(_t('opp'));
             }
         }
 
-
-
+        return true;
     }
+
 }

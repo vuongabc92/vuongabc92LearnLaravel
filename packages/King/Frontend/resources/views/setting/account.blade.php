@@ -41,7 +41,12 @@ Setting > Account
                             </span>
                         </span>
                         <div class="_fwfl _mt15">
-                            <span class="btn _btn _btn-white" data-event-trigger="#avatar-file" data-event="click|click">{{ _t('avatar_browser') }}</span>
+                            <span class="btn _btn _btn-white choose-avatar-btn" data-event-trigger="#avatar-file" data-event="click|click">
+                                <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-gray-white1.gif') }}" />
+                                <b class="btn-text">{{ _t('avatar_browser') }}</b>
+                                <i class="fa fa-check _dn"></i>
+                            </span>
+                            <span class="_fwfl _tr7 _fs12 _mt15">Please choose a correct image.</span>
                         </div>
                         <div class="_fwfl _dn">
                             {!! Form::open(['route' => 'front_setting_change_avatar', 'files' => true, 'method' => 'POST', 'id' => 'upload-avatar-form', 'data-upload-avatar']) !!}
@@ -70,7 +75,7 @@ Setting > Account
                             {!! Form::password('new_password', ['class' => '_fwfl setting-form-field', 'id' => 'new-password', 'maxlength' => '60']) !!}
                         </div>
                         <div class="_fwfl setting-form-group">
-                            <button type="submit" class="_fl _mr10 btn _btn _btn-blue1">
+                            <button type="submit" class="_fl _mr10 btn _btn _btn-blue1 _save-btn">
                                 <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-white-blue1.gif') }}" />
                                 <b class="btn-text">{{ _t('save') }}</b>
                                 <i class="fa fa-check _dn"></i>
@@ -105,10 +110,10 @@ Setting > Account
                         <div class="_fwfl setting-form-group">
                             <label class="_fwfl setting-form-label" for="password" data-title="{{ _t('pass_confirm') }}">{{ _t('pass_confirm') }}</label>
                             {!! Form::password('password', ['class' => '_fwfl setting-form-field', 'id' => 'password', 'maxlength' => '60']) !!}
-                            <span class="_fwfl _fs13 _tg5 _mt5">(*) Password for change user name or email</span>
+                            <span class="_fwfl _fs13 _tg5 _mt5">(*) {{ _t('basic_info_note1') }}</span>
                         </div>
                         <div class="_fwfl setting-form-group">
-                            <button type="submit" class="_fl _mr10 btn _btn _btn-blue1">
+                            <button type="submit" class="_fl _mr10 btn _btn _btn-blue1 _save-btn">
                                 <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-white-blue1.gif') }}" />
                                 <b class="btn-text">{{ _t('save') }}</b>
                                 <i class="fa fa-check _dn"></i>
@@ -141,60 +146,3 @@ Setting > Account
     /** END */
 </script>
 @stop
-
-<!--                                <script type="text/javascript">
-    function startCallback() {
-        //$('.setting-avatar-response-error').hide();
-        //$('.setting-acc-avatar-loading').show();
-
-        browserAvatarLoading(1)
-
-        return true;
-    }
-
-    function completeCallback(response) {
-        browserAvatarLoading(0);
-        response = JSON.parse(response);
-        //$('.setting-acc-avatar-loading').hide();
-        if (response.status === 'OK') {
-            //$('.setting-avatar-response-error').hide();
-            //$('.setting-avatar-response-ok').show();
-
-            $('.setting-avatar-img').attr('src', response.data);
-            $('.header-avatar-img').attr('src', response.data);
-            $('.header-profile-popup-avatar').attr('src', response.data);
-            browserAvatarOk(1);
-            setTimeout(function() {
-                $('.setting-avatar-response-ok').hide();
-            }, 2000);
-        } else {
-            var error = response.data;
-            $('.setting-avatar-response-error').show();
-            $('.upload-avatar-msg').html(error.setting_user_avatar);
-        }
-    }
-
-    function browserAvatarLoading(status) {
-        if (status === 1) {
-            $('.browse-avatar-text').hide();
-            $('.browse-avatar-ok').hide();
-            $('.browse-avatar-gray-loading').show();
-            $('.setting-submit-text-loading').show();
-            $('.setting-acc-browse-img-btn').addClass('browse-avatar-loading-btn');
-        } else {
-            $('.browse-avatar-text').show();
-            $('.browse-avatar-gray-loading').hide();
-            $('.setting-submit-text-loading').hide();
-            $('.setting-acc-browse-img-btn').removeClass('browse-avatar-loading-btn');
-        }
-    }
-
-    function browserAvatarOk(status) {
-        if (status === 1) {
-            $('.browse-avatar-ok').show();
-            setTimeout(function() {
-                $('.browse-avatar-ok').hide();
-            }, 2000);
-        }
-    }
-</script>-->

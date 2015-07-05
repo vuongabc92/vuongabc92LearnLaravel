@@ -5,7 +5,6 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Validator;
 use Hash;
-use File;
 
 class SettingController extends FrontController
 {
@@ -145,7 +144,7 @@ class SettingController extends FrontController
             $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->fails()) {
                 return ajax_response([
-                    'status' => AJAX_ERROR,
+                    'status'   => AJAX_ERROR,
                     'messages' => $validator->messages()
                 ]);
             }
@@ -155,7 +154,7 @@ class SettingController extends FrontController
                 if ( ! Hash::check($password, $hashingPass)) {
                     $validator->errors()->add('password', _t('pass_incorrect'));
                     return ajax_response([
-                        'status' => AJAX_ERROR,
+                        'status'   => AJAX_ERROR,
                         'messages' => $validator->messages()
                     ]);
                 }
@@ -180,19 +179,27 @@ class SettingController extends FrontController
             ]);
         }
     }
-
+    
+    /**
+     * Change user avatar
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return response
+     */
     public function ajaxChangeAvatar(Request $request) {
 
         if ($request->isMethod('POST')) {
 
             $rules = [
-                '__file' => 'required|mimes:jpg,png,jpeg,gif|max:10000'
+                '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:10000'
             ];
 
             $messages = [
                 '__file.required' => 'No image was chose.',
-                '__file.mimes'    => 'Image must be in (jpg, png, jpeg, gif).',
-                '__file.max'      => 'Image size is too big (10M).',
+                '__file.required' => 'The avatar file must be an image.',
+                '__file.mimes'    => 'The avatar must be a file of type: jpg, png, jpeg, gif.',
+                '__file.max'      => 'The avatar may not be greater than 10 megabytes..',
             ];
 
             $validator = Validator::make($request->all(), $rules, $messages);
@@ -205,10 +212,22 @@ class SettingController extends FrontController
 
             $currentAvatar = auth()->user()->avatar;
             $pathToAvatar  = config('front.avatar_path');
+            $newFileUpload = upload($request, $pathToAvatar, $currentAvatar);
 
-            upload($request, $pathToAvatar, $currentAvatar);
-
-
+            auth()->user()->avatar = $newFileUpload;
+            try {
+                auth()->user()->save();
+            } catch (Exception $ex) {
+                return ajax_response([
+                    'status'   => AJAX_OK,
+                    'messages' => _t('opp')
+                ], 500, ['Content-Type' => 'text/html']);
+            }
+            
+            return ajax_response([
+                'status'   => AJAX_OK,
+                'messages' => _t('saved_info')
+            ], 200, ['Content-Type' => 'text/html']);
         }
     }
 

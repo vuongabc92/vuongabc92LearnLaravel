@@ -61,4 +61,5 @@ return [
     'new_pass' => 'New password',
     'close' => 'Close',
     'pass_wrong' => 'Password is incorrect.',
+    'basic_info_note1' => 'Password for change user name or email.',
 ];

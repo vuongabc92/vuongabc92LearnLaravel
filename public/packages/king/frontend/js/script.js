@@ -290,22 +290,47 @@ var settings = {
 
     Plugin.prototype = {
         init: function() {
-            var current = this.element,
-                that    = this;
+            var current   = this.element,
+                avatarBtn = $('.choose-avatar-btn'),
+                that      = this,
+                img       = avatarBtn.children('img'),
+                text      = avatarBtn.children('b'),
+                check     = avatarBtn.children('i');
 
             current.on('submit', function(){
-
                 return AIM.submit(this, {
-                    onStart: that.startCallback,
-                    onComplete: that.completeCallback
+                    onStart: function(){
+                        img.show();
+                        text.hide();
+                    },
+                    onComplete: function(response){
+                        var json = $.parseJSON(response),
+                            status = json.status,
+                            messages = json.messages;
+                    
+                        img.hide();
+                        text.show();
+                        check.show(200);
+                        if (status === 'OK') {
+                            setTimeout(function() {
+                                check.hide(200);
+                            }, 3000);
+                        }
+                    }
                 });
             });
         },
-        startCallback: function(){
-
+        startCallback: function(img, text){
+            img.show();
+            text.hide();
         },
-        completeCallback: function (){
-
+        completeCallback: function (img, text, check){
+            img.hide();
+            text.show();
+            check.show(200);
+            setTimeout(function() {
+                check.hide(200);
+            }, 3000);
         },
         destroy: function() {
             $.removeData(this.element[0], pluginName);
