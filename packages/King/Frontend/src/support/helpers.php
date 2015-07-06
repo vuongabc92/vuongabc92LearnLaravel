@@ -9,13 +9,29 @@ if ( ! function_exists('_t')) {
      * @param  array   $parameters
      * @param  string  $domain
      * @param  string  $locale
-     * 
+     *
      * @return string
      */
     function _t($id = null, $parameters = [], $domain = 'messages', $locale = null) {
         return trans("frontend::frontend.{$id}", $parameters = [], $domain = 'messages', $locale = null);
     }
 
+}
+
+if ( ! function_exists('_const')) {
+    /**
+     * Get / set the specified configuration value.
+     *
+     * If an array is passed as the key, we will assume you want to set an array of values.
+     *
+     * @param  array|string  $key
+     * @param  mixed         $default
+     *
+     * @return mixed
+     */
+    function _const($key = null, $default = null) {
+        return config("constant.{$key}", $default);
+    }
 }
 
 if ( ! function_exists('get_avatar')) {
@@ -49,11 +65,28 @@ if ( ! function_exists('ajax_response')) {
      * @param  int           $status
      * @param  array         $headers
      * @param  int           $options
-     * 
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     function ajax_response($data = [], $status = 200, array $headers = [], $options = 0) {
         return response()->json($data, $status, $headers, $options);
+    }
+
+}
+
+if ( ! function_exists('ajax_upload_response')) {
+
+    /**
+     * Return a new JSON response from the application.
+     *
+     * @param  string|array  $data
+     * @param  int           $status
+     * @param  int           $options
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    function ajax_upload_response($data = [], $status = 200, $options = 0) {
+        return response()->json($data, $status, ['Content-Type' => 'text/html'], $options);
     }
 
 }
@@ -104,10 +137,10 @@ if ( ! function_exists('remove_rules')) {
          * 1. If rule contains dot "." then remove rule after dot for rule name
          *    before the dot.
          * 2. If rule doesn't contain dot then remove the rule name present
-         * 
+         *
          */
         if (is_string($rulesRemove)) {
-            
+
             if (str_contains($rulesRemove, '.')) {
                 $ruleInField = explode('.', $rulesRemove);
                 if (isset($rules[$ruleInField[0]])) {
@@ -117,15 +150,15 @@ if ( ! function_exists('remove_rules')) {
                     if (isset($ruleFlip[$ruleInField[1]])) {
                         unset($ruleSplit[$ruleFlip[$ruleInField[1]]]);
                     }
-                    
-                    //Remove the rule name if it contains no rule 
+
+                    //Remove the rule name if it contains no rule
                     if (count($ruleSplit)) {
                         $rules[$ruleInField[0]] = implode('|', $ruleSplit);
                     } else {
                         unset($rules[$ruleInField[0]]);
                     }
                 }
-                
+
             } elseif (isset($rules[$rulesRemove])) {
                 unset($rules[$rulesRemove]);
             }
@@ -166,14 +199,14 @@ if (!function_exists('get_display_name')) {
 if ( ! function_exists('generate_filename')) {
 
     /**
-     * Generate the file name base on current user id, time 
+     * Generate the file name base on current user id, time
      * to get a unique file in present folder
-     * 
+     *
      * @param string $directory Path to the upload directory
      * @param string $extension File extension
      * @param string $prefix    File prefix
      * @param string $suffix    File suffix
-     * 
+     *
      * @return string   File name
      */
     function generate_filename($directory, $extension, $prefix = '', $suffix = '') {
@@ -220,16 +253,16 @@ if ( ! function_exists('check_file')) {
 
 if ( ! function_exists('upload')) {
     /**
-     * 
+     *
      * @param Illuminate\Http\Request $request
      * @param string                  $directory
      * @param string                  $oldFile
-     * 
+     *
      * @return string
-     * 
+     *
      * @throws \Exception
      */
-    function upload($request, $directory, $oldFile) {
+    function upload($request, $directory, $oldFile, $resize = []) {
 
         /** Remove current file if exist. */
         if ($oldFile !== null) {
@@ -242,6 +275,8 @@ if ( ! function_exists('upload')) {
 
         try {
             $file->move($directory, $newFileName);
+
+
         } catch (Exception $ex) {
             throw new \Exception(_t('opp'));
         }
@@ -254,11 +289,11 @@ if ( ! function_exists('upload')) {
 if ( ! function_exists('delete_file')) {
 
     /**
-     * 
+     *
      * @param string $path
-     * 
+     *
      * @return boolean
-     * 
+     *
      * @throws \Exception
      */
     function delete_file($path) {
@@ -275,3 +310,26 @@ if ( ! function_exists('delete_file')) {
     }
 
 }
+
+if ( ! function_exists('resize_image')) {
+
+    function resize_image($image, $resize = []) {
+
+        if (count($resize)) {
+            $image  = \Intervention\Image\Facades\Image::make($image);
+            $width  = $image->width();
+            $height = $image->height();
+            if ($width > $height) {
+                $ratio = (int) $width - $height;
+                
+            } else {
+                $ratio = (int) $height - $width;
+            }
+
+
+            $image->resize($resize[0], $resize[1])->save();
+        }
+    }
+
+}
+

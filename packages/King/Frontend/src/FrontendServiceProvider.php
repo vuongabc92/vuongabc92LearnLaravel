@@ -17,9 +17,6 @@ class FrontendServiceProvider extends ServiceProvider {
         //Load helpers
         Include_once realpath(__DIR__ . '/support/helpers.php');
 
-        //Load constants
-        Include_once realpath(__DIR__ . '/config/constants.php');
-
         //Load views
         $this->loadViewsFrom(realpath(__DIR__ . '/../resources/views'), 'frontend');
 
@@ -29,9 +26,12 @@ class FrontendServiceProvider extends ServiceProvider {
         //Set up routes
         $this->setupRoutes($this->app->router);
 
-        //Merge config
+        /** Merge config */
         $this->mergeConfigFrom(
             __DIR__ . '/config/frontend.php', 'front'
+        );
+        $this->mergeConfigFrom(
+            __DIR__ . '/config/constants.php', 'constant'
         );
 
         //Publish assets

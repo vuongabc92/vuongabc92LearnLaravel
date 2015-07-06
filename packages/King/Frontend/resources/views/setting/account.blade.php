@@ -34,7 +34,7 @@ Setting > Account
                     <div class="_fr setting-field-right">
                         <span class="_fwfl">
                             <img class="_fl img-circle setting-avatar-img" src="{{ get_avatar() }}" />
-                            <span class="_fl _ml20 _mt11 _fs12 _tga">
+                            <span class="_fl _ml20 _fs12 _tga avatar-note-group">
                                 <p class="_m0">+ {{ _t('avatar_note1') }}</p>
                                 <p class="_m0">+ {{ _t('avatar_note2') }}</p>
                                 <p class="_m0">+ {{ _t('avatar_note3') }}</p>
@@ -46,7 +46,7 @@ Setting > Account
                                 <b class="btn-text">{{ _t('avatar_browser') }}</b>
                                 <i class="fa fa-check _dn"></i>
                             </span>
-                            <span class="_fwfl _tr7 _fs12 _mt15">Please choose a correct image.</span>
+                            <span class="_fwfl _tr7 _fs12 _mt10 _dn upload-avatar-messages"></span>
                         </div>
                         <div class="_fwfl _dn">
                             {!! Form::open(['route' => 'front_setting_change_avatar', 'files' => true, 'method' => 'POST', 'id' => 'upload-avatar-form', 'data-upload-avatar']) !!}

@@ -1,4 +1,8 @@
 <?php
 
-define('AJAX_OK', 'OK');
-define('AJAX_ERROR', 'ERROR');
+return [
+    'AJAX_OK' => 'OK',
+    'AJAX_ERROR' => 'ERROR',
+    'AVATAR_WIDTH' => 128,
+    'AVATAR_HEIGHT' => 128,
+];

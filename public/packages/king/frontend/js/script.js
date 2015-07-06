@@ -290,47 +290,40 @@ var settings = {
 
     Plugin.prototype = {
         init: function() {
-            var current   = this.element,
-                avatarBtn = $('.choose-avatar-btn'),
-                that      = this,
-                img       = avatarBtn.children('img'),
-                text      = avatarBtn.children('b'),
-                check     = avatarBtn.children('i');
+            var current      = this.element,
+                chooseAvatar = $('.choose-avatar-btn'),
+                img          = chooseAvatar.children('img'),
+                text         = chooseAvatar.children('b'),
+                check        = chooseAvatar.children('i');
 
             current.on('submit', function(){
                 return AIM.submit(this, {
-                    onStart: function(){
+                    onStart: function() {
                         img.show();
                         text.hide();
                     },
                     onComplete: function(response){
-                        var json = $.parseJSON(response),
-                            status = json.status,
+                        var json     = $.parseJSON(response),
+                            status   = json.status,
                             messages = json.messages;
-                    
+
                         img.hide();
                         text.show();
-                        check.show(200);
                         if (status === 'OK') {
+                            check.show(200);
                             setTimeout(function() {
                                 check.hide(200);
                             }, 3000);
                         }
+
+                        if (status === 'ERROR') {
+                            $('.upload-avatar-messages').show();
+                            $('.upload-avatar-messages').html(messages);
+                        }
+
                     }
                 });
             });
-        },
-        startCallback: function(img, text){
-            img.show();
-            text.hide();
-        },
-        completeCallback: function (img, text, check){
-            img.hide();
-            text.show();
-            check.show(200);
-            setTimeout(function() {
-                check.hide(200);
-            }, 3000);
         },
         destroy: function() {
             $.removeData(this.element[0], pluginName);

@@ -63,7 +63,8 @@ border: solid 1px #e4e4e4;}
 .setting-group{padding:20px 10px;border-bottom:solid 1px #eee;}
 .setting-field-left{width:28%;}
 .setting-field-right{width:72%;}
-.setting-avatar-img{width:74px;height:74px;}
+.setting-avatar-img{width:96px;height:96px;}
+.avatar-note-group{margin-top:22px;}
 .setting-form{float:left;width:80%;}
 .setting-form-group{margin-bottom:15px;}
 .setting-form-label{font-weight:normal;color:#777;}

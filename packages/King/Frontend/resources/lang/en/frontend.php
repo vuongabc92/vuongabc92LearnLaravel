@@ -62,4 +62,11 @@ return [
     'close' => 'Close',
     'pass_wrong' => 'Password is incorrect.',
     'basic_info_note1' => 'Password for change user name or email.',
+    'no_file' => 'No file was chosen.',
+    'file_not_image' => 'The file must be an image.',
+    'file_image_mimes' => 'The file must be a file of type: jpg, png, jpeg, gif.',
+    'avatar_max' => 'The file may not be greater than 10 megabytes.',
+    'opp' => 'Opp!! Somethings went wrong. Please try again!',
+    'saved_pass' => 'Saved password',
+    'curr_pass_wrong' => 'Current password is incorrect.',
 ];

@@ -53,7 +53,7 @@ class SettingController extends FrontController
             $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->fails()) {
                 return ajax_response([
-                    'status'   => AJAX_ERROR,
+                    'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->messages()
                 ]);
             }
@@ -71,13 +71,13 @@ class SettingController extends FrontController
                     auth()->user()->save();
                 } catch (Exception $ex) {
                     return ajax_response([
-                        'status'   => AJAX_ERROR,
+                        'status'   => _const('AJAX_ERROR'),
                         'messages' => _t('opp')
-                    ]);
+                    ], 500);
                 }
 
                 return ajax_response([
-                    'status'   => AJAX_OK,
+                    'status'   => _const('AJAX_OK'),
                     'messages' => _t('saved_pass')
                 ]);
             }
@@ -85,7 +85,7 @@ class SettingController extends FrontController
             $validator->errors()->add('password', _t('pass_wrong'));
 
             return ajax_response([
-                'status'   => AJAX_ERROR,
+                'status'   => _const('AJAX_ERROR'),
                 'messages' => $validator->messages()
             ]);
         }
@@ -144,7 +144,7 @@ class SettingController extends FrontController
             $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->fails()) {
                 return ajax_response([
-                    'status'   => AJAX_ERROR,
+                    'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->messages()
                 ]);
             }
@@ -154,7 +154,7 @@ class SettingController extends FrontController
                 if ( ! Hash::check($password, $hashingPass)) {
                     $validator->errors()->add('password', _t('pass_incorrect'));
                     return ajax_response([
-                        'status'   => AJAX_ERROR,
+                        'status'   => _const('AJAX_ERROR'),
                         'messages' => $validator->messages()
                     ]);
                 }
@@ -168,23 +168,23 @@ class SettingController extends FrontController
                 $user->save();
             } catch (Exception $ex) {
                 return ajax_response([
-                    'status'   => AJAX_ERROR,
+                    'status'   => _const('AJAX_ERROR'),
                     'messages' => _t('opp')
-                ]);
+                ], 500);
             }
 
             return ajax_response([
-                'status'   => AJAX_OK,
+                'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info')
             ]);
         }
     }
-    
+
     /**
      * Change user avatar
-     * 
+     *
      * @param \Illuminate\Http\Request $request
-     * 
+     *
      * @return response
      */
     public function ajaxChangeAvatar(Request $request) {
@@ -196,38 +196,40 @@ class SettingController extends FrontController
             ];
 
             $messages = [
-                '__file.required' => 'No image was chose.',
-                '__file.required' => 'The avatar file must be an image.',
-                '__file.mimes'    => 'The avatar must be a file of type: jpg, png, jpeg, gif.',
-                '__file.max'      => 'The avatar may not be greater than 10 megabytes..',
+                '__file.required' => _t('no_file'),
+                '__file.image'    => _t('file_not_image'),
+                '__file.mimes'    => _t('file_image_mimes'),
+                '__file.max'      => _t('avatar_max'),
             ];
 
             $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->fails()) {
-                return ajax_response([
-                    'status'   => AJAX_ERROR,
-                    'messages' => $validator->messages()
+                return ajax_upload_response([
+                    'status'   => _const('AJAX_ERROR'),
+                    'messages' => $validator->errors()->first()
                 ]);
             }
 
             $currentAvatar = auth()->user()->avatar;
             $pathToAvatar  = config('front.avatar_path');
-            $newFileUpload = upload($request, $pathToAvatar, $currentAvatar);
+            $avatarWidth   = _const('AVATAR_WIDTH');
+            $avatarHeight  = _const('AVATAR_HEIGHT');
+            $newFileUpload = upload($request, $pathToAvatar, $currentAvatar, [$avatarWidth, $avatarHeight]);
 
             auth()->user()->avatar = $newFileUpload;
             try {
                 auth()->user()->save();
             } catch (Exception $ex) {
-                return ajax_response([
-                    'status'   => AJAX_OK,
+                return ajax_upload_response([
+                    'status'   => _const('AJAX_OK'),
                     'messages' => _t('opp')
-                ], 500, ['Content-Type' => 'text/html']);
+                ], 500);
             }
-            
-            return ajax_response([
-                'status'   => AJAX_OK,
+
+            return ajax_upload_response([
+                'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info')
-            ], 200, ['Content-Type' => 'text/html']);
+            ]);
         }
     }
 
