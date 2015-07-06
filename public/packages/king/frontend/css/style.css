@@ -64,7 +64,7 @@ border: solid 1px #e4e4e4;}
 .setting-field-left{width:28%;}
 .setting-field-right{width:72%;}
 .setting-avatar-img{width:96px;height:96px;}
-.avatar-note-group{margin-top:22px;}
+.avatar-note-group{height:52px;margin-top:22px;}
 .setting-form{float:left;width:80%;}
 .setting-form-group{margin-bottom:15px;}
 .setting-form-label{font-weight:normal;color:#777;}

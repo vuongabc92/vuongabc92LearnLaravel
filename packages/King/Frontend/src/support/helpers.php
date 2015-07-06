@@ -262,21 +262,21 @@ if ( ! function_exists('upload')) {
      *
      * @throws \Exception
      */
-    function upload($request, $directory, $oldFile, $resize = []) {
+    function upload($request, $directory, $oldFile, $options = []) {
 
         /** Remove current file if exist. */
         if ($oldFile !== null) {
             delete_file($directory . $oldFile);
         }
 
-        $file        = $request->file('__file');
-        $fileExt     = $file->getClientOriginalExtension();
-        $newFileName = generate_filename($directory, $fileExt);
+        $file              = $request->file('__file');
+        $fileExt           = $file->getClientOriginalExtension();
+        $newFilenamePrefix = isset($options['prefix']) ? $options['prefix'] : '';
+        $newFilenameSuffix = isset($options['suffix']) ? $options['suffix'] : '';
+        $newFileName       = generate_filename($directory, $fileExt, $newFilenamePrefix, $newFilenameSuffix);
 
         try {
             $file->move($directory, $newFileName);
-
-
         } catch (Exception $ex) {
             throw new \Exception(_t('opp'));
         }
@@ -313,21 +313,27 @@ if ( ! function_exists('delete_file')) {
 
 if ( ! function_exists('resize_image')) {
 
-    function resize_image($image, $resize = []) {
+    /**
+     * Resize image
+     * 
+     * @param string $imagePath
+     * @param int    $width
+     * @param int    $height
+     * @param string $newImageName
+     */
+    function resize_image($imagePath, $width, $height, $newImageName = '') {
 
-        if (count($resize)) {
-            $image  = \Intervention\Image\Facades\Image::make($image);
-            $width  = $image->width();
-            $height = $image->height();
-            if ($width > $height) {
-                $ratio = (int) $width - $height;
-                
-            } else {
-                $ratio = (int) $height - $width;
+        if ($width && $height) {
+            $image = \Intervention\Image\Facades\Image::make($imagePath)->orientate();
+            $image->fit($width, $height, function ($constraint) {
+                $constraint->upsize();
+            });
+            
+            if ($newImageName !== '') {
+                $image->save($newImageName);
             }
-
-
-            $image->resize($resize[0], $resize[1])->save();
+            
+            $image->save();
         }
     }
 

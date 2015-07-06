@@ -292,6 +292,7 @@ var settings = {
         init: function() {
             var current      = this.element,
                 chooseAvatar = $('.choose-avatar-btn'),
+                avatar       = $('.__avatar'),
                 img          = chooseAvatar.children('img'),
                 text         = chooseAvatar.children('b'),
                 check        = chooseAvatar.children('i');
@@ -301,6 +302,7 @@ var settings = {
                     onStart: function() {
                         img.show();
                         text.hide();
+                        avatar.css({opacity:0.5});
                     },
                     onComplete: function(response){
                         var json     = $.parseJSON(response),
@@ -310,6 +312,8 @@ var settings = {
                         img.hide();
                         text.show();
                         if (status === 'OK') {
+                            avatar.attr('src', messages);
+                            avatar.css({opacity:1});
                             check.show(200);
                             setTimeout(function() {
                                 check.hide(200);

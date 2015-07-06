@@ -35,13 +35,13 @@
                             @if (auth()->check())
                             <div class="_fr btn-group avatar-dropdown">
                                 <button type="button" class="btn dropdown-toggle _bgw _p0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img src="{{ get_avatar() }}" class="_fl img-circle head-avatar-img"/>
+                                    <img src="{{ get_avatar() }}" class="_fl img-circle head-avatar-img __avatar"/>
                                 </button>
                                 <ul class="dropdown-menu _r2">
                                     <li>
                                         <a href="#" class="short-profile-nav">
                                             <span class="_fwfl">
-                                                <img src="{{ get_avatar() }}" class="_fl _r3 avatar-popup-img" />
+                                                <img src="{{ get_avatar() }}" class="_fl _r3 avatar-popup-img __avatar" />
                                                 <div class="_fl short-profile">
                                                     <span class="_fwfl _tb _fwb _fs13 short-info-name">
                                                         {{ get_display_name() }}
