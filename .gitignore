@@ -3,5 +3,6 @@
 /node_modules
 /nbproject
 /tests
+/public/uploads/images/avatar
 .env
 composer.lock
