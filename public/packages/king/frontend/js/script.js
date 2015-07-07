@@ -307,12 +307,13 @@ var settings = {
                     onComplete: function(response){
                         var json     = $.parseJSON(response),
                             status   = json.status,
-                            messages = json.messages;
+                            messages = json.messages,
+                            data     = json.data;
 
                         img.hide();
                         text.show();
                         if (status === 'OK') {
-                            avatar.attr('src', messages);
+                            avatar.attr('src', data);
                             avatar.css({opacity:1});
                             check.show(200);
                             setTimeout(function() {

@@ -209,7 +209,7 @@ if ( ! function_exists('generate_filename')) {
      *
      * @return string   File name
      */
-    function generate_filename($directory, $extension, $prefix = '', $suffix = '') {
+    function generate_filename($directory, $extension, $options = []) {
 
         $userId    = 0;
         $microtime = microtime(true);
@@ -219,6 +219,8 @@ if ( ! function_exists('generate_filename')) {
             $userId = auth()->user()->id;
         }
 
+        $prefix       = isset($options['prefix']) ? $options['prefix'] : '';
+        $suffix       = isset($options['suffix']) ? $options['suffix'] : '';
         $nameEncoding = md5($userId . $microtime . $randStr);
         $fileName     = $prefix . $nameEncoding . $suffix . '.' . $extension;
 
@@ -257,6 +259,19 @@ if ( ! function_exists('upload')) {
      * @param Illuminate\Http\Request $request
      * @param string                  $directory
      * @param string                  $oldFile
+     * @param array                   $options
+     *
+     * The param options contains data below:
+     * <pre>
+     * array(
+     *  'prefix',
+     *  'suffix',
+     *  'resize' => array(
+     *      'width' => xx
+     *      'height' => xx
+     *  )
+     * )
+     * </pre>
      *
      * @return string
      *
@@ -271,17 +286,35 @@ if ( ! function_exists('upload')) {
 
         $file              = $request->file('__file');
         $fileExt           = $file->getClientOriginalExtension();
-        $newFilenamePrefix = isset($options['prefix']) ? $options['prefix'] : '';
-        $newFilenameSuffix = isset($options['suffix']) ? $options['suffix'] : '';
-        $newFileName       = generate_filename($directory, $fileExt, $newFilenamePrefix, $newFilenameSuffix);
+        $newFileNamePrefix = isset($options['prefix']) ? $options['prefix'] : '';
+        $newFileNameSuffix = isset($options['suffix']) ? $options['suffix'] : '';
+        $newFiles          = [];
+        $newFileName       = generate_filename($directory, $fileExt, [
+            'prefix' => $newFileNamePrefix,
+            'suffix' => $newFileNameSuffix
+        ]);
 
         try {
             $file->move($directory, $newFileName);
+
+            if (isset($options['resize']) && count($options['resize'])) {
+                foreach ($options['resize'] as $k => $v) {
+                    $suffix = ($newFileNameSuffix !== '') ? $newFileNameSuffix : '_' . $k;
+                    $resizeFileName = generate_filename($directory, $fileExt, [
+                        'prefix' => $newFileNamePrefix,
+                        'suffix' => $suffix
+                    ]);
+                    $resizeWidth  = $v['width'];
+                    $resizeHeight = $v['height'];
+
+                    resize_image($directory . $resizeFileName, $resizeWidth, $resizeHeight);
+                }
+            }
         } catch (Exception $ex) {
             throw new \Exception(_t('opp'));
         }
 
-        return $newFileName;
+        return count($newFiles) ? $newFiles : $newFileName;
     }
 
 }
@@ -289,6 +322,7 @@ if ( ! function_exists('upload')) {
 if ( ! function_exists('delete_file')) {
 
     /**
+     * Delete file
      *
      * @param string $path
      *
@@ -315,24 +349,25 @@ if ( ! function_exists('resize_image')) {
 
     /**
      * Resize image
-     * 
+     *
      * @param string $imagePath
      * @param int    $width
      * @param int    $height
-     * @param string $newImageName
+     * @param string $newName
      */
-    function resize_image($imagePath, $width, $height, $newImageName = '') {
+    function resize_image($imagePath, $width, $height, $newName = '') {
 
+        //Only resize when the width and height is specified.
         if ($width && $height) {
             $image = \Intervention\Image\Facades\Image::make($imagePath)->orientate();
             $image->fit($width, $height, function ($constraint) {
                 $constraint->upsize();
             });
-            
-            if ($newImageName !== '') {
-                $image->save($newImageName);
+
+            if ($newName !== '') {
+                $image->save($newName);
             }
-            
+
             $image->save();
         }
     }

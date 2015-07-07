@@ -215,10 +215,17 @@ class SettingController extends FrontController
             $avatarWidth   = _const('AVATAR_WIDTH');
             $avatarHeight  = _const('AVATAR_HEIGHT');
             $newFileUpload = upload($request, $pathToAvatar, $currentAvatar, [
-                'resize' => ['width' => $avatarWidth, 'height' => $avatarHeight]
+                'prefix' => 'avatar_',
+                'resize' => [
+                    128 => [
+                        'width'  => $avatarWidth,
+                        'height' => $avatarHeight
+                    ]
+                ]
             ]);
-            resize_image($pathToAvatar . $newFileUpload, $avatarWidth, $avatarHeight);
-            
+
+            //resize_image($pathToAvatar . $newFileUpload, $avatarWidth, $avatarHeight);
+
             auth()->user()->avatar = $newFileUpload;
             try {
                 auth()->user()->save();
@@ -231,7 +238,8 @@ class SettingController extends FrontController
 
             return ajax_upload_response([
                 'status'   => _const('AJAX_OK'),
-                'messages' => asset($pathToAvatar . $newFileUpload)
+                'messages' => _t('saved_info'),
+                'data'     => asset($pathToAvatar . $newFileUpload)
             ]);
         }
     }
