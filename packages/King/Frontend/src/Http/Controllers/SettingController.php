@@ -210,12 +210,18 @@ class SettingController extends FrontController
                 ]);
             }
 
-            $currentAvatar = auth()->user()->avatar;
-            $pathToAvatar  = config('front.avatar_path');
-            $avatar128     = _const('AVATAR_128');
-            $avatar64      = _const('AVATAR_64');
-            $avatar32      = _const('AVATAR_32');
-            $newFileUpload = upload($request, $pathToAvatar, $currentAvatar, [
+            $currentAvatar128 = auth()->user()->avatar_128;
+            $currentAvatar64  = auth()->user()->avatar_64;
+            $currentAvatar40  = auth()->user()->avatar_40;
+            $pathToAvatar     = config('front.avatar_path');
+            $avatar128        = _const('AVATAR_128');
+            $avatar64         = _const('AVATAR_64');
+            $avatar40         = _const('AVATAR_40');
+            $newFileUpload    = upload($request, $pathToAvatar, [
+                $currentAvatar128, 
+                $currentAvatar64, 
+                $currentAvatar40
+            ], [
                 'prefix' => 'avatar_',
                 'resize' => [
                     '128' => [
@@ -226,16 +232,18 @@ class SettingController extends FrontController
                         'width'  => $avatar64,
                         'height' => $avatar64
                     ],
-                    '32' => [
-                        'width'  => $avatar32,
-                        'height' => $avatar32
+                    '40' => [
+                        'width'  => $avatar40,
+                        'height' => $avatar40
                     ]
                 ]
             ]);
 
             //resize_image($pathToAvatar . $newFileUpload, $avatarWidth, $avatarHeight);
 
-            auth()->user()->avatar = $newFileUpload['128'];
+            auth()->user()->avatar_128 = $newFileUpload['128'];
+            auth()->user()->avatar_64  = $newFileUpload['64'];
+            auth()->user()->avatar_40  = $newFileUpload['40'];
 
             try {
                 auth()->user()->save();
@@ -249,7 +257,11 @@ class SettingController extends FrontController
             return ajax_upload_response([
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
-                'data'     => asset($pathToAvatar . $newFileUpload['128'])
+                'data'     => [
+                    '128' => asset($pathToAvatar . $newFileUpload['128']),
+                    '64'  => asset($pathToAvatar . $newFileUpload['64']),
+                    '40'  => asset($pathToAvatar . $newFileUpload['40']),
+                ]
             ]);
         }
     }

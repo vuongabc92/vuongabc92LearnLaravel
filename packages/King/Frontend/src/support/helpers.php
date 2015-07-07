@@ -39,19 +39,44 @@ if ( ! function_exists('get_avatar')) {
     /**
      * Get avatar path
      * if the avatar does not exist, default avatar will be retrieved
+     * 
+     * @param string $size
      *
      * @return string Path to avatar
      */
-    function get_avatar() {
-        $currentAvatar = auth()->user()->avatar;
-        if ($currentAvatar !== null) {
-            $avatarPath = config('front.avatar_path') . $currentAvatar;
-            if (check_file($avatarPath)) {
-                return asset($avatarPath);
+    function get_avatar($size = '') {
+        
+        $avatar128 = auth()->user()->avatar_128;
+        $avatar64  = auth()->user()->avatar_64;
+        $avatar40  = auth()->user()->avatar_40;
+        $avatars   = [
+            '128' => asset(config('front.default_avatar_path')),
+            '64'  => asset(config('front.default_avatar_path')),
+            '40'  => asset(config('front.default_avatar_path')),
+        ];
+        
+        if ($avatar128 !== null) {
+            $avatar128Path = config('front.avatar_path') . $avatar128;
+            if (check_file($avatar128Path)) {
+                $avatars['128'] = asset($avatar128Path);
             }
         }
-
-        return asset(config('front.default_avatar_path'));
+        
+        if ($avatar64 !== null) {
+            $avatar64Path = config('front.avatar_path') . $avatar64;
+            if (check_file($avatar64Path)) {
+                $avatars['64'] = asset($avatar64Path);
+            }
+        }
+        
+        if ($avatar40 !== null) {
+            $avatar40Path = config('front.avatar_path') . $avatar40;
+            if (check_file($avatar40Path)) {
+                $avatars['40'] = asset($avatar40Path);
+            }
+        }
+        
+        return ($size !== '') ? $avatars[$size] : $avatars;
     }
 
 }

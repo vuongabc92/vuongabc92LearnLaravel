@@ -292,7 +292,9 @@ var settings = {
         init: function() {
             var current      = this.element,
                 chooseAvatar = $('.choose-avatar-btn'),
-                avatar       = $('.__avatar'),
+                avatar128    = $('.avatar-128'),
+                avatar64     = $('.avatar-64'),
+                avatar40     = $('.avatar-40'),
                 img          = chooseAvatar.children('img'),
                 text         = chooseAvatar.children('b'),
                 check        = chooseAvatar.children('i');
@@ -302,19 +304,25 @@ var settings = {
                     onStart: function() {
                         img.show();
                         text.hide();
-                        avatar.css({opacity:0.5});
+                        avatar128.css({opacity:0.5});
+                        avatar64.css({opacity:0.5});
+                        avatar40.css({opacity:0.5});
                     },
                     onComplete: function(response){
                         var json     = $.parseJSON(response),
                             status   = json.status,
-                            messages = json.messages,
-                            data     = json.data;
+                            messages = json.messages;
 
                         img.hide();
                         text.show();
                         if (status === 'OK') {
-                            avatar.attr('src', data);
-                            avatar.css({opacity:1});
+                            var image128 = json.data['128'],
+                                image64  = json.data['64'],
+                                image40  = json.data['40'];
+                        
+                            avatar128.attr('src', image128).css({opacity:1});
+                            avatar64.attr('src', image64).css({opacity:1});
+                            avatar40.attr('src', image40).css({opacity:1});
                             check.show(200);
                             setTimeout(function() {
                                 check.hide(200);

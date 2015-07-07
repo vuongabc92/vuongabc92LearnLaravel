@@ -5,5 +5,5 @@ return [
     'AJAX_ERROR' => 'ERROR',
     'AVATAR_128' => 128,
     'AVATAR_64' => 64,
-    'AVATAR_32' => 32,
+    'AVATAR_40' => 40,
 ];
