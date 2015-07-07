@@ -258,7 +258,7 @@ if ( ! function_exists('upload')) {
      *
      * @param Illuminate\Http\Request $request
      * @param string                  $directory
-     * @param string                  $oldFile
+     * @param array                   $oldFiles
      * @param array                   $options
      *
      * The param options contains data below:
@@ -267,7 +267,7 @@ if ( ! function_exists('upload')) {
      *  'prefix',
      *  'suffix',
      *  'resize' => array(
-     *      'width' => xx
+     *      'width'  => xx
      *      'height' => xx
      *  )
      * )
@@ -277,11 +277,13 @@ if ( ! function_exists('upload')) {
      *
      * @throws \Exception
      */
-    function upload($request, $directory, $oldFile, $options = []) {
+    function upload($request, $directory, $oldFiles = [], $options = []) {
 
         /** Remove current file if exist. */
-        if ($oldFile !== null) {
-            delete_file($directory . $oldFile);
+        if (count($oldFiles)) {
+            foreach ($oldFiles as $file) {
+                delete_file($directory . $file);
+            }
         }
 
         $file              = $request->file('__file');
