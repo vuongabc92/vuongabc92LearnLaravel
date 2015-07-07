@@ -221,13 +221,7 @@ if ( ! function_exists('generate_filename')) {
 
         $prefix       = isset($options['prefix'])  ? $options['prefix']  : '';
         $suffix       = isset($options['suffix'])  ? $options['suffix']  : '';
-        $default      = isset($options['default']) ? $options['default'] : '';
-
         $nameEncoding = md5($userId . $microtime . $randStr);
-        if ($default !== '') {
-            $nameEncoding = $default;
-        }
-
         $fileName     = $prefix . $nameEncoding . $suffix . '.' . $extension;
 
         while (check_file($directory . $fileName)) {
@@ -303,21 +297,29 @@ if ( ! function_exists('upload')) {
         try {
             $file->move($directory, $newFileName);
 
+            //Resize image if required
             if (isset($options['resize']) && count($options['resize'])) {
+                /*
+                 * Generate new file name for all image resize. those iamges
+                 * different the suffix that is replaced with '_REPLACE'
+                 */
+                $resizeFileName = generate_filename($directory, $fileExt, [
+                    'prefix' => $newFileNamePrefix,
+                    'suffix' => '_REPLACE'
+                ]);
                 foreach ($options['resize'] as $k => $v) {
                     $suffix = ($newFileNameSuffix !== '') ? $newFileNameSuffix : '_' . $k;
-                    $resizeFileName = generate_filename($directory, $fileExt, [
-                        'prefix' => $newFileNamePrefix,
-                        'suffix' => $suffix
-                    ]);
-                    $resizeWidth  = $v['width'];
-                    $resizeHeight = $v['height'];
+                    $newNameBySize = str_replace('_REPLACE', $suffix, $resizeFileName);
+                    $resizeWidth   = $v['width'];
+                    $resizeHeight  = $v['height'];
 
-                    if (resize_image($directory . $newFileName, $resizeWidth, $resizeHeight, $directory . $resizeFileName)) {
-                        $newFiles[$k] = $resizeFileName;
+                    if (resize_image($directory . $newFileName, $resizeWidth, $resizeHeight,
+                                     $directory . $newNameBySize)) {
+                        $newFiles[$k] = $newNameBySize;
                     }
                 }
 
+                //Delete the original image
                 if (count($newFiles)) {
                     delete_file($directory . $newFileName);
                 }
