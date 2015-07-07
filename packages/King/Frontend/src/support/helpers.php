@@ -219,9 +219,15 @@ if ( ! function_exists('generate_filename')) {
             $userId = auth()->user()->id;
         }
 
-        $prefix       = isset($options['prefix']) ? $options['prefix'] : '';
-        $suffix       = isset($options['suffix']) ? $options['suffix'] : '';
+        $prefix       = isset($options['prefix'])  ? $options['prefix']  : '';
+        $suffix       = isset($options['suffix'])  ? $options['suffix']  : '';
+        $default      = isset($options['default']) ? $options['default'] : '';
+
         $nameEncoding = md5($userId . $microtime . $randStr);
+        if ($default !== '') {
+            $nameEncoding = $default;
+        }
+
         $fileName     = $prefix . $nameEncoding . $suffix . '.' . $extension;
 
         while (check_file($directory . $fileName)) {
@@ -307,11 +313,17 @@ if ( ! function_exists('upload')) {
                     $resizeWidth  = $v['width'];
                     $resizeHeight = $v['height'];
 
-                    resize_image($directory . $resizeFileName, $resizeWidth, $resizeHeight);
+                    if (resize_image($directory . $newFileName, $resizeWidth, $resizeHeight, $directory . $resizeFileName)) {
+                        $newFiles[$k] = $resizeFileName;
+                    }
+                }
+
+                if (count($newFiles)) {
+                    delete_file($directory . $newFileName);
                 }
             }
         } catch (Exception $ex) {
-            throw new \Exception(_t('opp'));
+            throw new \Exception('Whoop!! Can not upload file. ' . $ex->getMessage());
         }
 
         return count($newFiles) ? $newFiles : $newFileName;
@@ -336,7 +348,7 @@ if ( ! function_exists('delete_file')) {
             try {
                 \Illuminate\Support\Facades\File::delete($path);
             } catch (Exception $ex) {
-                throw new \Exception(_t('opp'));
+                throw new \Exception('Whoop!! Can not delete file. ' . $ex->getMessage());
             }
         }
 
@@ -359,17 +371,26 @@ if ( ! function_exists('resize_image')) {
 
         //Only resize when the width and height is specified.
         if ($width && $height) {
-            $image = \Intervention\Image\Facades\Image::make($imagePath)->orientate();
-            $image->fit($width, $height, function ($constraint) {
-                $constraint->upsize();
-            });
 
-            if ($newName !== '') {
-                $image->save($newName);
+            try {
+                $image = \Intervention\Image\Facades\Image::make($imagePath)->orientate();
+                $image->fit($width, $height, function ($constraint) {
+                    $constraint->upsize();
+                });
+
+                if ($newName !== '') {
+                    $image->save($newName);
+                }
+
+                $image->save();
+            } catch (Exception $ex) {
+                throw new \Exception('Whoop!! can not resize image. ' . $ex->getMessage());
             }
 
-            $image->save();
+            return true;
         }
+
+        return false;
     }
 
 }

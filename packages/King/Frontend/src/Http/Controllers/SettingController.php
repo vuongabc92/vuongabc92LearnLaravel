@@ -212,21 +212,31 @@ class SettingController extends FrontController
 
             $currentAvatar = auth()->user()->avatar;
             $pathToAvatar  = config('front.avatar_path');
-            $avatarWidth   = _const('AVATAR_WIDTH');
-            $avatarHeight  = _const('AVATAR_HEIGHT');
+            $avatar128     = _const('AVATAR_128');
+            $avatar64      = _const('AVATAR_64');
+            $avatar32      = _const('AVATAR_32');
             $newFileUpload = upload($request, $pathToAvatar, $currentAvatar, [
                 'prefix' => 'avatar_',
                 'resize' => [
-                    128 => [
-                        'width'  => $avatarWidth,
-                        'height' => $avatarHeight
+                    '128' => [
+                        'width'  => $avatar128,
+                        'height' => $avatar128
+                    ],
+                    '64' => [
+                        'width'  => $avatar64,
+                        'height' => $avatar64
+                    ],
+                    '32' => [
+                        'width'  => $avatar32,
+                        'height' => $avatar32
                     ]
                 ]
             ]);
 
             //resize_image($pathToAvatar . $newFileUpload, $avatarWidth, $avatarHeight);
 
-            auth()->user()->avatar = $newFileUpload;
+            auth()->user()->avatar = $newFileUpload['128'];
+
             try {
                 auth()->user()->save();
             } catch (Exception $ex) {
@@ -239,7 +249,7 @@ class SettingController extends FrontController
             return ajax_upload_response([
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
-                'data'     => asset($pathToAvatar . $newFileUpload)
+                'data'     => asset($pathToAvatar . $newFileUpload['128'])
             ]);
         }
     }
