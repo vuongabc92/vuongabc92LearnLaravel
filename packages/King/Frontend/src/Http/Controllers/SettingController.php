@@ -9,6 +9,10 @@ use Hash;
 class SettingController extends FrontController
 {
 
+    /**
+     *
+     * @var App\Models\User
+     */
     protected $user;
 
     public function __construct(User $user)
@@ -62,7 +66,7 @@ class SettingController extends FrontController
             $newPass     = $request->get('new_password');
             $hashingPass = auth()->user()->password;
 
-            /** Check confirm password */
+            /** Check password confirmation */
             if (Hash::check($password, $hashingPass)) {
 
                 auth()->user()->password = bcrypt($newPass);
@@ -150,20 +154,19 @@ class SettingController extends FrontController
             }
 
             //Check does password from input match to password in DB.
-            if ($checkPass) {
-                if ( ! Hash::check($password, $hashingPass)) {
-                    $validator->errors()->add('password', _t('pass_incorrect'));
-                    return ajax_response([
-                        'status'   => _const('AJAX_ERROR'),
-                        'messages' => $validator->messages()
-                    ]);
-                }
+            if ($checkPass && ! Hash::check($password, $hashingPass)) {
+                $validator->errors()->add('password', _t('pass_incorrect'));
+                return ajax_response([
+                    'status'   => _const('AJAX_ERROR'),
+                    'messages' => $validator->messages()
+                ]);
             }
 
             $user->user_name  = $username;
             $user->email      = $email;
             $user->first_name = $fname;
             $user->last_name  = $lname;
+
             try {
                 $user->save();
             } catch (Exception $ex) {
@@ -218,8 +221,8 @@ class SettingController extends FrontController
             $avatar64         = _const('AVATAR_64');
             $avatar40         = _const('AVATAR_40');
             $newFileUpload    = upload($request, $pathToAvatar, [
-                $currentAvatar128, 
-                $currentAvatar64, 
+                $currentAvatar128,
+                $currentAvatar64,
                 $currentAvatar40
             ], [
                 'prefix' => 'avatar_',
@@ -238,8 +241,6 @@ class SettingController extends FrontController
                     ]
                 ]
             ]);
-
-            //resize_image($pathToAvatar . $newFileUpload, $avatarWidth, $avatarHeight);
 
             auth()->user()->avatar_128 = $newFileUpload['128'];
             auth()->user()->avatar_64  = $newFileUpload['64'];
