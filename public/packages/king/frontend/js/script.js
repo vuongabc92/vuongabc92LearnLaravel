@@ -312,7 +312,9 @@ var settings = {
                         var json     = $.parseJSON(response),
                             status   = json.status,
                             messages = json.messages;
-
+                        
+                        $('.upload-avatar-messages').html('');
+                        $('.upload-avatar-messages').hide();
                         img.hide();
                         text.show();
                         if (status === 'OK') {
@@ -320,9 +322,6 @@ var settings = {
                                 image64  = json.data['64'],
                                 image40  = json.data['40'];
                         
-                            avatar128.attr('src', image128).css({opacity:1});
-                            avatar64.attr('src', image64).css({opacity:1});
-                            avatar40.attr('src', image40).css({opacity:1});
                             check.show(200);
                             setTimeout(function() {
                                 check.hide(200);
@@ -333,6 +332,10 @@ var settings = {
                             $('.upload-avatar-messages').show();
                             $('.upload-avatar-messages').html(messages);
                         }
+                        
+                        avatar128.attr('src', image128).css({opacity:1});
+                        avatar64.attr('src', image64).css({opacity:1});
+                        avatar40.attr('src', image40).css({opacity:1});
 
                     }
                 });
