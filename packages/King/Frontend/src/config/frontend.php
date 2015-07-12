@@ -5,5 +5,5 @@ return [
     'uploads_folder' => 'uploads',
     'avatar_path' => 'uploads/images/avatar/',
     'site_name' => 'Suris',
-    'site_description' => 'The world of online store',
+    'site_desc' => 'The world of online store',
 ];

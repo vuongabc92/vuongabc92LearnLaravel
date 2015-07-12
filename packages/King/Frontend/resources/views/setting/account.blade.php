@@ -108,8 +108,8 @@ Setting > Account
                             {!! Form::text('last_name', null, ['class' => '_fwfl setting-form-field', 'id' => 'lastname', 'maxlength' => '32']) !!}
                         </div>
                         <div class="_fwfl setting-form-group">
-                            <label class="_fwfl setting-form-label" for="password" data-title="{{ _t('pass_confirm') }}">{{ _t('pass_confirm') }}</label>
-                            {!! Form::password('password', ['class' => '_fwfl setting-form-field', 'id' => 'password', 'maxlength' => '60']) !!}
+                            <label class="_fwfl setting-form-label" for="password-confirm-basic" data-title="{{ _t('pass_confirm') }}">{{ _t('pass_confirm') }}</label>
+                            {!! Form::password('password', ['class' => '_fwfl setting-form-field', 'id' => 'password-confirm-basic', 'maxlength' => '60']) !!}
                             <span class="_fwfl _fs13 _tg5 _mt5">(*) {{ _t('basic_info_note1') }}</span>
                         </div>
                         <div class="_fwfl setting-form-group">

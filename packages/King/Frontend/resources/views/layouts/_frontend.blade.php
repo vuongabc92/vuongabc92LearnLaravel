@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> @yield('title') - {{ config('front.sitename') }} - {{ config('front.sitedesc') }}</title>
+        <title> @yield('title') - {{ config('front.site_name') }} - {{ config('front.site_desc') }}</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{ asset('packages/king/frontend/css/bootstrap.css') }}">

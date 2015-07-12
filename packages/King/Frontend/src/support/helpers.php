@@ -32,6 +32,7 @@ if ( ! function_exists('_const')) {
     function _const($key = null, $default = null) {
         return config("constant.{$key}", $default);
     }
+    
 }
 
 if ( ! function_exists('get_avatar')) {
@@ -40,45 +41,65 @@ if ( ! function_exists('get_avatar')) {
      * Get avatar path
      * if the avatar does not exist, default avatar will be retrieved
      *
-     * @param string $size
+     * @param string $size Get avatar with exist size
      *
      * @return string Path to avatar
      */
     function get_avatar($size = '') {
+        
+        $avatar = [];
+        foreach ([128, 64, 40] as $one) {
+            $avatar[$one] = avatar_default($one);
+            if (avatar_size($one) !== false) {
+                $avatar[$one] = avatar_size($one);
+            }
+        }
+        
+        return ($size !== '' && isset($avatar[$size])) ? $avatar[$size] : false;
+    }
 
-        $avatar128 = auth()->user()->avatar_128;
-        $avatar64  = auth()->user()->avatar_64;
-        $avatar40  = auth()->user()->avatar_40;
-        $avatars   = [
+}
+
+if ( ! function_exists('avatar_size')) {
+    /**
+     * Get avatar by size
+     * 
+     * @param string $size
+     * 
+     * @return boolean|string
+     */
+    function avatar_size($size = ''){
+        if ($size !== '' && auth()->check()) {
+            $avatar     = 'avatar_' . $size;
+            $avatarPath = config('front.avatar_path') . auth()->user()->$avatar;
+            if (check_file($avatarPath)) {
+                return asset($avatarPath);
+            }
+            
+            return false;
+        }
+        
+        return false;
+    }
+}
+
+if ( ! function_exists('avatar_default')) {
+    /**
+     * Get avatar default
+     * 
+     * @param string $size
+     * 
+     * @return string|array
+     */
+    function avatar_default($size = '') {
+        $avatars = [
             '128' => asset(config('front.default_avatar_path')),
             '64'  => asset(config('front.default_avatar_path')),
             '40'  => asset(config('front.default_avatar_path')),
         ];
-
-        if ($avatar128 !== null) {
-            $avatar128Path = config('front.avatar_path') . $avatar128;
-            if (check_file($avatar128Path)) {
-                $avatars['128'] = asset($avatar128Path);
-            }
-        }
-
-        if ($avatar64 !== null) {
-            $avatar64Path = config('front.avatar_path') . $avatar64;
-            if (check_file($avatar64Path)) {
-                $avatars['64'] = asset($avatar64Path);
-            }
-        }
-
-        if ($avatar40 !== null) {
-            $avatar40Path = config('front.avatar_path') . $avatar40;
-            if (check_file($avatar40Path)) {
-                $avatars['40'] = asset($avatar40Path);
-            }
-        }
-
-        return ($size !== '') ? $avatars[$size] : $avatars;
+        
+        return ($size !== '' && isset($avatars[$size])) ? $avatars[$size] : $avatars;
     }
-
 }
 
 if ( ! function_exists('ajax_response')) {
@@ -329,7 +350,7 @@ if ( ! function_exists('upload')) {
             //Resize image if required
             if (isset($options['resize']) && count($options['resize'])) {
                 /*
-                 * Generate new file name for all image resize. those iamges
+                 * Generate new file name for all image resize. Those images
                  * different the suffix that is replaced with '_REPLACE'
                  */
                 $resizeFileName = generate_filename($directory, $fileExt, [
@@ -337,12 +358,10 @@ if ( ! function_exists('upload')) {
                     'suffix' => '_REPLACE'
                 ]);
                 foreach ($options['resize'] as $k => $v) {
-                    $suffix = ($newFileNameSuffix !== '') ? $newFileNameSuffix : '_' . $k;
+                    $suffix        = ($newFileNameSuffix !== '') ? $newFileNameSuffix : '_' . $k;
                     $newNameBySize = str_replace('_REPLACE', $suffix, $resizeFileName);
-                    $resizeWidth   = $v['width'];
-                    $resizeHeight  = $v['height'];
-
-                    if (resize_image($directory . $newFileName, $resizeWidth, $resizeHeight,
+                    
+                    if (resize_image($directory . $newFileName, $v['width'], $v['height'],
                                      $directory . $newNameBySize)) {
                         $newFiles[$k] = $newNameBySize;
                     }
@@ -425,4 +444,3 @@ if ( ! function_exists('resize_image')) {
     }
 
 }
-

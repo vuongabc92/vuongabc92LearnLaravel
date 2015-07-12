@@ -266,5 +266,8 @@ class SettingController extends FrontController
             ]);
         }
     }
-
+    
+    public function store() {
+        return view('frontend::setting.store');
+    }
 }
