@@ -267,7 +267,20 @@ class SettingController extends FrontController
         }
     }
     
+    /**
+     * Display save store page
+     * 
+     * @return response
+     */
     public function store() {
         return view('frontend::setting.store');
+    }
+    
+    
+    public function ajaxSaveStoreInfo(Request $request) {
+        //Only accept AJAX request
+        if ($request->ajax()) {
+            
+        }
     }
 }
