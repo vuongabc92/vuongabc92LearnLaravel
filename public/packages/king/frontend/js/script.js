@@ -1,7 +1,3 @@
-var settings = {
-    ajax_ok: 'OK',
-    ajax_error: 'ERROR'
-};
 /**
  *  @name Required
  *  @description
@@ -191,10 +187,10 @@ var settings = {
                         var status   = response.status,
                             messages = response.messages;
 
-                        if (status === 'ERROR') {
+                        if (status === SETTING.AJAX_ERROR) {
                             that.loading(false, img, text, check, false);
                         }
-                        if (status === 'OK') {
+                        if (status === SETTING.AJAX_OK) {
                             that.loading(false, img, text, check, true);
                         }
 
@@ -208,7 +204,7 @@ var settings = {
         showFormLabels: function(currents, labels, messages){
             var current = this.element;
             $.each(labels, function(k, v) {
-                var field  = current.find('input[name^=' + v + ']'),
+                var field  = current.find('[name^=' + v + ']'),
                     parent = field.parent('div'),
                     label  = parent.children('label');
 
@@ -317,7 +313,7 @@ var settings = {
                         $('.upload-avatar-messages').hide();
                         img.hide();
                         text.show();
-                        if (status === 'OK') {
+                        if (status === SETTING.AJAX_OK) {
                             var image128 = json.data['128'],
                                 image64  = json.data['64'],
                                 image40  = json.data['40'];
@@ -328,7 +324,7 @@ var settings = {
                             }, 3000);
                         }
 
-                        if (status === 'ERROR') {
+                        if (status === SETTING.AJAX_ERROR) {
                             $('.upload-avatar-messages').show();
                             $('.upload-avatar-messages').html(messages);
                         }

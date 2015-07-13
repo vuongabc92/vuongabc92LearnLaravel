@@ -16,5 +16,6 @@ Route::group(['middleware' => 'auth'], function(){
         $route->post('account/change-avatar', ['as' => 'front_setting_change_avatar', 'uses' => 'SettingController@ajaxChangeAvatar']);
     
         $route->get('store', ['as' => 'front_setting_store', 'uses' => 'SettingController@store']);
+        $route->post('store/change-info', ['as' => 'front_setting_store_change', 'uses' => 'SettingController@ajaxSaveStoreInfo']);
     });
 });

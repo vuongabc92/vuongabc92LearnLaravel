@@ -3,6 +3,7 @@ namespace King\Frontend\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Store;
 use Validator;
 use Hash;
 
@@ -280,7 +281,20 @@ class SettingController extends FrontController
     public function ajaxSaveStoreInfo(Request $request) {
         //Only accept AJAX request
         if ($request->ajax()) {
+            $store = new Store();
+            if (auth()->user()->has_store) {
+                $store = auth()->user()->store;
+            }
             
+            $rules     = $store->getRules();
+            $messages  = $store->getMessages();
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return ajax_response([
+                    'status'   => _const('AJAX_ERROR'),
+                    'messages' => $validator->messages()
+                ]);
+            }
         }
     }
 }

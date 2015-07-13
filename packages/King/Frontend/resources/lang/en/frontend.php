@@ -28,13 +28,11 @@ return [
     'user_pass_max' => 'Password is too long (60).',
     'user_fname_max' => 'First name is too long (16).',
     'user_lname_max' => 'Last name is too long (32).',
-
     //Home
     'head-search-placeholder' => 'Search stores, locations and everythings...',
     'view_store' => 'View my store',
     'setting' => 'Setting',
     'help' => 'Help',
-
     //Setting
     'acc' => 'Account',
     'bussiness' => 'Bussiness',
@@ -85,4 +83,24 @@ return [
     'select_district' => 'Select a district',
     'select_ward' => 'Select a ward',
     'contact_info_note1' => 'Please give us your exact info because that how your customer find you.',
+    'store_name_req' => 'Store name is required.',
+    'store_name_min' => 'Store name is too short (10).',
+    'store_name_max' => 'Store name is too long (250).',
+    'category_id_req' => 'Category is required.',
+    'category_id_int' => 'Category is incorrect.',
+    'category_id_exi' => 'Category does not exist.',
+    'street_req' => 'Street is required.',
+    'street_max' => 'Street is to long (250).',
+    'city_id_req' => 'City is required.',
+    'city_id_int' => 'City is incorrect.',
+    'city_id_exi' => 'City does not exist.',
+    'district_id_req' => 'District is required.',
+    'district_id_int' => 'District is incorrect.',
+    'district_id_exi' => 'District does not exist.',
+    'ward_id_req' => 'Ward is required.',
+    'ward_id_int' => 'Ward is incorrect.',
+    'ward_id_exi' => 'Ward does not exist.',
+    'phone_number_req' => 'Phone number is required.',
+    'phone_number_max' => 'Phone number is too long (250).',
+    'cover_max' => 'Cover is too long (250)',
 ];

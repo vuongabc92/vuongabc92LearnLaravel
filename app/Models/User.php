@@ -34,6 +34,15 @@ class User extends Base implements AuthenticatableContract, CanResetPasswordCont
     protected $hidden = ['password', 'remember_token'];
 
     /**
+     * Get store
+     * 
+     * @return App\Models\Store
+     */
+    public function store() {
+        return $this->hasOne('App\Models\Store');
+    }
+    
+    /**
      * Get user rules
      *
      * @return array

@@ -21,8 +21,8 @@ class CreateStoresTable extends Migration
             $table->integer('city_id')->unsigned();
             $table->integer('district_id')->unsigned();
             $table->integer('ward_id')->unsigned();
-            $table->string('phone_number', 250)->nullable();;
-            $table->string('cover_img', 250)->nullable();
+            $table->string('phone_number', 32)->nullable();;
+            $table->string('cover', 250)->nullable();
             $table->timestamps();
             
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
