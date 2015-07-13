@@ -65,7 +65,7 @@ Setting > Account
                             <span class="btn _btn _btn-red _mt10 show-pass-form">{{ _t('change_pass') }}</span>
                         </div>
 
-                        {!! Form::open(['route' => 'front_setting_change_pass', 'method' => 'POST', 'class' => '_fl _dn setting-form setting-form-pass', 'data-ajax-form' => 'password|new_password']) !!}
+                        {!! Form::open(['route' => 'front_setting_change_pass', 'method' => 'POST', 'class' => '_fl _dn setting-form setting-form-pass', 'id' => 'change-pass-form', 'data-ajax-form' => 'password|new_password']) !!}
                         <div class="_fwfl setting-form-group">
                             <label class="_fwfl setting-form-label" for="password" data-title="{{ _t('cur_pass') }}">{{ _t('cur_pass') }}</label>
                             {!! Form::password('password', ['class' => '_fwfl setting-form-field', 'id' => 'password', 'maxlength' => '60']) !!}
@@ -80,7 +80,7 @@ Setting > Account
                                 <b class="btn-text">{{ _t('save') }}</b>
                                 <i class="fa fa-check _dn"></i>
                             </button>
-                            <button type="reset" class="_fl btn _btn _btn-gray close-form-pass">{{ _t('cancel') }}</button>
+                            <button type="reset" class="_fl btn _btn _btn-gray close-form-pass" data-reset-form="#change-pass-form">{{ _t('cancel') }}</button>
                         </div>
                         {!! Form::close() !!}
                     </div>
@@ -90,7 +90,7 @@ Setting > Account
                         <b class="_fwfl _fs13 _tg5">{{ _t('basic_info') }}</b>
                     </div>
                     <div class="_fr setting-field-right">
-                        {!! Form::model($user, ['route' => 'front_setting_acc_basic', 'method' => 'POST', 'class' => '_fl setting-form', 'data-ajax-form' => 'user_name|email|first_name|last_name|password']) !!}
+                        {!! Form::model($user, ['route' => 'front_setting_acc_basic', 'method' => 'POST', 'class' => '_fl setting-form', 'id' => 'account-basic-form', 'data-ajax-form' => 'user_name|email|first_name|last_name|password']) !!}
                         <div class="_fwfl setting-form-group">
                             <label class="_fwfl setting-form-label" for="username" data-title="{{ _t('username') }}">{{ _t('username') }}</label>
                             {!! Form::text('user_name', null, ['class' => '_fwfl setting-form-field', 'id' => 'username', 'maxlength' => '32']) !!}
@@ -118,7 +118,7 @@ Setting > Account
                                 <b class="btn-text">{{ _t('save') }}</b>
                                 <i class="fa fa-check _dn"></i>
                             </button>
-                            <button type="reset" class="_fl btn _btn _btn-gray">{{ _t('cancel') }}</button>
+                            <button type="reset" class="_fl btn _btn _btn-gray" data-reset-form="#account-basic-form">{{ _t('cancel') }}</button>
                         </div>
                         {!! Form::close() !!}
                     </div>

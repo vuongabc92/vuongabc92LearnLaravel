@@ -194,19 +194,18 @@
                             that.loading(false, img, text, check, true);
                         }
 
-                        that.showFormLabels(current, labels, messages);
+                        that.showFormLabels(labels, messages);
                     }
                 });
 
                 return false;
             });
         },
-        showFormLabels: function(currents, labels, messages){
+        showFormLabels: function(labels, messages){
             var current = this.element;
             $.each(labels, function(k, v) {
                 var field  = current.find('[name^=' + v + ']'),
-                    parent = field.parent('div'),
-                    label  = parent.children('label');
+                    label  = field.parent('div').children('label');
 
                 if (messages.hasOwnProperty(v)) {
                     var errorHtml = '<span class="_fwfl _tr5">' + messages[v] + '</span>'
@@ -334,6 +333,72 @@
                         avatar40.attr('src', image40).css({opacity:1});
 
                     }
+                });
+            });
+        },
+        destroy: function() {
+            $.removeData(this.element[0], pluginName);
+        }
+    };
+
+    $.fn[pluginName] = function(options, params) {
+        return this.each(function() {
+            var instance = $.data(this, pluginName);
+            if (!instance) {
+                $.data(this, pluginName, new Plugin(this, options));
+            } else if (instance[options]) {
+                instance[options](params);
+            } else {
+                window.console && console.log(options ? options + ' method is not exists in ' + pluginName : pluginName + ' plugin has been initialized');
+            }
+        });
+    };
+
+    $.fn[pluginName].defaults = {
+        option: 'value'
+    };
+
+    $(function() {
+        $('[data-' + pluginName + ']')[pluginName]();
+    });
+
+}(jQuery, window));
+
+/**
+ *  @name Reset Form
+ *  @description
+ *  @version 1.0
+ *  @options
+ *    option
+ *  @events
+ *    event
+ *  @methods
+ *    init
+ *    publicMethod
+ *    destroy
+ */
+;
+(function($, window, undefined) {
+    var pluginName = 'reset-form';
+
+    function Plugin(element, options) {
+        this.element = $(element);
+        this.options = $.extend({}, $.fn[pluginName].defaults, options);
+        this.init();
+    }
+
+    Plugin.prototype = {
+        init: function() {
+            var current     = this.element,
+                form        = $(current.attr('data-reset-form')),
+                formElement = form.attr('data-ajax-form').split('|');
+        
+            current.on('click', function(){
+                $.each(formElement, function(k, v) {
+                    var field  = form.find('[name^=' + v + ']'),
+                        label  = field.parent('div').children('label');
+
+                    label.html(label.attr('data-title'));
                 });
             });
         },
