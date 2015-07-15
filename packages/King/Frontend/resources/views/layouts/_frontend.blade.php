@@ -99,6 +99,7 @@
         <script src="{{ asset('packages/king/frontend/js/jquery_v1.11.1.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/bootstrap.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/webtoolkit.aim.js') }}"></script>
+        <script src="{{ asset('packages/king/frontend/js/setting.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/script.js') }}"></script>
         @yield('js')
     </body>

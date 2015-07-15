@@ -3,15 +3,16 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDistrictsTable extends Migration {
-
+class CreateDistrictsTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up() {
-        Schema::create('districts', function ($table){
+    public function up()
+    {
+        Schema::create('districts', function (Blueprint $table){
             $table->increments('id');
             $table->integer('city_id')->unsigned();
             $table->string('name', 250);
@@ -25,8 +26,8 @@ class CreateDistrictsTable extends Migration {
      *
      * @return void
      */
-    public function down() {
+    public function down()
+    {
         Schema::dropIfExists('districts');
     }
-
 }

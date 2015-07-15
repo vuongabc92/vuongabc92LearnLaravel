@@ -3,15 +3,16 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateWardsTable extends Migration {
-
+class CreateWardsTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up() {
-        Schema::create('wards', function($table) {
+    public function up()
+    {
+        Schema::create('wards', function(Blueprint $table) {
             $table->increments('id');
             $table->integer('district_id')->unsigned();
             $table->string('name', 250);
@@ -25,8 +26,8 @@ class CreateWardsTable extends Migration {
      *
      * @return void
      */
-    public function down() {
+    public function down()
+    {
         Schema::dropIfExists('wards');
     }
-
 }

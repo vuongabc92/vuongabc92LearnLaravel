@@ -1,0 +1,4 @@
+SETTING = {
+    AJAX_OK: 'OK',
+    AJAX_ERROR: 'ERROR',
+}

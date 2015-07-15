@@ -3,18 +3,18 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCitiesTable extends Migration {
-
+class CreateCategoriesTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up() {
-        Schema::create('cities', function($table){
+    public function up()
+    {
+        Schema::create('categories', function(Blueprint $table){
             $table->increments('id');
             $table->string('name', 250);
-            $table->string('code', 250);
         });
     }
 
@@ -23,8 +23,8 @@ class CreateCitiesTable extends Migration {
      *
      * @return void
      */
-    public function down() {
-        Schema::dropIfExists('cities');
+    public function down()
+    {
+        Schema::dropIfExists('categories');
     }
-
 }

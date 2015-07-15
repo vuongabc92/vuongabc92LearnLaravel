@@ -3,25 +3,26 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateStoresTable extends Migration {
-
+class CreateStoresTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up() {
-        Schema::create('stores', function($table){
+    public function up()
+    {
+        Schema::create('stores', function(Blueprint $table){
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->string('name', 250);
             $table->integer('category_id')->unsigned();
-            $table->string('street', 250);
+            $table->string('street', 250)->nullable();
             $table->integer('city_id')->unsigned();
             $table->integer('district_id')->unsigned();
             $table->integer('ward_id')->unsigned();
-            $table->string('phone_number', 250);
-            $table->string('cover_img', 250);
+            $table->string('phone_number', 32)->nullable();;
+            $table->string('cover', 250)->nullable();
             $table->timestamps();
             
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -37,8 +38,8 @@ class CreateStoresTable extends Migration {
      *
      * @return void
      */
-    public function down() {
+    public function down()
+    {
         Schema::dropIfExists('stores');
     }
-
 }
