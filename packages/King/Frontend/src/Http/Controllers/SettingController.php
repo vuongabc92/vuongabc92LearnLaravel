@@ -266,8 +266,15 @@ class SettingController extends FrontController
             ]);
         }
     }
-    
+
     public function store() {
         return view('frontend::setting.store');
+    }
+
+    public function ajaxSaveStoreInfo(Request $request) {
+        //Only accept AJAX request
+        if ($request->ajax()) {
+            
+        }
     }
 }

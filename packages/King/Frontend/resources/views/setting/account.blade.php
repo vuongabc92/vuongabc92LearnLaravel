@@ -23,7 +23,7 @@ Setting > Account
                         </span>
 
                         <div class="_fwfl _mt10">
-                            <a class="btn _btn _btn-blue1" href="#">+ {{ _t('create_store') }}</a>
+                            <a class="btn _btn _btn-blue1" href="{{ route('front_setting_store') }}">+ {{ _t('create_store') }}</a>
                         </div>
                     </div>
                 </div>

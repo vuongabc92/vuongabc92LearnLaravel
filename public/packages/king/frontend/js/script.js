@@ -312,7 +312,7 @@ var settings = {
                         var json     = $.parseJSON(response),
                             status   = json.status,
                             messages = json.messages;
-                        
+
                         $('.upload-avatar-messages').html('');
                         $('.upload-avatar-messages').hide();
                         img.hide();
@@ -321,18 +321,18 @@ var settings = {
                             var image128 = json.data['128'],
                                 image64  = json.data['64'],
                                 image40  = json.data['40'];
-                        
+
                             check.show(200);
                             setTimeout(function() {
                                 check.hide(200);
-                            }, 3000);
+                            }, 2000);
                         }
 
                         if (status === 'ERROR') {
                             $('.upload-avatar-messages').show();
                             $('.upload-avatar-messages').html(messages);
                         }
-                        
+
                         avatar128.attr('src', image128).css({opacity:1});
                         avatar64.attr('src', image64).css({opacity:1});
                         avatar40.attr('src', image40).css({opacity:1});
