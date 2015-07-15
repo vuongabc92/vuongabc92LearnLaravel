@@ -16,7 +16,8 @@ class CreateDistrictsTable extends Migration
             $table->increments('id');
             $table->integer('city_id')->unsigned();
             $table->string('name', 250);
-            
+            $table->string('type', 128);
+
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
         });
     }

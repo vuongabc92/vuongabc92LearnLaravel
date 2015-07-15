@@ -10,22 +10,22 @@ class City extends Base
      * @var string
      */
     protected $table = 'cities';
-    
+
     public $timestamps = false;
-    
+
     /**
      * Get districts
-     * 
+     *
      * @return App\Models\District
      */
     public function districts()
     {
         return $this->hasMany('App\Models\District');
     }
-    
+
     /**
      * Get stores
-     * 
+     *
      * @return App\Models\Store
      */
     public function stores()

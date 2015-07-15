@@ -4,6 +4,9 @@ namespace King\Frontend\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Store;
+use App\Models\City;
+use App\Models\District;
+use App\Models\Ward;
 use Validator;
 use Hash;
 
@@ -11,14 +14,19 @@ class SettingController extends FrontController
 {
 
     /**
-     *
      * @var App\Models\User
      */
     protected $user;
 
-    public function __construct(User $user)
+    /**
+     * @var App\Models\Store
+     */
+    protected $store;
+
+    public function __construct(User $user, Store $store)
     {
-        $this->user = $user;
+        $this->user  = $user;
+        $this->store = $store;
     }
 
     /**
@@ -274,14 +282,25 @@ class SettingController extends FrontController
      * @return response
      */
     public function store() {
-        return view('frontend::setting.store');
+        $cityArr     = City::all()->pluck('name');
+        $districtArr = District::all()->pluck('name');
+        $wardArr     = Ward::all()->pluck('name');
+        $cities      = collect(['' => _t('select_city')])->merge($cityArr)->all();
+        $districts   = collect(['' => _t('select_district')])->merge($districtArr)->all();
+        $wards       = collect(['' => _t('select_ward')])->merge($wardArr)->all();
+
+        return view('frontend::setting.store', [
+            'cities'    => $cities,
+            'districts' => $districts,
+            'wards'     => $wards
+        ]);
     }
 
 
     public function ajaxSaveStoreInfo(Request $request) {
         //Only accept AJAX request
         if ($request->ajax()) {
-            $store = new Store();
+            $store = $this->store;
             if (auth()->user()->has_store) {
                 $store = auth()->user()->store;
             }

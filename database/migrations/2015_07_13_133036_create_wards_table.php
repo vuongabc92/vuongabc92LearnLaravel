@@ -16,7 +16,8 @@ class CreateWardsTable extends Migration
             $table->increments('id');
             $table->integer('district_id')->unsigned();
             $table->string('name', 250);
-            
+            $table->string('type', 128);
+
             $table->foreign('district_id')->references('id')->on('districts')->onDelete('cascade');
         });
     }

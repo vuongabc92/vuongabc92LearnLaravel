@@ -25,7 +25,7 @@ Setting > Store
                             <div class="_fl setting-form-group setting-form-group-store">
                                 <label class="_fwfl setting-form-label" for="category" data-title="{{ _t('category') }}">{{ _t('category') }}</label>
                                 {!!
-                                    Form::select('category_id', ['' => _t('select_category'), 'Clothes', 'Car', 'Mobile'] , null, ['id' => 'category', 'class' => '_fwfl setting-form-field selectbox-field']) 
+                                    Form::select('category_id', ['' => _t('select_category'), 'Clothes', 'Car', 'Mobile'] , null, ['id' => 'category', 'class' => '_fwfl setting-form-field selectbox-field'])
                                 !!}
                                 <div class="_fwfl _mt17">
                                     <p class="_fs12 _tg7 _m0">(*) {{ _t('store_name_note1') }}</p>
@@ -46,20 +46,20 @@ Setting > Store
                             <div class="_fl setting-form-group setting-form-group-store">
                                 <label class="_fwfl setting-form-label" for="city_id" data-title="{{ _t('province') }}">{{ _t('province') }}</label>
                                 {!!
-                                    Form::select('city_id', ['' => _t('select_city'), 'Clothes', 'Car', 'Mobile'] , null, ['id' => 'city_id', 'class' => '_fwfl setting-form-field selectbox-field']) 
+                                    Form::select('city_id', $cities , null, ['id' => 'city_id', 'class' => '_fwfl setting-form-field selectbox-field'])
                                 !!}
                             </div>
                             <div class="_fl setting-form-group setting-form-group-store">
                                 <div class="_w50 _fl _pr3">
                                     <label class="_fwfl setting-form-label" for="district_id" data-title="{{ _t('district') }}">{{ _t('district') }}</label>
                                     {!!
-                                        Form::select('district_id', ['' => _t('select_district'), 'Clothes', 'Car', 'Mobile'] , null, ['id' => 'district_id', 'class' => '_fwfl setting-form-field selectbox-field']) 
+                                        Form::select('district_id', $districts , null, ['id' => 'district_id', 'class' => '_fwfl setting-form-field selectbox-field'])
                                     !!}
                                 </div>
                                 <div class="_w50 _fl _pl3">
                                     <label class="_fwfl setting-form-label" for="ward_id" data-title="{{ _t('ward') }}">{{ _t('ward') }}</label>
                                     {!!
-                                        Form::select('ward_id', ['' => _t('select_ward'), 'Clothes', 'Car', 'Mobile'] , null, ['id' => 'ward_id', 'class' => '_fwfl setting-form-field selectbox-field']) 
+                                        Form::select('ward_id', $wards , null, ['id' => 'ward_id', 'class' => '_fwfl setting-form-field selectbox-field'])
                                     !!}
                                 </div>
                             </div>
