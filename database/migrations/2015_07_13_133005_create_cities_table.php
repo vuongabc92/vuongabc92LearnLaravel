@@ -16,7 +16,6 @@ class CreateCitiesTable extends Migration
             $table->increments('id');
             $table->string('name', 250);
             $table->string('type', 128);
-            $table->string('code', 32);
         });
     }
 

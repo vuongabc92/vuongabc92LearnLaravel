@@ -444,7 +444,7 @@ if ( ! function_exists('resize_image')) {
 
 }
 
-if ( ! function_exists('list_area')) {
+if ( ! function_exists('select')) {
     /**
      * Get list area such as: cities, districts, wards,...
      * The final result will be:
@@ -454,7 +454,7 @@ if ( ! function_exists('list_area')) {
      *
      * @param \Illuminate\Support\Collection $collection
      */
-    function list_area($collection) {
+    function select($collection) {
         $area = $collection->keyBy('id')->toArray();
         foreach ($area as $k => $v) {
             $area[$k] = $v['name'];

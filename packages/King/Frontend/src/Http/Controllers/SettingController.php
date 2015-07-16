@@ -7,6 +7,7 @@ use App\Models\Store;
 use App\Models\City;
 use App\Models\District;
 use App\Models\Ward;
+use App\Models\Category;
 use Validator;
 use Hash;
 use DB;
@@ -71,18 +72,18 @@ class SettingController extends FrontController
                     'messages' => $validator->messages()
                 ]);
             }
-
+            
+            $user        = auth()->user();
             $password    = $request->get('password');
             $newPass     = $request->get('new_password');
-            $hashingPass = auth()->user()->password;
 
             /** Check password confirmation */
-            if (Hash::check($password, $hashingPass)) {
+            if (Hash::check($password, $user->password)) {
 
-                auth()->user()->password = bcrypt($newPass);
+                $user->password = bcrypt($newPass);
 
                 try {
-                    auth()->user()->save();
+                    $user->save();
                 } catch (Exception $ex) {
                     return ajax_response([
                         'status'   => _const('AJAX_ERROR'),
@@ -222,10 +223,11 @@ class SettingController extends FrontController
                     'messages' => $validator->errors()->first()
                 ]);
             }
-
-            $currentAvatar128 = auth()->user()->avatar_128;
-            $currentAvatar64  = auth()->user()->avatar_64;
-            $currentAvatar40  = auth()->user()->avatar_40;
+            
+            $user             = auth()->user();
+            $currentAvatar128 = $user->avatar_128;
+            $currentAvatar64  = $user->avatar_64;
+            $currentAvatar40  = $user->avatar_40;
             $pathToAvatar     = config('front.avatar_path');
             $avatar128        = _const('AVATAR_128');
             $avatar64         = _const('AVATAR_64');
@@ -252,12 +254,12 @@ class SettingController extends FrontController
                 ]
             ]);
 
-            auth()->user()->avatar_128 = $newFileUpload['128'];
-            auth()->user()->avatar_64  = $newFileUpload['64'];
-            auth()->user()->avatar_40  = $newFileUpload['40'];
+            $user->avatar_128 = $newFileUpload['128'];
+            $user->avatar_64  = $newFileUpload['64'];
+            $user->avatar_40  = $newFileUpload['40'];
 
             try {
-                auth()->user()->save();
+                $user->save();
             } catch (Exception $ex) {
                 return ajax_upload_response([
                     'status'   => _const('AJAX_OK'),
@@ -283,12 +285,33 @@ class SettingController extends FrontController
      * @return response
      */
     public function store() {
-        $cities = list_area(City::select('id', 'name')->get());
-
+        $cities     = select(City::select('id', 'name')->get());
+        $districts  = ['' => _t('select_district')];
+        $wards      = ['' => _t('select_ward')];
+        $categories = select(Category::select('id', 'name')->get());
+        $user       = auth()->user();
+        $store      = $user->store;
+        if ($user->has_store) { 
+            $disDBRaw = DB::raw("id, CONCAT(type, ' ', name) as name");
+            $dis      = District::where('city_id', $store->city_id)
+                                 ->select($disDBRaw)
+                                 ->orderBy('name')
+                                 ->get()->keyBy('id');
+            $districts += select($dis);
+            
+            $wardDBRaw = DB::raw("id, CONCAT(type, ' ', name) as name");
+            $ward      = Ward::where('district_id', $store->district_id)
+                                 ->select($wardDBRaw)
+                                 ->orderBy('name')
+                                 ->get()->keyBy('id');
+            $wards += select($ward);
+        }
         return view('frontend::setting.store', [
-            'cities'    => ['' => _t('select_city')] + $cities,
-            'districts' => ['' => _t('select_district')],
-            'wards'     => ['' => _t('select_ward')]
+            'categories' => ['' => _t('select_category')] + $categories,
+            'cities'     => ['' => _t('select_city')] + $cities,
+            'districts'  => $districts,
+            'wards'      => $wards,
+            'store'      => $store
         ]);
     }
 
@@ -365,8 +388,9 @@ class SettingController extends FrontController
         //Only accept AJAX request
         if ($request->ajax()) {
             $store = $this->store;
-            if (auth()->user()->has_store) {
-                $store = auth()->user()->store;
+            $user  = auth()->user();
+            if ($user->has_store) {
+                $store = $user->store;
             }
 
             $rules     = $store->getRules();
@@ -380,16 +404,17 @@ class SettingController extends FrontController
             }
 
             try {
-                $store->name        = $request->get('name');
-                $store->category_id = $request->get('category_id');
-                $store->street      = $request->get('street');
-                $store->city        = $request->get('city_id');
-                $store->district    = $request->get('district_id');
-                $store->ward        = $request->get('ward_id');
-                $store->phone       = $request->get('phone_number');
+                $store->user_id      = $user->id;
+                $store->name         = $request->get('name');
+                $store->category_id  = $request->get('category_id');
+                $store->street       = $request->get('street');
+                $store->city_id      = $request->get('city_id');
+                $store->district_id  = $request->get('district_id');
+                $store->ward_id      = $request->get('ward_id');
+                $store->phone_number = $request->get('phone_number');
                 if ($store->save()) {
-                    auth()->user()->has_store = true;
-                    auth()->user()->update();
+                    $user->has_store = true;
+                    $user->update();
                 }
             } catch (Exception $ex) {
                 $validator->errors()->add('name', _t('opp'));
