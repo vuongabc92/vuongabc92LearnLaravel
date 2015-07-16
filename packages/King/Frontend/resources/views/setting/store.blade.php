@@ -46,7 +46,12 @@ Setting > Store
                             <div class="_fl setting-form-group setting-form-group-store">
                                 <label class="_fwfl setting-form-label" for="city_id" data-title="{{ _t('province') }}">{{ _t('province') }}</label>
                                 {!!
-                                    Form::select('city_id', $cities , null, ['id' => 'city_id', 'class' => '_fwfl setting-form-field selectbox-field', 'data-select-box-change' => url('setting/store/change-district'), 'data-target' => '#district_id'])
+                                    Form::select('city_id', $cities , null, [
+                                        'id'                  => 'city_id',
+                                        'class'               => '_fwfl setting-form-field selectbox-field',
+                                        'data-store-location' => url('setting/store/change-district'),
+                                        'data-target'         => '#district_id',
+                                        'data-text'            => _t('select_city')])
                                 !!}
                             </div>
                             <div class="_fl setting-form-group setting-form-group-store">

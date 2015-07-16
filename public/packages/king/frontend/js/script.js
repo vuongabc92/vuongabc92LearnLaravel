@@ -446,7 +446,7 @@
  */
 ;
 (function($, window, undefined) {
-    var pluginName = 'select-box-change';
+    var pluginName = 'store-location';
 
     function Plugin(element, options) {
         this.element = $(element);
@@ -456,9 +456,10 @@
 
     Plugin.prototype = {
         init: function() {
-            var current   = this.element,
-                actionUrl = current.attr('data-select-box-change') + '/',
-                target    = $(current.attr('data-target'));
+            var current    = this.element,
+                actionUrl  = current.attr('data-store-location') + '/',
+                target     = $(current.attr('data-target')),
+                selectCity = current.attr('data-text');
 
             current.on('change', function(){
                 $.ajax({
@@ -471,6 +472,7 @@
 
                         if (status === SETTING.AJAX_OK) {
                             target.find('option').remove();
+                            target.append($('<option>', {value: '', text : selectCity}));
                             $.each(data, function (k, v) {
                                 target.append($('<option>', {
                                     value: v.id,

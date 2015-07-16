@@ -292,14 +292,22 @@ class SettingController extends FrontController
         ]);
     }
 
-
-    public function ajaxChangeDistrict(Request $request, District $district, $id) {
+    /**
+     * Get the list districts by city id
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param App\Models\District      $district
+     * @param int                      $id
+     *
+     * @return JSON
+     */
+    public function ajaxGetDistrictByCityId(Request $request, District $district, $id) {
         //Only accept AJAX request
         if ($request->ajax()) {
             if (City::find((int) $id) !== null) {
-                $sql       = "id, CONCAT(type, ' ', name) as name";
+                $dbRaw     = DB::raw("id, CONCAT(type, ' ', name) as name");
                 $districts = $district->where('city_id', $id)
-                                      ->select(DB::raw($sql))
+                                      ->select($dbRaw)
                                       ->orderBy('name')
                                       ->get()
                                       ->toArray();
@@ -309,6 +317,11 @@ class SettingController extends FrontController
                     'data'   => $districts
                 ]);
             }
+
+            return ajax_response([
+                'status'   => _const('AJAX_ERROR'),
+                'messages' => _t('opp')
+            ]);
         }
 
     }
