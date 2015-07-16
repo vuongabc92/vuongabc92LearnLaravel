@@ -378,6 +378,32 @@ class SettingController extends FrontController
                     'messages' => $validator->messages()
                 ]);
             }
+
+            try {
+                $store->name        = $request->get('name');
+                $store->category_id = $request->get('category_id');
+                $store->street      = $request->get('street');
+                $store->city        = $request->get('city_id');
+                $store->district    = $request->get('district_id');
+                $store->ward        = $request->get('ward_id');
+                $store->phone       = $request->get('phone_number');
+                if ($store->save()) {
+                    auth()->user()->has_store = true;
+                    auth()->user()->update();
+                }
+            } catch (Exception $ex) {
+                $validator->errors()->add('name', _t('opp'));
+                
+                return ajax_response([
+                    'status'   => _const('AJAX_ERROR'),
+                    'messages' => $validator->messages()
+                ]);
+            }
+
+            return ajax_response([
+                'status'   => _const('AJAX_OK'),
+                'messages' => _t('saved_info')
+            ]);
         }
     }
 }
