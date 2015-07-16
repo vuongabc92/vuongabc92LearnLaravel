@@ -70,7 +70,7 @@ return [
     'create_store' => 'Create your online store',
     'store_name' => 'Store name',
     'category' => 'Category',
-    'select_category' => 'Select a category',
+    'select_category' => 'Select A Category',
     'store_name_note1' => 'Store name should be short, easy to remember and same as your store name in real world.',
     'store_name_note2' => 'Category is your bussiness field.',
     'contact_info' => 'Contact info',

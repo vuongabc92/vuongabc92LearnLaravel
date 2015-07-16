@@ -446,7 +446,7 @@
  */
 ;
 (function($, window, undefined) {
-    var pluginName = 'store-location';
+    var pluginName = 'get-area';
 
     function Plugin(element, options) {
         this.element = $(element);
@@ -457,14 +457,14 @@
     Plugin.prototype = {
         init: function() {
             var current    = this.element,
-                actionUrl  = current.attr('data-store-location') + '/',
+                actionUrl  = current.attr('data-get-area'),
                 target     = $(current.attr('data-target')),
                 selectCity = current.attr('data-text');
 
             current.on('change', function(){
                 $.ajax({
                     type: 'GET',
-                    url: actionUrl + $(this).val(),
+                    url: actionUrl.replace('0', $(this).val()),
                     beforeSend: function(){},
                     success: function(response){
                         var status = response.status,

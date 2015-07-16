@@ -47,18 +47,23 @@ Setting > Store
                                 <label class="_fwfl setting-form-label" for="city_id" data-title="{{ _t('province') }}">{{ _t('province') }}</label>
                                 {!!
                                     Form::select('city_id', $cities , null, [
-                                        'id'                  => 'city_id',
-                                        'class'               => '_fwfl setting-form-field selectbox-field',
-                                        'data-store-location' => url('setting/store/change-district'),
-                                        'data-target'         => '#district_id',
-                                        'data-text'            => _t('select_city')])
+                                        'id'            => 'city_id',
+                                        'class'         => '_fwfl setting-form-field selectbox-field',
+                                        'data-get-area' => route('front_setting_get_district', 0),
+                                        'data-target'   => '#district_id',
+                                        'data-text'     => _t('select_district')])
                                 !!}
                             </div>
                             <div class="_fl setting-form-group setting-form-group-store">
                                 <div class="_w50 _fl _pr3">
                                     <label class="_fwfl setting-form-label" for="district_id" data-title="{{ _t('district') }}">{{ _t('district') }}</label>
                                     {!!
-                                        Form::select('district_id', $districts , null, ['id' => 'district_id', 'class' => '_fwfl setting-form-field selectbox-field'])
+                                        Form::select('district_id', $districts , null, [
+                                            'id'            => 'district_id',
+                                            'class'         => '_fwfl setting-form-field selectbox-field',
+                                            'data-get-area' => route('front_setting_get_ward', 0),
+                                            'data-target'   => '#ward_id',
+                                            'data-text'     => _t('select_ward')])
                                     !!}
                                 </div>
                                 <div class="_w50 _fl _pl3">

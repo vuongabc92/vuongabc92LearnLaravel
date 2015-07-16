@@ -326,6 +326,40 @@ class SettingController extends FrontController
 
     }
 
+    /**
+     * Get the list wards by ditrict id
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param App\Models\Ward          $ward
+     * @param int                      $id
+     *
+     * @return JSON
+     */
+    public function ajaxGetWardByCityId(Request $request, Ward $ward, $id) {
+        //Only accept AJAX request
+        if ($request->ajax()) {
+            if (District::find((int) $id) !== null) {
+                $dbRaw = DB::raw("id, CONCAT(type, ' ', name) as name");
+                $ward  = $ward->where('district_id', $id)
+                              ->select($dbRaw)
+                              ->orderBy('name')
+                              ->get()
+                              ->toArray();
+
+                return ajax_response([
+                    'status' => _const('AJAX_OK'),
+                    'data'   => $ward
+                ]);
+            }
+
+            return ajax_response([
+                'status'   => _const('AJAX_ERROR'),
+                'messages' => _t('opp')
+            ]);
+        }
+
+    }
+
 
     public function ajaxSaveStoreInfo(Request $request) {
         //Only accept AJAX request
