@@ -392,13 +392,93 @@
             var current     = this.element,
                 form        = $(current.attr('data-reset-form')),
                 formElement = form.attr('data-ajax-form').split('|');
-        
+
             current.on('click', function(){
                 $.each(formElement, function(k, v) {
                     var field  = form.find('[name^=' + v + ']'),
                         label  = field.parent('div').children('label');
 
                     label.html(label.attr('data-title'));
+                });
+            });
+        },
+        destroy: function() {
+            $.removeData(this.element[0], pluginName);
+        }
+    };
+
+    $.fn[pluginName] = function(options, params) {
+        return this.each(function() {
+            var instance = $.data(this, pluginName);
+            if (!instance) {
+                $.data(this, pluginName, new Plugin(this, options));
+            } else if (instance[options]) {
+                instance[options](params);
+            } else {
+                window.console && console.log(options ? options + ' method is not exists in ' + pluginName : pluginName + ' plugin has been initialized');
+            }
+        });
+    };
+
+    $.fn[pluginName].defaults = {
+        option: 'value'
+    };
+
+    $(function() {
+        $('[data-' + pluginName + ']')[pluginName]();
+    });
+
+}(jQuery, window));
+
+
+/**
+ *  @name Select Box Change
+ *  @description
+ *  @version 1.0
+ *  @options
+ *    option
+ *  @events
+ *    event
+ *  @methods
+ *    init
+ *    publicMethod
+ *    destroy
+ */
+;
+(function($, window, undefined) {
+    var pluginName = 'select-box-change';
+
+    function Plugin(element, options) {
+        this.element = $(element);
+        this.options = $.extend({}, $.fn[pluginName].defaults, options);
+        this.init();
+    }
+
+    Plugin.prototype = {
+        init: function() {
+            var current   = this.element,
+                actionUrl = current.attr('data-select-box-change') + '/',
+                target    = $(current.attr('data-target'));
+
+            current.on('change', function(){
+                $.ajax({
+                    type: 'GET',
+                    url: actionUrl + $(this).val(),
+                    beforeSend: function(){},
+                    success: function(response){
+                        var status = response.status,
+                            data   = response.data;
+
+                        if (status === SETTING.AJAX_OK) {
+                            target.find('option').remove();
+                            $.each(data, function (k, v) {
+                                target.append($('<option>', {
+                                    value: v.id,
+                                    text : v.name
+                                }));
+                            });
+                        }
+                    }
                 });
             });
         },

@@ -9,6 +9,7 @@ use App\Models\District;
 use App\Models\Ward;
 use Validator;
 use Hash;
+use DB;
 
 class SettingController extends FrontController
 {
@@ -282,18 +283,34 @@ class SettingController extends FrontController
      * @return response
      */
     public function store() {
-        $cityArr     = City::all()->pluck('name');
-        $districtArr = District::all()->pluck('name');
-        $wardArr     = Ward::all()->pluck('name');
-        $cities      = collect(['' => _t('select_city')])->merge($cityArr)->all();
-        $districts   = collect(['' => _t('select_district')])->merge($districtArr)->all();
-        $wards       = collect(['' => _t('select_ward')])->merge($wardArr)->all();
+        $cities = list_area(City::select('id', 'name')->get());
 
         return view('frontend::setting.store', [
-            'cities'    => $cities,
-            'districts' => $districts,
-            'wards'     => $wards
+            'cities'    => ['' => _t('select_city')] + $cities,
+            'districts' => ['' => _t('select_district')],
+            'wards'     => ['' => _t('select_ward')]
         ]);
+    }
+
+
+    public function ajaxChangeDistrict(Request $request, District $district, $id) {
+        //Only accept AJAX request
+        if ($request->ajax()) {
+            if (City::find((int) $id) !== null) {
+                $sql       = "id, CONCAT(type, ' ', name) as name";
+                $districts = $district->where('city_id', $id)
+                                      ->select(DB::raw($sql))
+                                      ->orderBy('name')
+                                      ->get()
+                                      ->toArray();
+
+                return ajax_response([
+                    'status' => _const('AJAX_OK'),
+                    'data'   => $districts
+                ]);
+            }
+        }
+
     }
 
 

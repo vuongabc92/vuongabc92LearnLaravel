@@ -32,7 +32,7 @@ if ( ! function_exists('_const')) {
     function _const($key = null, $default = null) {
         return config("constant.{$key}", $default);
     }
-    
+
 }
 
 if ( ! function_exists('get_avatar')) {
@@ -41,12 +41,12 @@ if ( ! function_exists('get_avatar')) {
      * Get avatar path
      * if the avatar does not exist, default avatar will be retrieved
      *
-     * @param string $size Get avatar with exist size
+     * @param int $size Get avatar with exist size
      *
      * @return string Path to avatar
      */
-    function get_avatar($size = '') {
-        
+    function get_avatar($size = false) {
+
         $avatar = [];
         foreach ([128, 64, 40] as $one) {
             $avatar[$one] = avatar_default($one);
@@ -54,8 +54,8 @@ if ( ! function_exists('get_avatar')) {
                 $avatar[$one] = avatar_size($one);
             }
         }
-        
-        return ($size !== '' && isset($avatar[$size])) ? $avatar[$size] : false;
+
+        return ($size && isset($avatar[$size])) ? $avatar[$size] : false;
     }
 
 }
@@ -63,22 +63,22 @@ if ( ! function_exists('get_avatar')) {
 if ( ! function_exists('avatar_size')) {
     /**
      * Get avatar by size
-     * 
-     * @param string $size
-     * 
+     *
+     * @param int $size
+     *
      * @return boolean|string
      */
-    function avatar_size($size = ''){
-        if ($size !== '' && auth()->check()) {
+    function avatar_size($size = false){
+        if ($size && auth()->check()) {
             $avatar     = 'avatar_' . $size;
             $avatarPath = config('front.avatar_path') . auth()->user()->$avatar;
             if (check_file($avatarPath)) {
                 return asset($avatarPath);
             }
-            
+
             return false;
         }
-        
+
         return false;
     }
 }
@@ -86,19 +86,19 @@ if ( ! function_exists('avatar_size')) {
 if ( ! function_exists('avatar_default')) {
     /**
      * Get avatar default
-     * 
+     *
      * @param string $size
-     * 
+     *
      * @return string|array
      */
-    function avatar_default($size = '') {
+    function avatar_default($size = false) {
         $avatars = [
-            '128' => asset(config('front.default_avatar_path')),
-            '64'  => asset(config('front.default_avatar_path')),
-            '40'  => asset(config('front.default_avatar_path')),
+            128 => asset(config('front.default_avatar_path')),
+            64  => asset(config('front.default_avatar_path')),
+            40  => asset(config('front.default_avatar_path')),
         ];
-        
-        return ($size !== '' && isset($avatars[$size])) ? $avatars[$size] : $avatars;
+
+        return ($size && isset($avatars[$size])) ? $avatars[$size] : $avatars;
     }
 }
 
@@ -250,10 +250,9 @@ if ( ! function_exists('generate_filename')) {
      *
      * @param string $directory Path to the upload directory
      * @param string $extension File extension
-     * @param string $prefix    File prefix
-     * @param string $suffix    File suffix
+     * @param array  $options   Prefix, suffix,...
      *
-     * @return string   File name
+     * @return string
      */
     function generate_filename($directory, $extension, $options = []) {
 
@@ -360,7 +359,7 @@ if ( ! function_exists('upload')) {
                 foreach ($options['resize'] as $k => $v) {
                     $suffix        = ($newFileNameSuffix !== '') ? $newFileNameSuffix : '_' . $k;
                     $newNameBySize = str_replace('_REPLACE', $suffix, $resizeFileName);
-                    
+
                     if (resize_image($directory . $newFileName, $v['width'], $v['height'],
                                      $directory . $newNameBySize)) {
                         $newFiles[$k] = $newNameBySize;
@@ -441,6 +440,27 @@ if ( ! function_exists('resize_image')) {
         }
 
         return false;
+    }
+
+}
+
+if ( ! function_exists('list_area')) {
+    /**
+     * Get list area such as: cities, districts, wards,...
+     * The final result will be:
+     * <pre>
+     *  [id => name]
+     * </pre>
+     *
+     * @param \Illuminate\Support\Collection $collection
+     */
+    function list_area($collection) {
+        $area = $collection->keyBy('id')->toArray();
+        foreach ($area as $k => $v) {
+            $area[$k] = $v['name'];
+        }
+
+        return $area;
     }
 
 }

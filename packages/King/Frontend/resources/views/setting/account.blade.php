@@ -33,7 +33,7 @@ Setting > Account
                     </div>
                     <div class="_fr setting-field-right">
                         <span class="_fwfl">
-                            <img class="_fl img-circle setting-avatar-img avatar-128" src="{{ get_avatar('128') }}" />
+                            <img class="_fl img-circle setting-avatar-img avatar-128" src="{{ get_avatar(128) }}" />
                             <span class="_fl _ml20 _fs12 _tga avatar-note-group">
                                 <p class="_m0">+ {{ _t('avatar_note1') }}</p>
                                 <p class="_m0">+ {{ _t('avatar_note2') }}</p>

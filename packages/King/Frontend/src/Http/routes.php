@@ -14,8 +14,9 @@ Route::group(['middleware' => 'auth'], function(){
         $route->post('account/change-basic', ['as' => 'front_setting_acc_basic', 'uses' => 'SettingController@ajaxSaveBasicInfo']);
         $route->post('account/change-pass', ['as' => 'front_setting_change_pass', 'uses' => 'SettingController@ajaxChangePassword']);
         $route->post('account/change-avatar', ['as' => 'front_setting_change_avatar', 'uses' => 'SettingController@ajaxChangeAvatar']);
-    
+
         $route->get('store', ['as' => 'front_setting_store', 'uses' => 'SettingController@store']);
         $route->post('store/change-info', ['as' => 'front_setting_store_change', 'uses' => 'SettingController@ajaxSaveStoreInfo']);
+        $route->get('store/change-district/{id}', ['as' => 'front_setting_change_district', 'uses' => 'SettingController@ajaxChangeDistrict']);
     });
 });
