@@ -12,6 +12,17 @@ Setting > Store
                 <h1 class="_fwfl _p0 _m0 _fs20 _tg5 _fs20">{{ _t('create_store') }}</h1>
             </div>
             <div class="_fwfl">
+                <div class="_fwfl setting-group">
+                    <div class="_fl setting-field-left">
+                        <b class="_fwfl _fs13 _tg5">Cover</b>
+                    </div>
+                    <div class="_fr setting-field-right">
+
+                    </div>
+                    <div class="_fwfl">
+                        <img class="_fwfl" src="{{ get_cover() }}" />
+                    </div>
+                </div>
                 {!! Form::model($store, ['route' => 'front_setting_store_change','method' => 'POST', 'id' => 'save-store-form', 'data-ajax-form' => 'name|category_id|street|city_id|district_id|ward_id|phone_number']) !!}
                     <div class="_fwfl setting-group">
                         <div class="_fl setting-field-left">

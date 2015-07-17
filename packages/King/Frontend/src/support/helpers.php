@@ -60,6 +60,12 @@ if ( ! function_exists('get_avatar')) {
 
 }
 
+if ( ! function_exists('get_cover')) {
+    function get_cover() {
+        return asset(config('front.default_cover_path'));
+    }
+}
+
 if ( ! function_exists('avatar_size')) {
     /**
      * Get avatar by size
