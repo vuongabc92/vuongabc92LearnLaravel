@@ -72,7 +72,7 @@ class SettingController extends FrontController
                     'messages' => $validator->messages()
                 ]);
             }
-            
+
             $user        = auth()->user();
             $password    = $request->get('password');
             $newPass     = $request->get('new_password');
@@ -223,7 +223,7 @@ class SettingController extends FrontController
                     'messages' => $validator->errors()->first()
                 ]);
             }
-            
+
             $user             = auth()->user();
             $currentAvatar128 = $user->avatar_128;
             $currentAvatar64  = $user->avatar_64;
@@ -291,20 +291,9 @@ class SettingController extends FrontController
         $categories = select(Category::select('id', 'name')->get());
         $user       = auth()->user();
         $store      = $user->store;
-        if ($user->has_store) { 
-            $disDBRaw = DB::raw("id, CONCAT(type, ' ', name) as name");
-            $dis      = District::where('city_id', $store->city_id)
-                                 ->select($disDBRaw)
-                                 ->orderBy('name')
-                                 ->get()->keyBy('id');
-            $districts += select($dis);
-            
-            $wardDBRaw = DB::raw("id, CONCAT(type, ' ', name) as name");
-            $ward      = Ward::where('district_id', $store->district_id)
-                                 ->select($wardDBRaw)
-                                 ->orderBy('name')
-                                 ->get()->keyBy('id');
-            $wards += select($ward);
+        if ($user->has_store) {
+            $districts += select($this->getDistrictsByCityId($store->city_id)->keyBy('id'));
+            $wards     += select($this->getWardsByCityId($store->district_id)->keyBy('id'));
         }
         return view('frontend::setting.store', [
             'categories' => ['' => _t('select_category')] + $categories,
@@ -328,16 +317,11 @@ class SettingController extends FrontController
         //Only accept AJAX request
         if ($request->ajax()) {
             if (City::find((int) $id) !== null) {
-                $dbRaw     = DB::raw("id, CONCAT(type, ' ', name) as name");
-                $districts = $district->where('city_id', $id)
-                                      ->select($dbRaw)
-                                      ->orderBy('name')
-                                      ->get()
-                                      ->toArray();
+                $districts = $this->getDistrictsByCityId($id);
 
                 return ajax_response([
                     'status' => _const('AJAX_OK'),
-                    'data'   => $districts
+                    'data'   => $districts->toArray()
                 ]);
             }
 
@@ -362,16 +346,11 @@ class SettingController extends FrontController
         //Only accept AJAX request
         if ($request->ajax()) {
             if (District::find((int) $id) !== null) {
-                $dbRaw = DB::raw("id, CONCAT(type, ' ', name) as name");
-                $ward  = $ward->where('district_id', $id)
-                              ->select($dbRaw)
-                              ->orderBy('name')
-                              ->get()
-                              ->toArray();
+                $wards  = $this->getWardsByCityId($id);
 
                 return ajax_response([
                     'status' => _const('AJAX_OK'),
-                    'data'   => $ward
+                    'data'   => $wards->toArray()
                 ]);
             }
 
@@ -418,7 +397,7 @@ class SettingController extends FrontController
                 }
             } catch (Exception $ex) {
                 $validator->errors()->add('name', _t('opp'));
-                
+
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->messages()
@@ -430,5 +409,39 @@ class SettingController extends FrontController
                 'messages' => _t('saved_info')
             ]);
         }
+    }
+
+    /**
+     * Get districts that belong to the city/province by city_id
+     *
+     * @param int $id City id
+     *
+     * @return \Illuminate\Support\Collection $collection
+     */
+    public function getDistrictsByCityId($id) {
+
+        $dbRaw     = DB::raw("id, CONCAT(type, ' ', name) as name");
+        $districts = District::where('city_id', $id)->select($dbRaw)
+                                                    ->orderBy('name')
+                                                    ->get();
+
+        return $districts;
+    }
+
+    /**
+     * Get districts that belong to the city/province by city_id
+     *
+     * @param int $id City id
+     *
+     * @return \Illuminate\Support\Collection $collection
+     */
+    public function getWardsByCityId($id) {
+
+        $dbRaw = DB::raw("id, CONCAT(type, ' ', name) as name");
+        $wards = Ward::where('district_id', $id)->select($dbRaw)
+                                                ->orderBy('name')
+                                                ->get();
+
+        return $wards;
     }
 }
