@@ -38,7 +38,7 @@ class SettingController extends FrontController
      */
     public function index()
     {
-        return view('frontend::setting.account', ['user' => auth()->user()]);
+        return view('frontend::setting.account', ['user' => user()]);
     }
 
     /**
@@ -73,9 +73,9 @@ class SettingController extends FrontController
                 ]);
             }
 
-            $user        = auth()->user();
-            $password    = $request->get('password');
-            $newPass     = $request->get('new_password');
+            $user     = user();
+            $password = $request->get('password');
+            $newPass  = $request->get('new_password');
 
             /** Check password confirmation */
             if (Hash::check($password, $user->password)) {
@@ -121,7 +121,7 @@ class SettingController extends FrontController
             $rules           = remove_rules($this->user->getRules(), 'password.min:6');
             $messages        = $this->user->getMessages();
 
-            $user            = auth()->user();
+            $user            = user();
             $currentUsername = $user->user_name;
             $currentEmail    = $user->email;
             $hashingPass     = $user->password;
@@ -204,9 +204,10 @@ class SettingController extends FrontController
     public function ajaxChangeAvatar(Request $request) {
 
         if ($request->isMethod('POST')) {
-
+            
+            $avatarMaxFileSize = _const('AVATAR_MAX');
             $rules = [
-                '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:10000'
+                '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . $avatarMaxFileSize
             ];
 
             $messages = [
@@ -224,39 +225,33 @@ class SettingController extends FrontController
                 ]);
             }
 
-            $user             = auth()->user();
-            $currentAvatar128 = $user->avatar_128;
-            $currentAvatar64  = $user->avatar_64;
-            $currentAvatar40  = $user->avatar_40;
+            $user             = user();
             $pathToAvatar     = config('front.avatar_path');
-            $avatar128        = _const('AVATAR_128');
-            $avatar64         = _const('AVATAR_64');
-            $avatar40         = _const('AVATAR_40');
             $newFileUpload    = upload($request, $pathToAvatar, [
-                $currentAvatar128,
-                $currentAvatar64,
-                $currentAvatar40
+                $user->avatar_big,
+                $user->avatar_medium,
+                $user->avatar_small
             ], [
                 'prefix' => 'avatar_',
                 'resize' => [
-                    '128' => [
-                        'width'  => $avatar128,
-                        'height' => $avatar128
+                    'big' => [
+                        'width'  => _const('AVATAR_BIG'),
+                        'height' => _const('AVATAR_BIG')
                     ],
-                    '64' => [
-                        'width'  => $avatar64,
-                        'height' => $avatar64
+                    'medium' => [
+                        'width'  => _const('AVATAR_MEDIUM'),
+                        'height' => _const('AVATAR_MEDIUM')
                     ],
-                    '40' => [
-                        'width'  => $avatar40,
-                        'height' => $avatar40
+                    'small' => [
+                        'width'  => _const('AVATAR_SMALL'),
+                        'height' => _const('AVATAR_SMALL')
                     ]
                 ]
             ]);
 
-            $user->avatar_128 = $newFileUpload['128'];
-            $user->avatar_64  = $newFileUpload['64'];
-            $user->avatar_40  = $newFileUpload['40'];
+            $user->avatar_big    = $newFileUpload['big'];
+            $user->avatar_medium = $newFileUpload['medium'];
+            $user->avatar_small  = $newFileUpload['small'];
 
             try {
                 $user->save();
@@ -271,9 +266,9 @@ class SettingController extends FrontController
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
-                    '128' => asset($pathToAvatar . $newFileUpload['128']),
-                    '64'  => asset($pathToAvatar . $newFileUpload['64']),
-                    '40'  => asset($pathToAvatar . $newFileUpload['40']),
+                    'big'     => asset($pathToAvatar . $newFileUpload['big']),
+                    'medium'  => asset($pathToAvatar . $newFileUpload['medium']),
+                    'small'   => asset($pathToAvatar . $newFileUpload['small']),
                 ]
             ]);
         }
@@ -289,8 +284,8 @@ class SettingController extends FrontController
         $districts  = ['' => _t('select_district')];
         $wards      = ['' => _t('select_ward')];
         $categories = select(Category::select('id', 'name')->get());
-        $user       = auth()->user();
-        $store      = $user->store;
+        $user       = user();
+        $store      = store();
         if ($user->has_store) {
             $districts += select($this->getDistrictsByCityId($store->city_id)->keyBy('id'));
             $wards     += select($this->getWardsByCityId($store->district_id)->keyBy('id'));
@@ -346,7 +341,7 @@ class SettingController extends FrontController
         //Only accept AJAX request
         if ($request->ajax()) {
             if (District::find((int) $id) !== null) {
-                $wards  = $this->getWardsByCityId($id);
+                $wards = $this->getWardsByCityId($id);
 
                 return ajax_response([
                     'status' => _const('AJAX_OK'),
@@ -367,9 +362,9 @@ class SettingController extends FrontController
         //Only accept AJAX request
         if ($request->ajax()) {
             $store = $this->store;
-            $user  = auth()->user();
+            $user  = user();
             if ($user->has_store) {
-                $store = $user->store;
+                $store = store();
             }
 
             $rules     = $store->getRules();
@@ -443,5 +438,77 @@ class SettingController extends FrontController
                                                 ->get();
 
         return $wards;
+    }
+    
+    public function ajaxChangeCover(Request $request) {
+        if ($request->isMethod('POST') && user()->has_store) {
+            
+            $coverMaxFileSize = _const('COVER_MAX');
+            $rules            = [
+                '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . $coverMaxFileSize
+            ];
+
+            $messages = [
+                '__file.required' => _t('no_file'),
+                '__file.image'    => _t('file_not_image'),
+                '__file.mimes'    => _t('file_image_mimes'),
+                '__file.max'      => _t('avatar_max'),
+            ];
+
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return ajax_upload_response([
+                    'status'   => _const('AJAX_ERROR'),
+                    'messages' => $validator->errors()->first()
+                ]);
+            }
+            
+            $store         = store();
+            $pathToCover   = config('front.cover_path');
+            $newFileUpload = upload($request, $pathToCover, [
+                $store->cover_big,
+                $store->cover_medium,
+                $store->cover_small,
+            ], [
+                'prefix' => 'cover_',
+                'resize' => [
+                    'big' => [
+                        'width'  => _const('COVER_BIG_W'),
+                        'height' => _const('COVER_BIG_H')
+                    ],
+                    'medium' => [
+                        'width'  => _const('COVER_MEDIUM_W'),
+                        'height' => _const('COVER_MEDIUM_H')
+                    ],
+                    'small' => [
+                        'width'  => _const('COVER_SMALL_W'),
+                        'height' => _const('COVER_SMALL_H')
+                    ],
+                ]
+            ]);
+            
+            $store->cover_big    = $newFileUpload['big'];
+            $store->cover_medium = $newFileUpload['medium'];
+            $store->cover_small  = $newFileUpload['small'];
+            
+            try {
+                $store->update();
+            } catch (Exception $ex) {
+                return ajax_upload_response([
+                    'status'   => _const('AJAX_OK'),
+                    'messages' => _t('opp')
+                ], 500);
+            }
+
+            return ajax_upload_response([
+                'status'   => _const('AJAX_OK'),
+                'messages' => _t('saved_info'),
+                'data'     => [
+                    'big'    => asset($pathToCover . $newFileUpload['big']),
+                    'medium' => asset($pathToCover . $newFileUpload['medium']),
+                    'small'  => asset($pathToCover . $newFileUpload['small']),
+                ]
+            ]);
+        }
     }
 }

@@ -9,21 +9,45 @@ Setting > Store
     <div class="_fwfl setting-container">
         <div class="_fl _bgw _r3 setting-left-col">
             <div class="_fwfl setting-header">
-                <h1 class="_fwfl _p0 _m0 _fs20 _tg5 _fs20">{{ _t('create_store') }}</h1>
+                <h1 class="_fwfl _p0 _m0 _fs20 _tg5 _fs20">
+                    @if(user()->has_store)
+                        {{ _t('change_store_info') }}
+                    @else
+                        {{ _t('store') }}
+                    @endif
+                </h1>
             </div>
             <div class="_fwfl">
+                @if(user()->has_store)
                 <div class="_fwfl setting-group">
                     <div class="_fl setting-field-left">
-                        <b class="_fwfl _fs13 _tg5">Cover image</b>
+                        <b class="_fwfl _fs13 _tg5">{{ _t('cover_img') }}</b>
                     </div>
                     <div class="_fr setting-field-right">
-
+                        <b class="_fr _tr7 _fs13 _dn upload-cover-messages"></b>
                     </div>
                     <div class="_fwfl _mt10 setting-cover-box">
-                        <img class="_fwfl _r2 setting-cover-img" src="{{ get_cover() }}" />
-                        <button class="btn _btn _btn-white _mt10">Choose an image</button>
+                        <img class="_fwfl _r2 setting-cover-img cover-medium" src="{{ get_cover('medium') }}" />
+                        <div class="_fwfl _mt10">
+                            <span class="_fl _fs12 _tga">
+                                <p class="_m0">+ {{ _t('cover_note1') }}</p>
+                                <p class="_m0">+ {{ _t('cover_note2') }}</p>
+                                <p class="_m0">+ {{ _t('cover_note3') }}</p>
+                            </span>
+                            <button class="_fr btn _btn _btn-white choose-cover-btn" data-event-trigger="#cover-file" data-event="click|click">
+                                <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-gray-white1.gif') }}" />
+                                <b class="btn-text">{{ _t('choose_cover') }}</b>
+                                <i class="fa fa-check _dn"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="_fwfl _dn">
+                        {!! Form::open(['route' => 'front_setting_change_cover', 'files' => true, 'method' => 'POST', 'id' => 'upload-cover-form', 'data-upload-cover']) !!}
+                        {!! Form::file('__file', ['class' => 'field-file-hidden', 'id' => 'cover-file', 'accept' => 'image/*', 'data-event-trigger' => '#upload-cover-form', 'data-event' => 'change|submit']) !!}
+                        {!! Form::close() !!}
                     </div>
                 </div>
+                @endif
                 {!! Form::model($store, ['route' => 'front_setting_store_change','method' => 'POST', 'id' => 'save-store-form', 'data-ajax-form' => 'name|category_id|street|city_id|district_id|ward_id|phone_number']) !!}
                     <div class="_fwfl setting-group">
                         <div class="_fl setting-field-left">
@@ -104,6 +128,9 @@ Setting > Store
                     </div>
                 </form>
                 {!! Form::close() !!}
+            </div>
+            <div class="_fwfl setting-group last-setting-group">
+                <button class="_fr btn _btn _btn-red">{{ _t('del_store') }}</button>
             </div>
         </div>
     </div>

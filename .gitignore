@@ -4,5 +4,6 @@
 /nbproject
 /tests
 /public/uploads/images/avatar
+/public/uploads/images/cover
 .env
 composer.lock

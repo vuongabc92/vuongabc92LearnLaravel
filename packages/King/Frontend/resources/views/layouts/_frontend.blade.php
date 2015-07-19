@@ -23,11 +23,32 @@
                                     <input type="text" class="_fwfl _fh _ff0 _r2 header-search-input" placeholder="{{ _t('head-search-placeholder') }}">
                                     <button type="submit" class="_ff0 _fl _fh _fs17 _tb header-search-btn"><i class="fa fa-search"></i></button>
                                 </form>
-                                <span class="btn _btn _btn-blue head-location-btn">
-                                    <i class="glyphicon glyphicon-map-marker"></i>
-                                    <span>Ho Chi Minh</span>
-                                    <i class="caret"></i>
-                                </span>
+                                
+                                <div class="btn-group location-btn-group">
+                                    <button type="button" class="btn _btn _btn-blue head-location-btn" data-toggle="dropdown">
+                                        <i class="glyphicon glyphicon-map-marker"></i>
+                                        <span>Ho Chi Minh</span>
+                                        <i class="caret"></i>
+                                    </button>
+                                    <div class="_r2 dropdown-menu header-location-dropdown" role="">
+                                        <div class="_fwfl popup-header location-popup-header" onclick="return false;">
+                                            <form class="_fwfl search-location-form">
+                                                <input type="text" class="_fwfl _r2 _ff0" placeholder="Search a location">
+                                                <button type="submit" class="_ff0 _fl _fh _fs14 location-search-btn"><i class="fa fa-search"></i></button>
+                                            </form>
+                                        </div>
+                                        <div class="_fwfl popup-body">
+                                            <ul class="_fwfl _ls list-location">
+                                                {{ locations() }}
+                                                <li data-value="1">
+                                                    <span class="location-txt">Hồ Chí Minh</span>
+                                                    <span class="location-num-shop">4</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <span class="_fr glyphicon glyphicon-map-marker _tb _fs20 _mt6 _cp mobile-head-location"></span>
                             </div>
                         </div>
@@ -35,19 +56,19 @@
                             @if (auth()->check())
                             <div class="_fr btn-group avatar-dropdown">
                                 <button type="button" class="btn dropdown-toggle _bgw _p0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img src="{{ get_avatar(40) }}" class="_fl img-circle head-avatar-img avatar-40"/>
+                                    <img src="{{ get_avatar('small') }}" class="_fl img-circle head-avatar-img avatar-small"/>
                                 </button>
                                 <ul class="dropdown-menu _r2">
                                     <li>
                                         <a href="#" class="short-profile-nav">
                                             <span class="_fwfl">
-                                                <img src="{{ get_avatar(64) }}" class="_fl _r3 avatar-popup-img avatar-64" />
+                                                <img src="{{ get_avatar('medium') }}" class="_fl _r2 avatar-popup-img avatar-medium" />
                                                 <div class="_fl short-profile">
                                                     <span class="_fwfl _tb _fwb _fs13 short-info-name">
                                                         {{ get_display_name() }}
                                                     </span>
                                                     <span class="_fwfl  _tb _fwb _fs13">
-                                                        {{ auth()->user()->email }}
+                                                        {{ user()->email }}
                                                     </span>
                                                 </div>
                                             </span>

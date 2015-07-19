@@ -287,9 +287,9 @@
         init: function() {
             var current      = this.element,
                 chooseAvatar = $('.choose-avatar-btn'),
-                avatar128    = $('.avatar-128'),
-                avatar64     = $('.avatar-64'),
-                avatar40     = $('.avatar-40'),
+                avatarBig    = $('.avatar-big'),
+                avatarMedium = $('.avatar-medium'),
+                avatarSmall  = $('.avatar-small'),
                 img          = chooseAvatar.children('img'),
                 text         = chooseAvatar.children('b'),
                 check        = chooseAvatar.children('i');
@@ -299,9 +299,9 @@
                     onStart: function() {
                         img.show();
                         text.hide();
-                        avatar128.css({opacity:0.5});
-                        avatar64.css({opacity:0.5});
-                        avatar40.css({opacity:0.5});
+                        avatarBig.css({opacity:0.5});
+                        avatarMedium.css({opacity:0.5});
+                        avatarSmall.css({opacity:0.5});
                     },
                     onComplete: function(response){
                         var json     = $.parseJSON(response),
@@ -313,14 +313,18 @@
                         img.hide();
                         text.show();
                         if (status === SETTING.AJAX_OK) {
-                            var image128 = json.data['128'],
-                                image64  = json.data['64'],
-                                image40  = json.data['40'];
-
+                            var imageBig     = json.data['big'],
+                                imageMedium  = json.data['medium'],
+                                imageSmall   = json.data['small'];
+                                
                             check.show(200);
                             setTimeout(function() {
                                 check.hide(200);
                             }, 2000);
+                            
+                            avatarBig.attr('src', imageBig);
+                            avatarMedium.attr('src', imageMedium);
+                            avatarSmall.attr('src', imageSmall);
                         }
 
                         if (status === SETTING.AJAX_ERROR) {
@@ -328,9 +332,9 @@
                             $('.upload-avatar-messages').html(messages);
                         }
 
-                        avatar128.attr('src', image128).css({opacity:1});
-                        avatar64.attr('src', image64).css({opacity:1});
-                        avatar40.attr('src', image40).css({opacity:1});
+                        avatarBig.css({opacity:1});
+                        avatarMedium.css({opacity:1});
+                        avatarSmall.css({opacity:1});
 
                     }
                 });
@@ -480,6 +484,102 @@
                                 }));
                             });
                         }
+                    }
+                });
+            });
+        },
+        destroy: function() {
+            $.removeData(this.element[0], pluginName);
+        }
+    };
+
+    $.fn[pluginName] = function(options, params) {
+        return this.each(function() {
+            var instance = $.data(this, pluginName);
+            if (!instance) {
+                $.data(this, pluginName, new Plugin(this, options));
+            } else if (instance[options]) {
+                instance[options](params);
+            } else {
+                window.console && console.log(options ? options + ' method is not exists in ' + pluginName : pluginName + ' plugin has been initialized');
+            }
+        });
+    };
+
+    $.fn[pluginName].defaults = {
+        option: 'value'
+    };
+
+    $(function() {
+        $('[data-' + pluginName + ']')[pluginName]();
+    });
+
+}(jQuery, window));
+
+/**
+ *  @name Upload Cover
+ *  @description
+ *  @version 1.0
+ *  @options
+ *    option
+ *  @events
+ *    event
+ *  @methods
+ *    init
+ *    publicMethod
+ *    destroy
+ */
+;
+(function($, window, undefined) {
+    var pluginName = 'upload-cover';
+
+    function Plugin(element, options) {
+        this.element = $(element);
+        this.options = $.extend({}, $.fn[pluginName].defaults, options);
+        this.init();
+    }
+
+    Plugin.prototype = {
+        init: function() {
+            var current      = this.element,
+                chooseCover  = $('.choose-cover-btn'),
+                coverMedium  = $('.cover-medium'),
+                img          = chooseCover.children('img'),
+                text         = chooseCover.children('b'),
+                check        = chooseCover.children('i');;
+
+            current.on('submit', function(){
+                return AIM.submit(this, {
+                    onStart: function() {
+                        img.show();
+                        text.hide();
+                        coverMedium.css({opacity: 0.5});
+                    },
+                    onComplete: function(response){
+                        var json     = $.parseJSON(response),
+                            status   = json.status,
+                            messages = json.messages;
+                        
+                        img.hide();
+                        text.show();
+                        
+                        if (status === SETTING.AJAX_OK) {
+                            
+                            $('.upload-cover-messages').hide();
+                            check.show(200);
+                            setTimeout(function() {
+                                check.hide(200);
+                            }, 2000);
+                            
+                            coverMedium.attr('src', json.data['medium']);
+                        }
+                        
+                        if (status === SETTING.AJAX_ERROR) {
+                            $('.upload-cover-messages').show();
+                            $('.upload-cover-messages').html(messages);
+                        }
+                        
+                        coverMedium.css({opacity: 1});
                     }
                 });
             });

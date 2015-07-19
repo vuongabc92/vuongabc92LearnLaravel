@@ -18,6 +18,36 @@ if ( ! function_exists('_t')) {
 
 }
 
+if ( ! function_exists('user')) {
+    /**
+     * Current authenticated user
+     * 
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     */
+    function user() {
+        if (auth()->check()) {
+            return auth()->user();
+        }
+        
+        return null;
+    }
+}
+
+if ( ! function_exists('store')) {
+    /**
+     * Current authenticated user's store if exist
+     * 
+     * @return \App\Models\Store|null
+     */
+    function store() {
+        if (user()->has_store) {
+            return user()->store;
+        }
+        
+        return null;
+    }
+}
+
 if ( ! function_exists('_const')) {
     /**
      * Get / set the specified configuration value.
@@ -47,23 +77,17 @@ if ( ! function_exists('get_avatar')) {
      */
     function get_avatar($size = false) {
 
-        $avatar = [];
-        foreach ([128, 64, 40] as $one) {
-            $avatar[$one] = avatar_default($one);
+        $avatars = [];
+        foreach (['big', 'medium', 'small'] as $one) {
+            $avatars[$one] = avatar_default($one);
             if (avatar_size($one) !== false) {
-                $avatar[$one] = avatar_size($one);
+                $avatars[$one] = avatar_size($one);
             }
         }
 
-        return ($size && isset($avatar[$size])) ? $avatar[$size] : false;
+        return ($size && isset($avatars[$size])) ? $avatars[$size] : false;
     }
 
-}
-
-if ( ! function_exists('get_cover')) {
-    function get_cover() {
-        return asset(config('front.default_cover_path'));
-    }
 }
 
 if ( ! function_exists('avatar_size')) {
@@ -77,7 +101,7 @@ if ( ! function_exists('avatar_size')) {
     function avatar_size($size = false){
         if ($size && auth()->check()) {
             $avatar     = 'avatar_' . $size;
-            $avatarPath = config('front.avatar_path') . auth()->user()->$avatar;
+            $avatarPath = config('front.avatar_path') . user()->$avatar;
             if (check_file($avatarPath)) {
                 return asset($avatarPath);
             }
@@ -99,12 +123,79 @@ if ( ! function_exists('avatar_default')) {
      */
     function avatar_default($size = false) {
         $avatars = [
-            128 => asset(config('front.default_avatar_path')),
-            64  => asset(config('front.default_avatar_path')),
-            40  => asset(config('front.default_avatar_path')),
+            'big'    => asset(config('front.default_avatar_path')),
+            'medium' => asset(config('front.default_avatar_path')),
+            'small'  => asset(config('front.default_avatar_path')),
         ];
 
         return ($size && isset($avatars[$size])) ? $avatars[$size] : $avatars;
+    }
+}
+
+if ( ! function_exists('get_cover')) {
+
+    /**
+     * Get cover path
+     * if the cover does not exist, default cover will be retrieved
+     *
+     * @param int $size Get cover with exist size
+     *
+     * @return string Path to cover
+     */
+    function get_cover($size = false) {
+
+        $covers = [];
+        foreach (['big', 'medium', 'small'] as $one) {
+            $covers[$one] = cover_default($one);
+            if (cover_size($one) !== false) {
+                $covers[$one] = cover_size($one);
+            }
+        }
+        
+        return ($size && isset($covers[$size])) ? $covers[$size] : false;
+    }
+
+}
+
+if ( ! function_exists('cover_size')) {
+    /**
+     * Get cover by size
+     *
+     * @param int $size
+     *
+     * @return boolean|string
+     */
+    function cover_size($size = false){
+        if ($size && user()->has_store) {
+            $cover      = 'cover_' . $size;
+            $coverPath = config('front.cover_path') . store()->$cover;
+            if (check_file($coverPath)) {
+                return asset($coverPath);
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+}
+
+if ( ! function_exists('cover_default')) {
+    /**
+     * Get cover default
+     *
+     * @param string $size
+     *
+     * @return string|array
+     */
+    function cover_default($size = false) {
+        $covers = [
+            'big'    => asset(config('front.default_cover_path')),
+            'medium' => asset(config('front.default_cover_path')),
+            'small'  => asset(config('front.default_cover_path')),
+        ];
+
+        return ($size && isset($covers[$size])) ? $covers[$size] : $covers;
     }
 }
 
@@ -235,7 +326,7 @@ if (!function_exists('get_display_name')) {
     function get_display_name() {
 
         if (auth()->check()) {
-            $user = auth()->user();
+            $user = user();
             if ($user->first_name !== '') {
                 return $user->first_name . ' ' . $user->last_name;
             }
@@ -267,11 +358,11 @@ if ( ! function_exists('generate_filename')) {
         $randStr   = str_random(10);
 
         if (auth()->check()) {
-            $userId = auth()->user()->id;
+            $userId = user()->id;
         }
 
-        $prefix       = isset($options['prefix'])  ? $options['prefix']  : '';
-        $suffix       = isset($options['suffix'])  ? $options['suffix']  : '';
+        $prefix       = isset($options['prefix']) ? $options['prefix']  : '';
+        $suffix       = isset($options['suffix']) ? $options['suffix']  : '';
         $nameEncoding = md5($userId . $microtime . $randStr);
         $fileName     = $prefix . $nameEncoding . $suffix . '.' . $extension;
 
@@ -326,7 +417,7 @@ if ( ! function_exists('upload')) {
      * ]
      * </pre>
      *
-     * @return string
+     * @return string|array
      *
      * @throws \Exception
      */
@@ -334,8 +425,8 @@ if ( ! function_exists('upload')) {
 
         /** Remove current file if exist. */
         if (count($oldFiles)) {
-            foreach ($oldFiles as $file) {
-                delete_file($directory . $file);
+            foreach ($oldFiles as $one) {
+                delete_file($directory . $one);
             }
         }
 
@@ -469,4 +560,14 @@ if ( ! function_exists('select')) {
         return $area;
     }
 
+}
+
+if ( ! function_exists('locations')) {
+    function locations() {
+        return  DB::table('cities')
+                    ->leftJoin('stores', 'cities.id', '=', 'stores.city_id')
+                    ->select(DB::raw('king_cities.id, king_cities.name, COUNT(king_stores.id) AS count_store'))
+                    ->groupBy('cities.id')
+                    ->get();
+    }
 }

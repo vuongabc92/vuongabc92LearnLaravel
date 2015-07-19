@@ -14,16 +14,25 @@ Setting > Account
             <div class="_fwfl">
                 <div class="_fwfl setting-group">
                     <div class="_fl setting-field-left">
-                        <b class="_fwfl _fs13 _tg5">{{ _('bussiness') }}</b>
+                        <b class="_fwfl _fs13 _tg5">{{ _t('bussiness') }}</b>
                     </div>
                     <div class="_fr setting-field-right">
                         <span class="_fwfl _tg7">
-                            {{ _t('buss_note') }}
-                            <!--<b class="_fs13 _tup _tb">Shop Quần Áo Liên Liên</b>-->
+                            @if(user()->has_store)
+                                <b class="_fs13 _tup _tb">{{ store()->name }}</b>
+                            @else
+                                {{ _t('buss_note') }}
+                            @endif
                         </span>
 
                         <div class="_fwfl _mt10">
-                            <a class="btn _btn _btn-blue1" href="{{ route('front_setting_store') }}">+ {{ _t('create_store') }}</a>
+                            <a class="btn _btn _btn-blue1" href="{{ route('front_setting_store') }}">
+                                @if(user()->has_store)
+                                    <i class="fa fa-gear"></i> {{ _t('setting_store') }}
+                                @else
+                                    + {{ _t('create_store') }}
+                                @endif
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -33,7 +42,7 @@ Setting > Account
                     </div>
                     <div class="_fr setting-field-right">
                         <span class="_fwfl">
-                            <img class="_fl img-circle setting-avatar-img avatar-128" src="{{ get_avatar(128) }}" />
+                            <img class="_fl img-circle setting-avatar-img avatar-big" src="{{ get_avatar('big') }}" />
                             <span class="_fl _ml20 _fs12 _tga avatar-note-group">
                                 <p class="_m0">+ {{ _t('avatar_note1') }}</p>
                                 <p class="_m0">+ {{ _t('avatar_note2') }}</p>
@@ -122,6 +131,9 @@ Setting > Account
                         </div>
                         {!! Form::close() !!}
                     </div>
+                </div>
+                <div class="_fwfl setting-group last-setting-group">
+                    <button class="_fr btn _btn _btn-red">{{ _t('del_acc') }}</button>
                 </div>
             </div>
         </div>
