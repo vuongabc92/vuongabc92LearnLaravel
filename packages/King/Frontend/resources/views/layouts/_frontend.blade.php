@@ -32,10 +32,10 @@
                                     </button>
                                     <div class="_r2 dropdown-menu header-location-dropdown" role="">
                                         <div class="_fwfl popup-header location-popup-header" onclick="return false;">
-                                            <form class="_fwfl search-location-form">
-                                                <input type="text" name="" class="_fwfl _r2 _ff0" placeholder="{{ _t('search_location') }}" data-search-location="{{ route('front_search_location', 0) }}" data-display-location="#list-location" >
+                                            {!! Form::open(['route' => 'front_search_location', 'method' => 'POST', 'class' => '_fwfl search-location-form', 'id' => 'search-location-form', 'data-search-location' => '#list-location']) !!}
+                                                {!! Form::text('location_keyword', '', ['class' => '_fwfl _r2 _ff0', 'placeholder' => _t('search_location'), 'data-event-trigger' => '#search-location-form', 'data-event' => 'keyup|submit', 'autocomplete' => 'off']) !!}
                                                 <button type="submit" class="_ff0 _fl _fh _fs14 location-search-btn"><i class="fa fa-search"></i></button>
-                                            </form>
+                                            {!! Form::close() !!}
                                         </div>
                                         <div class="_fwfl popup-body">
                                             <ul class="_fwfl _ls list-location" id="list-location">

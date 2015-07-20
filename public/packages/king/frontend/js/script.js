@@ -638,17 +638,14 @@
     Plugin.prototype = {
         init: function() {
             var current = this.element,
-                url     = current.attr('data-search-location'),
-                target  = $(current.attr('data-display-location'));
+                url     = current.attr('action'),
+                target  = $(current.data('search-location'));
 
-            current.on('keyup', function(){
-                var keyWord = $(this).val();
-                $('.location-dropdown').on('hide.bs.dropdown', function(){
-
-                });
+            current.on('submit', function(){
                 $.ajax({
-                    type: 'GET',
-                    url: url.replace('0', keyWord),
+                    type: 'POST',
+                    url: url,
+                    data: current.serialize(),
                     beforeSend: function() {
                     },
                     success: function(response) {
@@ -667,7 +664,8 @@
                         }
                     }
                 });
-
+                
+                return false;
             });
         },
         destroy: function() {
@@ -697,3 +695,14 @@
     });
 
 }(jQuery, window));
+
+$(document).ready(function(){
+    
+    //Reset list location when location dropdown is closed
+    $('.location-dropdown').on('hide.bs.dropdown', function() {
+        $('.search-location-form').find('[name^=location_keyword]').val('');
+        $('.search-location-form').submit();
+    });
+    //End
+    
+});

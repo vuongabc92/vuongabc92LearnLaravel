@@ -29,11 +29,11 @@ Setting > Store
                     <div class="_fwfl _mt10 setting-cover-box">
                         <img class="_fwfl _r2 setting-cover-img cover-medium" src="{{ get_cover('medium') }}" />
                         <div class="_fwfl _mt10">
-                            <span class="_fl _fs12 _tga">
+<!--                            <span class="_fl _fs12 _tga">
                                 <p class="_m0">+ {{ _t('cover_note1') }}</p>
                                 <p class="_m0">+ {{ _t('cover_note2') }}</p>
                                 <p class="_m0">+ {{ _t('cover_note3') }}</p>
-                            </span>
+                            </span>-->
                             <button class="_fr btn _btn _btn-white choose-cover-btn" data-event-trigger="#cover-file" data-event="click|click">
                                 <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-gray-white1.gif') }}" />
                                 <b class="btn-text">{{ _t('choose_cover') }}</b>

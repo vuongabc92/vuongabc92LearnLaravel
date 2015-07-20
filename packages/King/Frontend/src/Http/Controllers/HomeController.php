@@ -17,11 +17,12 @@ class HomeController extends FrontController
         return view('frontend::home.index');
     }
 
-    public function ajaxSearchLocation(Request $request, $city_name = '') {
+    public function ajaxSearchLocation(Request $request) {
 
         //Only accept ajax request
         if ($request->ajax()) {
-            $results = locations(trim($city_name));
+            $city_name = $request->get('location_keyword');
+            $results   = locations(trim($city_name));
 
             return ajax_response([
                 'status' => _const('AJAX_OK'),
