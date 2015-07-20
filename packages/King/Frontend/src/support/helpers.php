@@ -21,14 +21,14 @@ if ( ! function_exists('_t')) {
 if ( ! function_exists('user')) {
     /**
      * Current authenticated user
-     * 
+     *
      * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
     function user() {
         if (auth()->check()) {
             return auth()->user();
         }
-        
+
         return null;
     }
 }
@@ -36,14 +36,14 @@ if ( ! function_exists('user')) {
 if ( ! function_exists('store')) {
     /**
      * Current authenticated user's store if exist
-     * 
+     *
      * @return \App\Models\Store|null
      */
     function store() {
         if (user()->has_store) {
             return user()->store;
         }
-        
+
         return null;
     }
 }
@@ -151,7 +151,7 @@ if ( ! function_exists('get_cover')) {
                 $covers[$one] = cover_size($one);
             }
         }
-        
+
         return ($size && isset($covers[$size])) ? $covers[$size] : false;
     }
 
@@ -563,11 +563,22 @@ if ( ! function_exists('select')) {
 }
 
 if ( ! function_exists('locations')) {
-    function locations() {
-        return  DB::table('cities')
-                    ->leftJoin('stores', 'cities.id', '=', 'stores.city_id')
-                    ->select(DB::raw('king_cities.id, king_cities.name, COUNT(king_stores.id) AS count_store'))
-                    ->groupBy('cities.id')
+    function locations($name = '') {
+        //Get table dynamically
+        $city       = new \App\Models\City();
+        $store      = new \App\Models\Store();
+        $cities_tbl = DB::getQueryGrammar()->wrapTable($city->getTable());
+        $stores_tbl = DB::getQueryGrammar()->wrapTable($store->getTable());
+
+        $join = DB::table($city->getTable())
+                    ->leftJoin($store->getTable(), "{$city->getTable()}.id", '=', "{$store->getTable()}.city_id");
+
+        if ($name !== '') {
+            $join->where("{$city->getTable()}.name",'LIKE', "%{$name}%");
+        }
+
+        return $join->select(DB::raw("{$cities_tbl}.id, {$cities_tbl}.name, COUNT({$stores_tbl}.id) AS count_store"))
+                    ->groupBy("{$city->getTable()}.id")
                     ->get();
     }
 }

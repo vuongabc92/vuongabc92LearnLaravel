@@ -1,6 +1,8 @@
 <?php
 
 Route::get('/', ['as' => 'front_home', 'uses' => 'HomeController@index']);
+Route::get('/search-location/{city_name}', ['as' => 'front_search_location', 'uses' => 'HomeController@ajaxSearchLocation']);
+Route::get('/search-location', ['as' => 'front_all_location', 'uses' => 'HomeController@ajaxSearchLocation']);
 Route::get('logout', ['as' => 'front_logout', 'uses' => 'AuthController@logout']);
 
 Route::group(['middleware' => 'guest'], function($route){

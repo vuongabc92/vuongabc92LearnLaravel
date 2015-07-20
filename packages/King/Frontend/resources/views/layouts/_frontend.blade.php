@@ -23,32 +23,35 @@
                                     <input type="text" class="_fwfl _fh _ff0 _r2 header-search-input" placeholder="{{ _t('head-search-placeholder') }}">
                                     <button type="submit" class="_ff0 _fl _fh _fs17 _tb header-search-btn"><i class="fa fa-search"></i></button>
                                 </form>
-                                
-                                <div class="btn-group location-btn-group">
+
+                                <div class="btn-group location-btn-group location-dropdown">
                                     <button type="button" class="btn _btn _btn-blue head-location-btn" data-toggle="dropdown">
                                         <i class="glyphicon glyphicon-map-marker"></i>
-                                        <span>Ho Chi Minh</span>
+                                        <span>Hồ Chí Minh</span>
                                         <i class="caret"></i>
                                     </button>
                                     <div class="_r2 dropdown-menu header-location-dropdown" role="">
                                         <div class="_fwfl popup-header location-popup-header" onclick="return false;">
                                             <form class="_fwfl search-location-form">
-                                                <input type="text" class="_fwfl _r2 _ff0" placeholder="Search a location">
+                                                <input type="text" name="" class="_fwfl _r2 _ff0" placeholder="{{ _t('search_location') }}" data-search-location="{{ route('front_search_location', 0) }}" data-display-location="#list-location" >
                                                 <button type="submit" class="_ff0 _fl _fh _fs14 location-search-btn"><i class="fa fa-search"></i></button>
                                             </form>
                                         </div>
                                         <div class="_fwfl popup-body">
-                                            <ul class="_fwfl _ls list-location">
-                                                {{ locations() }}
-                                                <li data-value="1">
-                                                    <span class="location-txt">Hồ Chí Minh</span>
-                                                    <span class="location-num-shop">4</span>
-                                                </li>
+                                            <ul class="_fwfl _ls list-location" id="list-location">
+                                                @if (count(locations()))
+                                                    @foreach(locations() as $one)
+                                                        <li data-value="{{ $one->id }}">
+                                                            <span class="_fl">{{ $one->name }}</span>
+                                                            <span class="_fr">{{ $one->count_store }}</span>
+                                                        </li>
+                                                    @endforeach
+                                                @endif
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <span class="_fr glyphicon glyphicon-map-marker _tb _fs20 _mt6 _cp mobile-head-location"></span>
                             </div>
                         </div>

@@ -316,12 +316,12 @@
                             var imageBig     = json.data['big'],
                                 imageMedium  = json.data['medium'],
                                 imageSmall   = json.data['small'];
-                                
+
                             check.show(200);
                             setTimeout(function() {
                                 check.hide(200);
                             }, 2000);
-                            
+
                             avatarBig.attr('src', imageBig);
                             avatarMedium.attr('src', imageMedium);
                             avatarSmall.attr('src', imageSmall);
@@ -546,7 +546,7 @@
                 coverMedium  = $('.cover-medium'),
                 img          = chooseCover.children('img'),
                 text         = chooseCover.children('b'),
-                check        = chooseCover.children('i');;
+                check        = chooseCover.children('i');
 
             current.on('submit', function(){
                 return AIM.submit(this, {
@@ -559,29 +559,115 @@
                         var json     = $.parseJSON(response),
                             status   = json.status,
                             messages = json.messages;
-                        
+
                         img.hide();
                         text.show();
-                        
+
                         if (status === SETTING.AJAX_OK) {
-                            
+
                             $('.upload-cover-messages').hide();
                             check.show(200);
                             setTimeout(function() {
                                 check.hide(200);
                             }, 2000);
-                            
+
                             coverMedium.attr('src', json.data['medium']);
                         }
-                        
+
                         if (status === SETTING.AJAX_ERROR) {
                             $('.upload-cover-messages').show();
                             $('.upload-cover-messages').html(messages);
                         }
-                        
+
                         coverMedium.css({opacity: 1});
                     }
                 });
+            });
+        },
+        destroy: function() {
+            $.removeData(this.element[0], pluginName);
+        }
+    };
+
+    $.fn[pluginName] = function(options, params) {
+        return this.each(function() {
+            var instance = $.data(this, pluginName);
+            if (!instance) {
+                $.data(this, pluginName, new Plugin(this, options));
+            } else if (instance[options]) {
+                instance[options](params);
+            } else {
+                window.console && console.log(options ? options + ' method is not exists in ' + pluginName : pluginName + ' plugin has been initialized');
+            }
+        });
+    };
+
+    $.fn[pluginName].defaults = {
+        option: 'value'
+    };
+
+    $(function() {
+        $('[data-' + pluginName + ']')[pluginName]();
+    });
+
+}(jQuery, window));
+
+/**
+ *  @name Search Location
+ *  @description
+ *  @version 1.0
+ *  @options
+ *    option
+ *  @events
+ *    event
+ *  @methods
+ *    init
+ *    publicMethod
+ *    destroy
+ */
+;
+(function($, window, undefined) {
+    var pluginName = 'search-location';
+
+    function Plugin(element, options) {
+        this.element = $(element);
+        this.options = $.extend({}, $.fn[pluginName].defaults, options);
+        this.init();
+    }
+
+    Plugin.prototype = {
+        init: function() {
+            var current = this.element,
+                url     = current.attr('data-search-location'),
+                target  = $(current.attr('data-display-location'));
+
+            current.on('keyup', function(){
+                var keyWord = $(this).val();
+                $('.location-dropdown').on('hide.bs.dropdown', function(){
+
+                });
+                $.ajax({
+                    type: 'GET',
+                    url: url.replace('0', keyWord),
+                    beforeSend: function() {
+                    },
+                    success: function(response) {
+                        var status = response.status,
+                                data = response.data;
+
+                        if (status === SETTING.AJAX_OK) {
+                            target.find('li').remove();
+                            $.each(data, function(k, v) {
+                                var li = SETTING.LOCATION_LI;
+                                li = li.replace('__VALUE', v.id);
+                                li = li.replace('__NAME', v.name);
+                                li = li.replace('__COUNT', v.count_store);
+                                target.append(li);
+                            });
+                        }
+                    }
+                });
+
             });
         },
         destroy: function() {
