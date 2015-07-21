@@ -16,7 +16,8 @@ position:relative;}
 .auth-field:focus{border-color:#007aff;}
 
 /** Header */
-.header{height:55px;border-bottom:solid 1px #007aff;padding:0 15px;position:fixed;}
+.header{height:55px;border-bottom:solid 1px #007aff;padding:0 15px;position:fixed;
+z-index:999;}
 /*.header-inside{display:none;}*/
 .head-left-col{width:20%;}
 .head-right-col{width:80%;}
@@ -85,7 +86,7 @@ outline:none;border-radius:2px;-webkit-border-radius:2px;background-color:#fff;
 .loading-in-btn{float:left;margin-top:-1px;padding:0 3px;display:none;}
 .setting-form-group-store{width:90%;}
 .selectbox-field{padding:6px 15px;}
-.setting-cover-img{height:256px;}
+.setting-cover-img{height:256px;z-index:9;}
 
 
 @media screen and (min-width: 320px){

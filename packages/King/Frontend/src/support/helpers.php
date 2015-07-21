@@ -582,3 +582,17 @@ if ( ! function_exists('locations')) {
                     ->get();
     }
 }
+
+if ( ! function_exists('current_location')) {
+    /**
+     * @todo Get current location (city)
+     *
+     * @return \App\Models\City
+     */
+    function current_location() {
+        $current_id = session(_const('SESSION_LOCATION'), _const('DEFAULT_LOCATION'));
+        $location   = \App\Models\City::find($current_id);
+
+        return $location;
+    }
+}

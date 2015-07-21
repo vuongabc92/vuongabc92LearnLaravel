@@ -24,7 +24,7 @@
     Plugin.prototype = {
         init: function() {
             var current    = this.element,
-                fields     = current.attr('data-required'),
+                fields     = current.data('required'),
                 fieldArray = fields.split('|'),
                 empty      = false;
 
@@ -97,8 +97,8 @@
     Plugin.prototype = {
         init: function() {
             var current    = this.element,
-                target     = $(current.attr('data-event-trigger')),
-                events     = current.attr('data-event'),
+                target     = $(current.data('event-trigger')),
+                events     = current.data('event'),
                 eventArray = events.split('|'),
                 firstEvent = eventArray[0],
                 lastEvent  = eventArray[1];
@@ -169,7 +169,7 @@
         init: function() {
             var current = this.element,
                 that    = this,
-                labels  = current.attr('data-ajax-form').split('|'),
+                labels  = current.data('ajax-form').split('|'),
                 submit  = current.find(':submit'),
                 img     = submit.children('img'),
                 text    = submit.children('b'),
@@ -394,7 +394,7 @@
     Plugin.prototype = {
         init: function() {
             var current     = this.element,
-                form        = $(current.attr('data-reset-form')),
+                form        = $(current.data('reset-form')),
                 formElement = form.attr('data-ajax-form').split('|');
 
             current.on('click', function(){
@@ -461,9 +461,9 @@
     Plugin.prototype = {
         init: function() {
             var current    = this.element,
-                actionUrl  = current.attr('data-get-area'),
-                target     = $(current.attr('data-target')),
-                selectCity = current.attr('data-text');
+                actionUrl  = current.data('get-area'),
+                target     = $(current.data('target')),
+                selectCity = current.data('text');
 
             current.on('change', function(){
                 $.ajax({
@@ -664,7 +664,7 @@
                         }
                     }
                 });
-                
+
                 return false;
             });
         },
@@ -696,13 +696,88 @@
 
 }(jQuery, window));
 
+/**
+ *  @name Select Location
+ *  @description
+ *  @version 1.0
+ *  @options
+ *    option
+ *  @events
+ *    event
+ *  @methods
+ *    init
+ *    publicMethod
+ *    destroy
+ */
+;
+(function($, window, undefined) {
+    var pluginName = 'select-location';
+
+    function Plugin(element, options) {
+        this.element = $(element);
+        this.options = $.extend({}, $.fn[pluginName].defaults, options);
+        this.init();
+    }
+
+    Plugin.prototype = {
+        init: function() {
+            var current = this.element,
+                url     = current.data('select-location'),
+                target  = $(current.data('target'));
+
+            current.on('click', function(){
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    beforeSend: function() {
+                    },
+                    success: function(response) {
+                        if (response.status === SETTING.AJAX_OK) {
+                            target.text(current.find('.location-name').text());
+                        }
+                    }
+                });
+
+                return true;
+            });
+        },
+        destroy: function() {
+            $.removeData(this.element[0], pluginName);
+        }
+    };
+
+    $.fn[pluginName] = function(options, params) {
+        return this.each(function() {
+            var instance = $.data(this, pluginName);
+            if (!instance) {
+                $.data(this, pluginName, new Plugin(this, options));
+            } else if (instance[options]) {
+                instance[options](params);
+            } else {
+                window.console && console.log(options ? options + ' method is not exists in ' + pluginName : pluginName + ' plugin has been initialized');
+            }
+        });
+    };
+
+    $.fn[pluginName].defaults = {
+        option: 'value'
+    };
+
+    $(function() {
+        $('[data-' + pluginName + ']')[pluginName]();
+    });
+
+}(jQuery, window));
+
+
+
 $(document).ready(function(){
-    
+
     //Reset list location when location dropdown is closed
     $('.location-dropdown').on('hide.bs.dropdown', function() {
         $('.search-location-form').find('[name^=location_keyword]').val('');
         $('.search-location-form').submit();
     });
     //End
-    
+
 });

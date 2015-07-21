@@ -27,7 +27,7 @@
                                 <div class="btn-group location-btn-group location-dropdown">
                                     <button type="button" class="btn _btn _btn-blue head-location-btn" data-toggle="dropdown">
                                         <i class="glyphicon glyphicon-map-marker"></i>
-                                        <span>Hồ Chí Minh</span>
+                                        <span id="current-location-name">{{ current_location()->name }}</span>
                                         <i class="caret"></i>
                                     </button>
                                     <div class="_r2 dropdown-menu header-location-dropdown" role="">
@@ -41,8 +41,8 @@
                                             <ul class="_fwfl _ls list-location" id="list-location">
                                                 @if (count(locations()))
                                                     @foreach(locations() as $one)
-                                                        <li data-value="{{ $one->id }}">
-                                                            <span class="_fl">{{ $one->name }}</span>
+                                                        <li data-select-location="{{ route('front_select_location', $one->id) }}" data-target="#current-location-name">
+                                                            <span class="_fl location-name">{{ $one->name }}</span>
                                                             <span class="_fr">{{ $one->count_store }}</span>
                                                         </li>
                                                     @endforeach
