@@ -721,19 +721,24 @@
 
     Plugin.prototype = {
         init: function() {
-            var current = this.element,
-                url     = current.data('select-location'),
-                target  = $(current.data('target'));
+            var current     = this.element,
+                url         = current.data('select-location'),
+                fromTarget  = current.data('from-to-target').split('|'),
+                from        = $(fromTarget[0]),
+                target      = $(fromTarget[1]);
 
-            current.on('click', function(){
+            from.on('click', 'li', function(){
+                var id   = $(this).attr('data-value'),
+                    name = $(this).find('.location-name').text();
+
                 $.ajax({
                     type: 'GET',
-                    url: url,
+                    url: url.replace('0', id),
                     beforeSend: function() {
                     },
                     success: function(response) {
                         if (response.status === SETTING.AJAX_OK) {
-                            target.text(current.find('.location-name').text());
+                            target.text(name);
                         }
                     }
                 });

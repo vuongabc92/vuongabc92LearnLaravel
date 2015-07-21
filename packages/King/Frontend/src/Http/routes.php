@@ -28,5 +28,8 @@ Route::group(['middleware' => 'auth'], function(){
         $route->get('store/get-district/{id}', ['as' => 'front_setting_get_district', 'uses' => 'SettingController@ajaxGetDistrictByCityId']);
         $route->get('store/get-ward/{id}', ['as' => 'front_setting_get_ward', 'uses' => 'SettingController@ajaxGetWardByCityId']);
         $route->post('store/change-cover', ['as' => 'front_setting_change_cover', 'uses' => 'SettingController@ajaxChangeCover']);
+
+        //Store
+//        $route->get('my-store', ['as' => 'front_my_store'])
     });
 });

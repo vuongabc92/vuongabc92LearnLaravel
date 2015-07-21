@@ -38,10 +38,10 @@
                                             {!! Form::close() !!}
                                         </div>
                                         <div class="_fwfl popup-body">
-                                            <ul class="_fwfl _ls list-location" id="list-location">
+                                            <ul class="_fwfl _ls list-location" id="list-location" data-select-location="{{ route('front_select_location', 0) }}" data-from-to-target=".popup-body|#current-location-name">
                                                 @if (count(locations()))
                                                     @foreach(locations() as $one)
-                                                        <li data-select-location="{{ route('front_select_location', $one->id) }}" data-target="#current-location-name">
+                                                        <li data-value="{{ $one->id }}">
                                                             <span class="_fl location-name">{{ $one->name }}</span>
                                                             <span class="_fr">{{ $one->count_store }}</span>
                                                         </li>
