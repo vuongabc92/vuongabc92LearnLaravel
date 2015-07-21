@@ -30,6 +30,6 @@ Route::group(['middleware' => 'auth'], function(){
         $route->post('store/change-cover', ['as' => 'front_setting_change_cover', 'uses' => 'SettingController@ajaxChangeCover']);
 
         //Store
-//        $route->get('my-store', ['as' => 'front_my_store'])
+        $route->get('my-store', ['as' => 'front_my_store', 'uses' => 'StoreController@index']);
     });
 });

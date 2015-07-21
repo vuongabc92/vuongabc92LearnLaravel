@@ -88,6 +88,8 @@ outline:none;border-radius:2px;-webkit-border-radius:2px;background-color:#fff;
 .selectbox-field{padding:6px 15px;}
 .setting-cover-img{height:256px;z-index:9;}
 
+/* Store */
+.store-header{height:400px;background-color:#fff;}
 
 @media screen and (min-width: 320px){
     .header-search-form{width:90%;}

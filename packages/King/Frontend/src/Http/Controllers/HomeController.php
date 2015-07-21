@@ -21,9 +21,9 @@ class HomeController extends FrontController
     /**
      * @todo Search city by name
      *
-     * @param Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      *
-     * @return JSON
+     * @return \Illuminate\Http\JsonResponse
      */
     public function ajaxSearchLocation(Request $request) {
 
@@ -39,6 +39,14 @@ class HomeController extends FrontController
         }
     }
 
+    /**
+     * @todo Save location by session
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int                      $id City id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function ajaxSelectLocation(Request $request, $id) {
         //Only accept ajax request
         if ($request->ajax()) {
