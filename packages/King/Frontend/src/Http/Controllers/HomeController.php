@@ -52,6 +52,11 @@ class HomeController extends FrontController
         if ($request->ajax()) {
             $id = (int) $id;
             if (City::find($id) !== null) {
+                //Start session if it wasn't started
+                if ( ! $request->session()->isStarted()) {
+                    $request->session()->start();
+                }
+
                 $request->session()->put(_const('SESSION_LOCATION'), $id);
 
                 return ajax_response([
