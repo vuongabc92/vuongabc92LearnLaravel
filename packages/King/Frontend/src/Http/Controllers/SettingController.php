@@ -8,6 +8,7 @@ use App\Models\City;
 use App\Models\District;
 use App\Models\Ward;
 use App\Models\Category;
+use App\Helpers\Upload;
 use Validator;
 use Hash;
 use DB;
@@ -225,15 +226,17 @@ class SettingController extends FrontController
                 ]);
             }
 
-            $user             = user();
-            $pathToAvatar     = config('front.avatar_path');
-            $newFileUpload    = upload($request, $pathToAvatar, [
-                $user->avatar_big,
-                $user->avatar_medium,
-                $user->avatar_small
-            ], [
-                'prefix' => 'avatar_',
-                'resize' => [
+            $user       = user();
+            $avatarPath = config('front.avatar_path');
+            
+            try {
+                //Upload and resize image
+                $upload = new Upload($request->file('__file'));
+                $upload->setDirectory($avatarPath);
+                $upload->setPrefix(_const('AVATAR_PREFIX'));
+                $upload->setSuffix(_const('AVATAR_ORIGINAL'));
+                $upload->move();
+                $imageResized = $upload->resizeGroup([
                     'big' => [
                         'width'  => _const('AVATAR_BIG'),
                         'height' => _const('AVATAR_BIG')
@@ -246,19 +249,37 @@ class SettingController extends FrontController
                         'width'  => _const('AVATAR_SMALL'),
                         'height' => _const('AVATAR_SMALL')
                     ]
-                ]
+                ]);
+            } catch (Exception $ex) {
+                $validator->errors()->add('__file', _t('opp'));
+                
+                return ajax_upload_response([
+                    'status'   => _const('AJAX_OK'),
+                    'messages' => $validator->errors()->first()
+                ], 500);
+            }
+            
+            //Delete old avatar image
+            delete_file([
+                $avatarPath . $user->avatar_original,
+                $avatarPath . $user->avatar_big,
+                $avatarPath . $user->avatar_medium,
+                $avatarPath . $user->avatar_small
             ]);
 
-            $user->avatar_big    = $newFileUpload['big'];
-            $user->avatar_medium = $newFileUpload['medium'];
-            $user->avatar_small  = $newFileUpload['small'];
-
+            $user->avatar_original = $imageResized['original'];
+            $user->avatar_big      = $imageResized['big'];
+            $user->avatar_medium   = $imageResized['medium'];
+            $user->avatar_small    = $imageResized['small'];
+            
             try {
                 $user->save();
             } catch (Exception $ex) {
+                $validator->errors()->add('__file', _t('opp'));
+                
                 return ajax_upload_response([
                     'status'   => _const('AJAX_OK'),
-                    'messages' => _t('opp')
+                    'messages' => $validator->errors()->first()
                 ], 500);
             }
 
@@ -266,9 +287,9 @@ class SettingController extends FrontController
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
-                    'big'     => asset($pathToAvatar . $newFileUpload['big']),
-                    'medium'  => asset($pathToAvatar . $newFileUpload['medium']),
-                    'small'   => asset($pathToAvatar . $newFileUpload['small']),
+                    'big'     => asset($avatarPath . $imageResized['big']),
+                    'medium'  => asset($avatarPath . $imageResized['medium']),
+                    'small'   => asset($avatarPath . $imageResized['small']),
                 ]
             ]);
         }

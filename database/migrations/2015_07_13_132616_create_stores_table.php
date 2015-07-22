@@ -22,6 +22,7 @@ class CreateStoresTable extends Migration
             $table->integer('district_id')->unsigned();
             $table->integer('ward_id')->unsigned();
             $table->string('phone_number', 32)->nullable();;
+            $table->string('cover_original', 250)->nullable();
             $table->string('cover_big', 250)->nullable();
             $table->string('cover_medium', 250)->nullable();
             $table->string('cover_small', 250)->nullable();

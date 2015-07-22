@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Illuminate\Http\Request;
+use Intervention\Image\Facades\Image;
 
 class Upload {
 
@@ -12,6 +13,13 @@ class Upload {
      * @var \Symfony\Component\HttpFoundation\File\UploadedFile|array
      */
     protected $_file;
+    
+    /**
+     * File extension
+     *
+     * @var string
+     */
+    protected $_fileExt;
 
      /**
      * Upload directory
@@ -65,6 +73,24 @@ class Upload {
      */
     public function getFile() {
         return $this->_file;
+    }
+    
+    /**
+     * Set file extension
+     *
+     * @param string $fileExt
+     */
+    public function setFileExt($fileExt) {
+        $this->_fileExt = $fileExt;
+    }
+
+    /**
+     * Get file extension
+     *
+     * @return string
+     */
+    public function getFileExt() {
+        return $this->_fileExt;
     }
 
     /**
@@ -160,14 +186,20 @@ class Upload {
 
     public function __construct($file)
     {
-        $this->_file = $file;
+        $this->_file    = $file;
+        $this->_fileExt = $file->getClientOriginalExtension();
     }
 
+    /**
+     * Upload file to the directory
+     * 
+     * @return string
+     * @throws \Exception
+     */
     public function move() {
 
         $file        = $this->_file;
-        $fileExt     = $file->getClientOriginalExtension();
-        $newFileName = generate_filename($this->_directory, $fileExt, [
+        $newFileName = generate_filename($this->_directory, $this->_fileExt, [
             'prefix' => $this->_prefix,
             'suffix' => $this->_suffix
         ]);
@@ -178,8 +210,95 @@ class Upload {
             throw new \Exception("Whoop!! Couldn't upload file. {$ex->getMessage()}");
         }
 
-        $this->_newFileName = $this->_directory . $newFileName;
+        $this->_newFileName = $newFileName;
 
         return $this->_directory . $newFileName;
     }
+    
+    /**
+     * Resize image
+     * 
+     * @param int    $width
+     * @param int    $height
+     * @param string $imagePath
+     * @param string $newName
+     * 
+     * @return boolean
+     * @throws \Exception
+     */
+    public function resize($width, $height, $imagePath = '', $newName = '') {
+        
+        //Only resize when the width and height is specified.
+        if ($width && $height) {
+
+            try {
+                if ($imagePath === '') {
+                    $imagePath = $this->_directory . $this->_newFileName;
+                }
+                $image = Image::make($imagePath)->orientate();
+                $image->fit($width, $height, function ($constraint) {
+                    $constraint->upsize();
+                });
+
+                if ($newName !== '') {
+                    $image->save($newName);
+                }
+
+                $image->save();
+            } catch (Exception $ex) {
+                throw new \Exception("Whoop!! Couldn't resize image. {$ex->getMessage()}");
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+    
+    /**
+     * Resize group of images
+     * 
+     * @param array  $sizes
+     * @param string $newFileName
+     * @param string $imagePath
+     * 
+     * @return type
+     * @throws \Exception
+     */
+    public function resizeGroup($sizes, $newFileName = '', $imagePath = '') {
+        
+        if (count($sizes)) {
+            
+            $resized     = [];
+            
+            if ($newFileName === '') {
+                $newFileName = generate_filename($this->_directory, $this->_fileExt, [
+                    'prefix' => $this->_prefix,
+                    'suffix' => _const('TOBEREPLACED')
+                ]);
+            }
+            
+            foreach ($sizes as $k => $size) {
+                $nameBySize = str_replace('_ToBeReplaced', "_{$k}", $newFileName);
+                if ($this->resize($size['width'], $size['height'], $imagePath, $this->_directory . $nameBySize)) {
+                    $resized[$k] = $nameBySize;
+                }
+            }
+            
+            try {
+                $newOriginnalName = str_replace('_ToBeReplaced', _const('AVATAR_ORIGINAL'), $newFileName);
+                $originnalImage   = Image::make($this->_directory . $this->_newFileName)->orientate();
+                $originnalImage->save($this->_directory . $newOriginnalName);
+                $resized['original'] = $newOriginnalName;
+                delete_file($this->_directory . $this->_newFileName);
+            } catch (Exception $ex) {
+                throw new \Exception("Whoop!! Couldn't update original image. {$ex->getMessage()}");
+            }
+            
+            return $resized;
+        }
+        
+        return [];
+    }
+    
 }

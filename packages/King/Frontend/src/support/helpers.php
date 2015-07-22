@@ -482,17 +482,26 @@ if ( ! function_exists('delete_file')) {
     /**
      * Delete file
      *
-     * @param string $path
+     * @param string|array $file
      *
      * @return boolean
      *
      * @throws \Exception
      */
-    function delete_file($path) {
+    function delete_file($file) {
 
-        if (check_file($path)) {
+        //Delete list of files
+        if (is_array($file) && count($file)) {
+            foreach ($file as $one) {
+                delete_file($one);
+            }
+            
+            return true;
+        }
+        
+        if (check_file($file)) {
             try {
-                \Illuminate\Support\Facades\File::delete($path);
+                \Illuminate\Support\Facades\File::delete($file);
             } catch (Exception $ex) {
                 throw new \Exception('Whoop!! Can not delete file. ' . $ex->getMessage());
             }
