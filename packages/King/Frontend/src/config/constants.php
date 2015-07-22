@@ -11,7 +11,7 @@ return [
 
     'COVER_BIG_W'    => 970,
     'COVER_BIG_H'    => 340,
-    'COVER_MEDIUM_W' => 768,
+    'COVER_MEDIUM_W' => 620,
     'COVER_MEDIUM_H' => 270,
     'COVER_SMALL_W'  => 320,
     'COVER_SMALL_H'  => 113,
