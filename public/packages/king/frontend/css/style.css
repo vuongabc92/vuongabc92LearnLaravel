@@ -84,7 +84,7 @@ outline:none;border-radius:2px;-webkit-border-radius:2px;background-color:#fff;
 -moz-border-radius:2px;-ms-border-radius:2px;-o-border-radius:2px;}
 .setting-form-field:focus{border-color:#007aff;}
 .loading-in-btn, .loading-in-btn-sm{float:left;margin-top:-1px;padding:0 3px;display:none;}
-.loading-in-btn-sm{margin-top:-2px;}
+.loading-in-btn-sm{margin-top:-3px;}
 .setting-form-group-store{width:90%;}
 .selectbox-field{padding:6px 15px;}
 .setting-cover-img{height:256px;z-index:9;}

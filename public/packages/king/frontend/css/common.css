@@ -18,8 +18,8 @@ font-weight:bold;border-radius:2px;-webkit-border-radius:2px;
 -moz-border-radius:2px;-ms-border-radius:2px;-o-border-radius:2px;}
 ._btn:active{box-shadow:none;-webkit-box-shadow:none;
 -moz-box-shadow:none;-ms-box-shadow:none;-o-box-shadow:none;}
-._btn-sm{height: 32px;}
-button._btn-sm{height: 32px;}
+._btn-sm{height: 30px;line-height:17px;}
+button._btn-sm{height: 30px;line-height:17px;}
 ._save-btn{padding-left:18px;padding-right:18px;}
 
 ._btn-white{color:#999;background-color:#fff;border-color:#ddd;}
