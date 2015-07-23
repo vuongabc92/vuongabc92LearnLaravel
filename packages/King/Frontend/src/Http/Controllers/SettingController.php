@@ -200,13 +200,13 @@ class SettingController extends FrontController
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @return response
+     * @return JSON
      */
     public function ajaxChangeAvatar(Request $request) {
 
         if ($request->isMethod('POST')) {
-            
-            $avatarMaxFileSize = _const('AVATAR_MAX');
+
+            $avatarMaxFileSize = _const('AVATAR_MAX_FILE_SIZE');
             $rules = [
                 '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . $avatarMaxFileSize
             ];
@@ -226,16 +226,25 @@ class SettingController extends FrontController
                 ]);
             }
 
-            $user       = user();
-            $avatarPath = config('front.avatar_path');
-            
+            /**
+             * 1. Upload
+             * 2. Resize
+             * 3. Delete old avatars
+             * 4. Save new avatars
+             */
             try {
-                //Upload and resize image
-                $upload = new Upload($request->file('__file'));
+
+                //1
+                $user       = user();
+                $avatarPath = config('front.avatar_path');
+                $upload     = new Upload($request->file('__file'));
+
                 $upload->setDirectory($avatarPath);
                 $upload->setPrefix(_const('AVATAR_PREFIX'));
-                $upload->setSuffix(_const('AVATAR_ORIGINAL'));
+                $upload->setSuffix(_const('ORIGINAL_SUFFIX'));
                 $upload->move();
+
+                //2
                 $imageResized = $upload->resizeGroup([
                     'big' => [
                         'width'  => _const('AVATAR_BIG'),
@@ -250,33 +259,25 @@ class SettingController extends FrontController
                         'height' => _const('AVATAR_SMALL')
                     ]
                 ]);
-            } catch (Exception $ex) {
-                $validator->errors()->add('__file', _t('opp'));
-                
-                return ajax_upload_response([
-                    'status'   => _const('AJAX_OK'),
-                    'messages' => $validator->errors()->first()
-                ], 500);
-            }
-            
-            //Delete old avatar image
-            delete_file([
-                $avatarPath . $user->avatar_original,
-                $avatarPath . $user->avatar_big,
-                $avatarPath . $user->avatar_medium,
-                $avatarPath . $user->avatar_small
-            ]);
 
-            $user->avatar_original = $imageResized['original'];
-            $user->avatar_big      = $imageResized['big'];
-            $user->avatar_medium   = $imageResized['medium'];
-            $user->avatar_small    = $imageResized['small'];
-            
-            try {
-                $user->save();
+                //3
+                delete_file([
+                    $avatarPath . $user->avatar_original,
+                    $avatarPath . $user->avatar_big,
+                    $avatarPath . $user->avatar_medium,
+                    $avatarPath . $user->avatar_small
+                ]);
+
+                //4
+                $user->avatar_original = $imageResized['original'];
+                $user->avatar_big      = $imageResized['big'];
+                $user->avatar_medium   = $imageResized['medium'];
+                $user->avatar_small    = $imageResized['small'];
+                $user->update();
+
             } catch (Exception $ex) {
                 $validator->errors()->add('__file', _t('opp'));
-                
+
                 return ajax_upload_response([
                     'status'   => _const('AJAX_OK'),
                     'messages' => $validator->errors()->first()
@@ -460,11 +461,11 @@ class SettingController extends FrontController
 
         return $wards;
     }
-    
+
     public function ajaxChangeCover(Request $request) {
         if ($request->isMethod('POST') && user()->has_store) {
-            
-            $coverMaxFileSize = _const('COVER_MAX');
+
+            $coverMaxFileSize = _const('COVER_MAX_FILE_SIZE');
             $rules            = [
                 '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . $coverMaxFileSize
             ];
@@ -483,16 +484,26 @@ class SettingController extends FrontController
                     'messages' => $validator->errors()->first()
                 ]);
             }
-            
-            $store         = store();
-            $pathToCover   = config('front.cover_path');
-            $newFileUpload = upload($request, $pathToCover, [
-                $store->cover_big,
-                $store->cover_medium,
-                $store->cover_small,
-            ], [
-                'prefix' => 'cover_',
-                'resize' => [
+            /**
+             * 1. Upload
+             * 2. Resize
+             * 3. Delete old covers
+             * 4. Save new covers
+             */
+            try {
+
+                //1
+                $store     = store();
+                $coverPath = config('front.cover_path');
+                $upload    = new Upload($request->file('__file'));
+
+                $upload->setDirectory($coverPath);
+                $upload->setPrefix(_const('COVER_PREFIX'));
+                $upload->setSuffix(_const('ORIGINAL_SUFFIX'));
+                $upload->move();
+
+                //2
+                $imageResized = $upload->resizeGroup([
                     'big' => [
                         'width'  => _const('COVER_BIG_W'),
                         'height' => _const('COVER_BIG_H')
@@ -505,19 +516,29 @@ class SettingController extends FrontController
                         'width'  => _const('COVER_SMALL_W'),
                         'height' => _const('COVER_SMALL_H')
                     ],
-                ]
-            ]);
-            
-            $store->cover_big    = $newFileUpload['big'];
-            $store->cover_medium = $newFileUpload['medium'];
-            $store->cover_small  = $newFileUpload['small'];
-            
-            try {
+                ]);
+
+                //3
+                delete_file([
+                    $coverPath . $store->cover_original,
+                    $coverPath . $store->cover_big,
+                    $coverPath . $store->cover_medium,
+                    $coverPath . $store->cover_small,
+                ]);
+
+                //4
+                $store->cover_original = $imageResized['original'];
+                $store->cover_big      = $imageResized['big'];
+                $store->cover_medium   = $imageResized['medium'];
+                $store->cover_small    = $imageResized['small'];
                 $store->update();
+
             } catch (Exception $ex) {
+                $validator->errors()->add('__file', _t('opp'));
+
                 return ajax_upload_response([
                     'status'   => _const('AJAX_OK'),
-                    'messages' => _t('opp')
+                    'messages' => $validator->errors()->first()
                 ], 500);
             }
 
@@ -525,9 +546,9 @@ class SettingController extends FrontController
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
-                    'big'    => asset($pathToCover . $newFileUpload['big']),
-                    'medium' => asset($pathToCover . $newFileUpload['medium']),
-                    'small'  => asset($pathToCover . $newFileUpload['small']),
+                    'big'    => asset($coverPath . $imageResized['big']),
+                    'medium' => asset($coverPath . $imageResized['medium']),
+                    'small'  => asset($coverPath . $imageResized['small']),
                 ]
             ]);
         }

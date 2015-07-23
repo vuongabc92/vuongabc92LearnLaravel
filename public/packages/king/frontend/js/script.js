@@ -544,6 +544,7 @@
             var current      = this.element,
                 chooseCover  = $('.choose-cover-btn'),
                 coverMedium  = $('.cover-medium'),
+                coverBig     = $('.cover-big'),
                 img          = chooseCover.children('img'),
                 text         = chooseCover.children('b'),
                 check        = chooseCover.children('i');
@@ -554,6 +555,7 @@
                         img.show();
                         text.hide();
                         coverMedium.css({opacity: 0.5});
+                        coverBig.css({opacity: 0.5});
                     },
                     onComplete: function(response){
                         var json     = $.parseJSON(response),
@@ -572,6 +574,7 @@
                             }, 2000);
 
                             coverMedium.attr('src', json.data['medium']);
+                            coverBig.css('background-image', 'url(' + json.data['big'] + ')');
                         }
 
                         if (status === SETTING.AJAX_ERROR) {
@@ -580,6 +583,7 @@
                         }
 
                         coverMedium.css({opacity: 1});
+                        coverBig.css({opacity: 1});
                     }
                 });
             });
