@@ -12,7 +12,7 @@ Setting > My store
                 <div class="_fwfl _fh store-cover-img cover-big" style="background-image:url('{{ get_cover('big') }}')">
                     <button class="_fr _m10 btn _btn-sm _btn-black-opacity choose-cover-btn" data-event-trigger="#cover-file" data-event="click|click">
                         <img class="loading-in-btn-sm" src="{{ asset('packages/king/frontend/images/loading-black-opacity1.gif') }}" />
-                        <b class="btn-text">Change cover</b>
+                        <b>{{ _t('store_change_cover') }}</b>
                         <i class="fa fa-check _dn"></i>
                     </button>
                     <div class="_fwfl _dn">
@@ -28,14 +28,31 @@ Setting > My store
                     <li><a href="#"><b>Contact</b></a></li>
                     <li><a href="#"><b>Rating <span class="_fs12">(17)</span></b></a></li>
                     <li><a href="#"><b>Follow <span class="_fs12">(22)</span></b></a></li>
-                    <li><a href="#"><b><i class="_fs14 fa fa-plus"></i></b></a></li>
-                    <li><a href="#"><b><i class="_fs14 fa fa-search"></i></b></a></li>
+                    <li data-toggle="modal" data-target="#myModal">
+                        <a href="#" id="add-product-tooltip" data-toggle="tooltip" data-placement="bottom" data-original-title="{{ _t('add_product') }}">
+                            <b><i class="_fs14 fa fa-plus"></i></b>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="search-product-tooltip" data-toggle="tooltip" data-placement="bottom" data-original-title="{{ _t('search_in_store') }}">
+                            <b><i class="_fs14 fa fa-search"></i></b>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
     </div>
 </div>
+
+@include('frontend::inc.save-product-popup')
+
 @stop
 
 @section('js')
+<script>
+
+    $('#add-product-tooltip').tooltip();
+    $('#search-product-tooltip').tooltip();
+    
+</script>
 @stop

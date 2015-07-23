@@ -112,5 +112,8 @@ return [
     'change_store_info' => 'Store',
     'del_store' => 'Delete store',
     'del_acc' => 'Delete account',
-    'search_location' => 'Search a location'
+    'search_location' => 'Search a location',
+    'store_change_cover' => 'Change cover',
+    'add_product' => 'Add product',
+    'search_in_store' => 'Search in store'
 ];

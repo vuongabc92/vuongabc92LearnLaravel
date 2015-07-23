@@ -378,3 +378,9 @@ button._btn-sm{height: 30px;line-height:17px;}
 -moz-border-radius: 50%;
 -ms-border-radius: 50%;
 -o-border-radius: 50%;}
+
+/* Overide bootstap */
+
+/* Tooltip */
+.tooltip-inner{padding:4px 8px;border-radius:2px;-webkit-border-radius:2px;
+-moz-border-radius:2px;-ms-border-radius:2px;-o-border-radius:2px;}
