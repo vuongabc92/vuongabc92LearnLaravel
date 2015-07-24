@@ -5,5 +5,6 @@
 /tests
 /public/uploads/images/avatar
 /public/uploads/images/cover
+/public/uploads/images/product
 .env
 composer.lock
