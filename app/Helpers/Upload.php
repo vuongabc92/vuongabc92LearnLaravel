@@ -311,10 +311,11 @@ class Upload {
 
             //4
             try {
-                $newOriginnalName = str_replace($toBeReplaced, $original, $newFileName);
+                $newOriginalName = str_replace($toBeReplaced, $original, $newFileName);
                 $originnalImage   = Image::make($directory . $imgUpload)->orientate();
-                $originnalImage->save($directory . $newOriginnalName);
-                $resized['original'] = $newOriginnalName;
+                $originnalImage->save($directory . $newOriginalName);
+                $resized['original'] = $newOriginalName;
+                $this->_newFileName  = $newOriginalName;
                 delete_file($directory . $imgUpload);
             } catch (Exception $ex) {
                 throw new \Exception("Whoop!! Couldn't update original image. {$ex->getMessage()}");
@@ -324,6 +325,22 @@ class Upload {
         }
 
         return [];
+    }
+
+    /**
+     * Delete original image that was upload at the begin or
+     * was changed the name when resize group
+     *
+     * @throws \Exception
+     */
+    public function deleteOriginalImage() {
+        try {
+
+            delete_file($this->_directory . $this->_newFileName);
+
+        } catch (Exception $ex) {
+            throw new \Exception("Whoop!! Couldn't delete original image. {$ex->getMessage()}");
+        }
     }
 
 }

@@ -29,11 +29,6 @@ Setting > Store
                     <div class="_fwfl _mt10 setting-cover-box">
                         <img class="_fwfl _r2 setting-cover-img cover-medium" src="{{ get_cover('medium') }}" />
                         <div class="_fwfl _mt10">
-<!--                            <span class="_fl _fs12 _tga">
-                                <p class="_m0">+ {{ _t('cover_note1') }}</p>
-                                <p class="_m0">+ {{ _t('cover_note2') }}</p>
-                                <p class="_m0">+ {{ _t('cover_note3') }}</p>
-                            </span>-->
                             <button class="_fr btn _btn _btn-white choose-cover-btn" data-event-trigger="#cover-file" data-event="click|click">
                                 <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-gray-white1.gif') }}" />
                                 <b class="btn-text">{{ _t('choose_cover') }}</b>
@@ -61,7 +56,7 @@ Setting > Store
                             <div class="_fl setting-form-group setting-form-group-store">
                                 <label class="_fwfl setting-form-label" for="category" data-title="{{ _t('category') }}">{{ _t('category') }}</label>
                                 {!!
-                                    Form::select('category_id', $categories , null, ['id' => 'category', 'class' => '_fwfl setting-form-field selectbox-field'])
+                                    Form::select('category_id', $categories , null, ['id' => 'category', 'class' => 'setting-form-field selectbox-field'])
                                 !!}
                                 <div class="_fwfl _mt17">
                                     <p class="_fs12 _tg7 _m0">(*) {{ _t('store_name_note1') }}</p>
@@ -77,14 +72,14 @@ Setting > Store
                         <div class="_fr setting-field-right">
                             <div class="_fl setting-form-group setting-form-group-store">
                                 <label class="_fwfl setting-form-label" for="street" data-title="{{ _t('street_name') }}">{{ _t('street_name') }}</label>
-                                {!! Form::text('street', null, ['class' => '_fwfl setting-form-field', 'id' => 'street', 'maxlength' => '250']) !!}
+                                {!! Form::text('street', null, ['class' => 'setting-form-field', 'id' => 'street', 'maxlength' => '250']) !!}
                             </div>
                             <div class="_fl setting-form-group setting-form-group-store">
                                 <label class="_fwfl setting-form-label" for="city_id" data-title="{{ _t('province') }}">{{ _t('province') }}</label>
                                 {!!
                                     Form::select('city_id', $cities , null, [
                                         'id'            => 'city_id',
-                                        'class'         => '_fwfl setting-form-field selectbox-field',
+                                        'class'         => 'setting-form-field select-box-field',
                                         'data-get-area' => route('front_setting_get_district', 0),
                                         'data-target'   => '#district_id',
                                         'data-text'     => _t('select_district')])
@@ -96,7 +91,7 @@ Setting > Store
                                     {!!
                                         Form::select('district_id', $districts , null, [
                                             'id'            => 'district_id',
-                                            'class'         => '_fwfl setting-form-field selectbox-field',
+                                            'class'         => 'setting-form-field select-box-field',
                                             'data-get-area' => route('front_setting_get_ward', 0),
                                             'data-target'   => '#ward_id',
                                             'data-text'     => _t('select_ward')])
@@ -105,13 +100,13 @@ Setting > Store
                                 <div class="_w50 _fl _pl3">
                                     <label class="_fwfl setting-form-label" for="ward_id" data-title="{{ _t('ward') }}">{{ _t('ward') }}</label>
                                     {!!
-                                        Form::select('ward_id', $wards , null, ['id' => 'ward_id', 'class' => '_fwfl setting-form-field selectbox-field'])
+                                        Form::select('ward_id', $wards , null, ['id' => 'ward_id', 'class' => 'setting-form-field select-box-field'])
                                     !!}
                                 </div>
                             </div>
                             <div class="_fl setting-form-group setting-form-group-store">
                                 <label class="_fwfl setting-form-label" for="phone" data-title="{{ _t('fone_num') }}">{{ _t('fone_num') }}</label>
-                                {!! Form::text('phone_number', null, ['class' => '_fwfl setting-form-field', 'id' => 'phone', 'maxlength' => '250']) !!}
+                                {!! Form::text('phone_number', null, ['class' => 'setting-form-field', 'id' => 'phone', 'maxlength' => '250']) !!}
                                 <div class="_fwfl _mt10">
                                     <p class="_fs12 _tg7 _m0">(*) {{ _t('contact_info_note1') }}</p>
                                 </div>

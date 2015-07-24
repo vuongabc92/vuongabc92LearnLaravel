@@ -24,10 +24,10 @@ Setting > My store
             </div>
             <div class="_fwfl store-nav-bar">
                 <ul class="_fwfl _fh _ls store-nav-list">
-                    <li><a href="#"><b>Product <span class="_fs12">(12)</span></b></a></li>
-                    <li><a href="#"><b>Contact</b></a></li>
-                    <li><a href="#"><b>Rating <span class="_fs12">(17)</span></b></a></li>
-                    <li><a href="#"><b>Follow <span class="_fs12">(22)</span></b></a></li>
+                    <li><a href="#"><b>{{ _t('store_product') }} <span class="_fs12">(12)</span></b></a></li>
+                    <li><a href="#"><b>{{ _t('store_contact') }}</b></a></li>
+                    <li><a href="#"><b>{{ _t('store_rating') }} <span class="_fs12">(17)</span></b></a></li>
+                    <li><a href="#"><b>{{ _t('store_follow') }} <span class="_fs12">(22)</span></b></a></li>
                     <li data-toggle="modal" data-target="#myModal">
                         <a href="#" id="add-product-tooltip" data-toggle="tooltip" data-placement="bottom" data-original-title="{{ _t('add_product') }}">
                             <b><i class="_fs14 fa fa-plus"></i></b>
@@ -53,6 +53,6 @@ Setting > My store
 
     $('#add-product-tooltip').tooltip();
     $('#search-product-tooltip').tooltip();
-    
+
 </script>
 @stop

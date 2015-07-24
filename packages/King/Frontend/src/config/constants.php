@@ -19,6 +19,11 @@ return [
     'COVER_SMALL_H' => 113,
     'COVER_MAX_FILE_SIZE' => 10000,
 
+    'PRODUCT_PREFIX' => 'product_',
+    'PRODUCT_BIG' => 310,
+    'PRODUCT_THUMB' => 200,
+    'PRODUCT_MAX_FILE_SIZE' => 10000,
+
     'TOBEREPLACED' => '_ToBeReplaced',
     'ORIGINAL_SUFFIX' => '_original',
 

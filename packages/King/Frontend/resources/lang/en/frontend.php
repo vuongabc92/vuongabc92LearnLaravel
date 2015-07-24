@@ -115,5 +115,9 @@ return [
     'search_location' => 'Search a location',
     'store_change_cover' => 'Change cover',
     'add_product' => 'Add product',
-    'search_in_store' => 'Search in store'
+    'search_in_store' => 'Search in store',
+    'store_product' => 'Product',
+    'store_contact' => 'Contact',
+    'store_rating' => 'Rating',
+    'store_follow' => 'Follow',
 ];

@@ -31,5 +31,7 @@ Route::group(['middleware' => 'auth'], function(){
 
         //Store
         $route->get('my-store', ['as' => 'front_my_store', 'uses' => 'StoreController@index']);
+        $route->post('save-product', ['as' => 'front_save_product', 'uses' => 'StoreController@ajaxSaveProduct']);
+        $route->post('add-product-image', ['as' => 'front_product_image', 'uses' => 'StoreController@ajaxAddProductImage']);
     });
 });
