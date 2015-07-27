@@ -306,12 +306,13 @@ class SettingController extends FrontController
         $districts  = ['' => _t('select_district')];
         $wards      = ['' => _t('select_ward')];
         $categories = select(Category::select('id', 'name')->get());
-        $user       = user();
         $store      = store();
-        if ($user->has_store) {
+
+        if (user()->has_store) {
             $districts += select($this->getDistrictsByCityId($store->city_id)->keyBy('id'));
             $wards     += select($this->getWardsByCityId($store->district_id)->keyBy('id'));
         }
+
         return view('frontend::setting.store', [
             'categories' => ['' => _t('select_category')] + $categories,
             'cities'     => ['' => _t('select_city')] + $cities,

@@ -46,6 +46,18 @@ class StoreController extends FrontController
                 ]);
             }
 
+            /** Check the order of product image when upload */
+            $order       = (int) $request->get('order');
+            $orderConfig = config('front.product_img_order');
+            if ( ! in_array($order, $orderConfig)) {
+                $validator->errors()->add('__product', _t('opp'));
+
+                return ajax_upload_response([
+                    'status'   => _const('AJAX_ERROR'),
+                    'messages' => $validator->errors()->first()
+                ]);
+            }
+
             /**
              * 1. Upload
              * 2. Resize
@@ -55,44 +67,21 @@ class StoreController extends FrontController
             try {
 
                 //1
-                $productPath = config('front.product_path');
-                $upload      = new Upload($request->file('__product'));
-                $upload->setDirectory($productPath);
+                $tempPath = config('front.temp_path');
+                $upload   = new Upload($request->file('__product'));
+                $upload->setDirectory($tempPath);
                 $upload->setPrefix(_const('PRODUCT_PREFIX'));
                 $upload->setSuffix(_const('ORIGINAL_SUFFIX'));
-                $upload->move();
+                $original = $upload->move();
 
                 //2
                 $imageResized = $upload->resizeGroup([
-                    'big' => [
-                        'width'  => _const('PRODUCT_BIG'),
-                        'height' => _const('PRODUCT_BIG')
-                    ],
                     'thumb' => [
                         'width'  => _const('PRODUCT_THUMB'),
                         'height' => _const('PRODUCT_THUMB')
                     ],
                 ]);
                 $upload->deleteOriginalImage();
-                $product_id = Product::where('id', store()->id)->max('id');
-                $product    = Product::findOrNew($product_id);
-                
-//                if ($product_id === null || $product)
-//
-//                //3
-//                delete_file([
-//                    $avatarPath . $user->avatar_original,
-//                    $avatarPath . $user->avatar_big,
-//                    $avatarPath . $user->avatar_medium,
-//                    $avatarPath . $user->avatar_small
-//                ]);
-//
-//                //4
-//                $user->avatar_original = $imageResized['original'];
-//                $user->avatar_big      = $imageResized['big'];
-//                $user->avatar_medium   = $imageResized['medium'];
-//                $user->avatar_small    = $imageResized['small'];
-//                $user->update();
 
             } catch (Exception $ex) {
                 $validator->errors()->add('__product', _t('opp'));
@@ -103,15 +92,15 @@ class StoreController extends FrontController
                 ], 500);
             }
 
-//            return ajax_upload_response([
-//                'status'   => _const('AJAX_OK'),
-//                'messages' => _t('saved_info'),
-//                'data'     => [
-//                    'big'     => asset($avatarPath . $imageResized['big']),
-//                    'medium'  => asset($avatarPath . $imageResized['medium']),
-//                    'small'   => asset($avatarPath . $imageResized['small']),
-//                ]
-//            ]);
+            return ajax_upload_response([
+                'status'   => _const('AJAX_OK'),
+                'messages' => _t('saved_info'),
+                'data'     => [
+                    'original' => asset($tempPath . $original),
+                    'thumb'    => asset($tempPath . $imageResized['thumb']),
+                    'order'    => $order
+                ]
+            ]);
 
         }
 

@@ -495,10 +495,10 @@ if ( ! function_exists('delete_file')) {
             foreach ($file as $one) {
                 delete_file($one);
             }
-            
+
             return true;
         }
-        
+
         if (check_file($file)) {
             try {
                 \Illuminate\Support\Facades\File::delete($file);
@@ -552,13 +552,15 @@ if ( ! function_exists('resize_image')) {
 
 if ( ! function_exists('select')) {
     /**
-     * Get list area such as: cities, districts, wards,...
+     * From collection get the list use for generate select box HTML::select
      * The final result will be:
      * <pre>
      *  [id => name]
      * </pre>
      *
      * @param \Illuminate\Support\Collection $collection
+     *
+     * @return array
      */
     function select($collection) {
         $area = $collection->keyBy('id')->toArray();
@@ -572,6 +574,14 @@ if ( ! function_exists('select')) {
 }
 
 if ( ! function_exists('locations')) {
+    /**
+     * Get locations and number of store per location or
+     * return specify location by name.
+     *
+     * @param string $name Location name
+     *
+     * @return \Illuminate\Support\Collection $collection
+     */
     function locations($name = '') {
         //Get table dynamically
         $city       = new \App\Models\City();
@@ -594,7 +604,7 @@ if ( ! function_exists('locations')) {
 
 if ( ! function_exists('current_location')) {
     /**
-     * @todo Get current location (city)
+     * Get current location (city)
      *
      * @return \App\Models\City
      */
@@ -603,5 +613,20 @@ if ( ! function_exists('current_location')) {
         $location   = \App\Models\City::find($current_id);
 
         return $location;
+    }
+}
+
+if ( ! function_exists('get_product')) {
+    /**
+     * Get product by current store id and product id
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Support\Collection $collection
+     */
+    function get_product($id) {
+        return App\Models\Product::where('store_id', store()->id)
+                                   ->where('id', (int) $id)
+                                   ->get();
     }
 }

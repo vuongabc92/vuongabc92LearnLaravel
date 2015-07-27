@@ -3,8 +3,9 @@
 /node_modules
 /nbproject
 /tests
-/public/uploads/images/avatar
-/public/uploads/images/cover
-/public/uploads/images/product
+/public/uploads/images/avatars
+/public/uploads/images/covers
+/public/uploads/images/products
+/public/uploads/temp
 .env
 composer.lock

@@ -26,6 +26,10 @@
                             <i class="fa fa-plus"></i>
                         </span>
                     </div>
+                    {!! Form::hidden('product_image_1', '', ['id' => 'product-image-1']) !!}
+                    {!! Form::hidden('product_image_2', '', ['id' => 'product-image-2']) !!}
+                    {!! Form::hidden('product_image_3', '', ['id' => 'product-image-3']) !!}
+                    {!! Form::hidden('product_image_4', '', ['id' => 'product-image-4']) !!}
                 </div>
                 <div class="_fwfl setting-form-group">
                     <label class="_fwfl setting-form-label" for="name" data-title="Name">

@@ -820,6 +820,7 @@
                             productImg = productImg.replace('__SRC', json.data['thumb']);
                             $('.product-img-' + json.data['order']).css('border', 'solid 3px #000');
                             $('.product-img-' + json.data['order']).html(productImg);
+                            $('#product-image-' + json.data['order']).val(json.data['original']);
                         }
 
                     }
