@@ -13,16 +13,16 @@
                         Image <span class="_tr6">*</span>
                     </label>
                     <div class="_fwfl">
-                        <span class="_r3 add-product-image" data-event-trigger="#product-image1-file" data-event="click|click">
+                        <span class="_r3 add-product-image product-img-1" data-event-trigger="#product-image1-file" data-event="click|click">
                             <i class="fa fa-plus"></i>
                         </span>
-                        <span class="_r3 add-product-image" data-event-trigger="#product-image2-file" data-event="click|click">
+                        <span class="_r3 add-product-image product-img-2" data-event-trigger="#product-image2-file" data-event="click|click">
                             <i class="fa fa-plus"></i>
                         </span>
-                        <span class="_r3 add-product-image" data-event-trigger="#product-image3-file" data-event="click|click">
+                        <span class="_r3 add-product-image product-img-3" data-event-trigger="#product-image3-file" data-event="click|click">
                             <i class="fa fa-plus"></i>
                         </span>
-                        <span class="_r3 add-product-image add-product-image-last" data-event-trigger="#product-image4-file" data-event="click|click">
+                        <span class="_r3 add-product-image product-img-4 add-product-image-last" data-event-trigger="#product-image4-file" data-event="click|click">
                             <i class="fa fa-plus"></i>
                         </span>
                     </div>

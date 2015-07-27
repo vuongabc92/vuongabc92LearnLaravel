@@ -810,11 +810,17 @@
                     onStart: function() {
                     },
                     onComplete: function(response){
-                        var json     = $.parseJSON(response),
-                            status   = json.status,
-                            messages = json.messages;
+                        var json        = $.parseJSON(response),
+                            status      = json.status,
+                            messages    = json.messages,
+                            productImg  = SETTING.PRODUCT_IMG,
+                            productImgI = SETTING.PRODUCT_IMG_I;
 
-
+                        if (status === SETTING.AJAX_OK) {
+                            productImg = productImg.replace('__SRC', json.data['thumb']);
+                            $('.product-img-' + json.data['order']).css('border', 'solid 3px #000');
+                            $('.product-img-' + json.data['order']).html(productImg);
+                        }
 
                     }
                 });

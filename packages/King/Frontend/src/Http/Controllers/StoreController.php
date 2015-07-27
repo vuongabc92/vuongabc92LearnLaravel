@@ -11,6 +11,7 @@ namespace King\Frontend\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator;
 use App\Helpers\Upload;
+use App\Models\Product;
 
 class StoreController extends FrontController
 {
@@ -54,10 +55,9 @@ class StoreController extends FrontController
             try {
 
                 //1
-                $user       = user();
-                $avatarPath = config('front.product_path');
-                $upload     = new Upload($request->file('__product'));
-                $upload->setDirectory($avatarPath);
+                $productPath = config('front.product_path');
+                $upload      = new Upload($request->file('__product'));
+                $upload->setDirectory($productPath);
                 $upload->setPrefix(_const('PRODUCT_PREFIX'));
                 $upload->setSuffix(_const('ORIGINAL_SUFFIX'));
                 $upload->move();
@@ -74,6 +74,10 @@ class StoreController extends FrontController
                     ],
                 ]);
                 $upload->deleteOriginalImage();
+                $product_id = Product::where('id', store()->id)->max('id');
+                $product    = Product::findOrNew($product_id);
+                
+//                if ($product_id === null || $product)
 //
 //                //3
 //                delete_file([
@@ -91,7 +95,7 @@ class StoreController extends FrontController
 //                $user->update();
 
             } catch (Exception $ex) {
-                $validator->errors()->add('__file', _t('opp'));
+                $validator->errors()->add('__product', _t('opp'));
 
                 return ajax_upload_response([
                     'status'   => _const('AJAX_OK'),

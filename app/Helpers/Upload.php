@@ -53,7 +53,7 @@ class Upload {
      *
      * @var string
      */
-    protected $_newFileName;
+    protected $_originalFileName;
 
 
     /**
@@ -167,10 +167,10 @@ class Upload {
     /**
      * Set new file name
      *
-     * @param array $newFileName
+     * @param array $originalFileName
      */
-    public function setNewFileName($newFileName) {
-        $this->_newFileName = $newFileName;
+    public function setOriginalFileName($originalFileName) {
+        $this->_originalFileName = $originalFileName;
     }
 
     /**
@@ -178,8 +178,8 @@ class Upload {
      *
      * @return string
      */
-    public function getNewFileName() {
-        return $this->_newFileName;
+    public function getOriginalFileName() {
+        return $this->_originalFileName;
     }
 
 
@@ -209,9 +209,9 @@ class Upload {
             throw new \Exception("Whoop!! Couldn't upload file. {$ex->getMessage()}");
         }
 
-        $this->_newFileName = $newFileName;
+        $this->_originalFileName = $newFileName;
 
-        return $this->_directory . $newFileName;
+        return $newFileName;
     }
 
     /**
@@ -239,7 +239,7 @@ class Upload {
 
                 //1
                 if ($imagePath === '') {
-                    $imagePath = $this->_directory . $this->_newFileName;
+                    $imagePath = $this->_directory . $this->_originalFileName;
                 }
 
                 //2
@@ -289,7 +289,7 @@ class Upload {
             //1
             $resized      = [];
             $directory    = $this->_directory;
-            $imgUpload    = $this->_newFileName;
+            $imgUpload    = $this->_originalFileName;
             $toBeReplaced = _const('TOBEREPLACED');
             $original     = _const('ORIGINAL_SUFFIX');
 
@@ -311,11 +311,11 @@ class Upload {
 
             //4
             try {
-                $newOriginalName = str_replace($toBeReplaced, $original, $newFileName);
+                $newOriginalName  = str_replace($toBeReplaced, $original, $newFileName);
                 $originnalImage   = Image::make($directory . $imgUpload)->orientate();
                 $originnalImage->save($directory . $newOriginalName);
-                $resized['original'] = $newOriginalName;
-                $this->_newFileName  = $newOriginalName;
+                $resized['original']     = $newOriginalName;
+                $this->_originalFileName = $newOriginalName;
                 delete_file($directory . $imgUpload);
             } catch (Exception $ex) {
                 throw new \Exception("Whoop!! Couldn't update original image. {$ex->getMessage()}");
@@ -336,7 +336,7 @@ class Upload {
     public function deleteOriginalImage() {
         try {
 
-            delete_file($this->_directory . $this->_newFileName);
+            delete_file($this->_directory . $this->_originalFileName);
 
         } catch (Exception $ex) {
             throw new \Exception("Whoop!! Couldn't delete original image. {$ex->getMessage()}");

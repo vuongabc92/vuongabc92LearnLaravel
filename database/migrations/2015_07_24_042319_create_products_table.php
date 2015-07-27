@@ -14,7 +14,7 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('store_id');
+            $table->integer('store_id')->unsigned();
             $table->string('name', 250);
             $table->text('images');
             $table->string('price', 16);
@@ -24,6 +24,8 @@ class CreateProductsTable extends Migration
             $table->boolean('is_trash')->default(0);
             $table->boolean('is_block')->default(0);
             $table->timestamps();
+            
+            $table->foreign('store_id')->references('id')->on('stores')->onDelete('cascade');
         });
     }
 
