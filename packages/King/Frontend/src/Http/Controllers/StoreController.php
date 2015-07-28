@@ -15,15 +15,74 @@ use App\Models\Product;
 
 class StoreController extends FrontController
 {
-    public function index()
+    /**
+     * @var App\Models\Product
+     */
+    protected $_product;
+
+    public function __construct(Product $product)
     {
+        $this->_product = $product;
+    }
+
+    public function index() {
         return view('frontend::store.index');
     }
 
-    public function ajaxSaveProduct(){}
+    public function ajaxSaveProduct(Request $request) {
+        //Only accept ajax request
+        if ($request->ajax()) {
+            $rules     = $this->_product->getRules();
+            $messages  = $this->_product->getMessages();
+            $validator = Validator::make($request->all(), $rules, $messages);
+
+            //A product must has at least one image.
+            $image1 = $request->get('product_image_1');
+            $image2 = $request->get('product_image_2');
+            $image3 = $request->get('product_image_3');
+            $image4 = $request->get('product_image_4');
+            if (empty($image1) && empty($image2)
+                               && empty($image3)
+                               && empty($image4)) {
+                $validator->errors()->add('image', _t('product_image_req'));
+            }
+
+            if ($validator->fails()) {
+                return ajax_upload_response([
+                    'status'   => _const('AJAX_ERROR'),
+                    'messages' => $validator->messages()
+                ]);
+            }
+
+            try {
+                $tempPath    = config('front.temp_path');
+                $productPath = config('front.product_path');
+                foreach ([$image1, $image2, $image3, $image4] as $one) {
+                    if ( ! empty($one) && check_file($tempPath . $one)) {
+                        copy($tempPath . $one, $productPath . $one);
+                    }
+                }
+
+            } catch (Exception $ex) {
+                $validator->errors()->add('image', _t('opp'));
+
+                return ajax_upload_response([
+                    'status'   => _const('AJAX_ERROR'),
+                    'messages' => $validator->errors()->first()
+                ]);
+            }
+        }
+    }
 
 
-    public function ajaxAddProductImage(Request $request){
+    /**
+     * Upload product image
+     *
+     * @param Illuminate\Http\Request $request
+     *
+     * return JSON
+     */
+    public function ajaxAddProductImage(Request $request) {
 
         if ($request->isMethod('POST')) {
             $productMaxFileSize = _const('PRODUCT_MAX_FILE_SIZE');
@@ -81,7 +140,6 @@ class StoreController extends FrontController
                         'height' => _const('PRODUCT_THUMB')
                     ],
                 ]);
-                $upload->deleteOriginalImage();
 
             } catch (Exception $ex) {
                 $validator->errors()->add('__product', _t('opp'));
@@ -96,7 +154,7 @@ class StoreController extends FrontController
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
-                    'original' => asset($tempPath . $original),
+                    'original' => $imageResized['original'],
                     'thumb'    => asset($tempPath . $imageResized['thumb']),
                     'order'    => $order
                 ]

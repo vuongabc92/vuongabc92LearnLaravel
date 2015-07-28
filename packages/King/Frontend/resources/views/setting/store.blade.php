@@ -30,7 +30,7 @@ Setting > Store
                         <img class="_fwfl _r2 setting-cover-img cover-medium" src="{{ get_cover('medium') }}" />
                         <div class="_fwfl _mt10">
                             <button class="_fr btn _btn _btn-white choose-cover-btn" data-event-trigger="#cover-file" data-event="click|click">
-                                <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-gray-white1.gif') }}" />
+                                <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-gray-white-24x24.gif') }}" />
                                 <b class="btn-text">{{ _t('choose_cover') }}</b>
                                 <i class="fa fa-check _dn"></i>
                             </button>
@@ -113,7 +113,7 @@ Setting > Store
                             </div>
                             <div class="_fwfl setting-form-group">
                                 <button type="submit" class="_fl _mr10 btn _btn _btn-blue1 _save-btn">
-                                    <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-white-blue1.gif') }}" />
+                                    <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-white-blue-24x24.gif') }}" />
                                     <b class="btn-text">{{ _t('save') }}</b>
                                     <i class="fa fa-check _dn"></i>
                                 </button>

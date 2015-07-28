@@ -343,7 +343,7 @@ if ( ! function_exists('generate_filename')) {
 
     /**
      * Generate the file name base on current user id, time
-     * to get a unique file in present folder
+     * to get a unique file in present directory
      *
      * @param string $directory Path to the upload directory
      * @param string $extension File extension

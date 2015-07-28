@@ -51,7 +51,7 @@ Setting > Account
                         </span>
                         <div class="_fwfl _mt15">
                             <span class="btn _btn _btn-white choose-avatar-btn" data-event-trigger="#avatar-file" data-event="click|click">
-                                <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-gray-white1.gif') }}" />
+                                <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-gray-white-24x24.gif') }}" />
                                 <b class="btn-text">{{ _t('avatar_browser') }}</b>
                                 <i class="fa fa-check _dn"></i>
                             </span>
@@ -85,7 +85,7 @@ Setting > Account
                         </div>
                         <div class="_fwfl setting-form-group">
                             <button type="submit" class="_fl _mr10 btn _btn _btn-blue1 _save-btn">
-                                <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-white-blue1.gif') }}" />
+                                <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-white-blue-24x24.gif') }}" />
                                 <b class="btn-text">{{ _t('save') }}</b>
                                 <i class="fa fa-check _dn"></i>
                             </button>
@@ -123,7 +123,7 @@ Setting > Account
                         </div>
                         <div class="_fwfl setting-form-group">
                             <button type="submit" class="_fl _mr10 btn _btn _btn-blue1 _save-btn">
-                                <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-white-blue1.gif') }}" />
+                                <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-white-blue-24x24.gif') }}" />
                                 <b class="btn-text">{{ _t('save') }}</b>
                                 <i class="fa fa-check _dn"></i>
                             </button>

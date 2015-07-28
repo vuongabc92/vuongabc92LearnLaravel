@@ -250,7 +250,7 @@ class Upload {
 
                 //3
                 if ($newName !== '') {
-                    $image->save($newName);
+                    $image->save($this->_directory . $newName);
                 } else {
                     $image->save();
                 }
@@ -259,7 +259,7 @@ class Upload {
                 throw new \Exception("Whoop!! Couldn't resize image. {$ex->getMessage()}");
             }
 
-            return true;
+            return ( ! empty($newName)) ? $this->_directory . $newName : $imagePath;
         }
 
         return false;
@@ -304,7 +304,7 @@ class Upload {
             //3
             foreach ($sizes as $k => $size) {
                 $nameBySize = str_replace($toBeReplaced, "_{$k}", $newFileName);
-                if ($this->resize($size['width'], $size['height'], $imagePath, $directory . $nameBySize)) {
+                if ($this->resize($size['width'], $size['height'], $imagePath, $nameBySize)) {
                     $resized[$k] = $nameBySize;
                 }
             }

@@ -803,26 +803,28 @@
 
     Plugin.prototype = {
         init: function() {
-            var current = this.element;
+            var current = this.element,
+                loading = $('.product-img-loading');
 
             current.on('submit', function(){
                 return AIM.submit(this, {
                     onStart: function() {
+                        loading.show();
                     },
                     onComplete: function(response){
-                        var json        = $.parseJSON(response),
-                            status      = json.status,
-                            messages    = json.messages,
-                            productImg  = SETTING.PRODUCT_IMG,
-                            productImgI = SETTING.PRODUCT_IMG_I;
+                        var json           = $.parseJSON(response),
+                            status         = json.status,
+                            messages       = json.messages,
+                            productImg     = SETTING.PRODUCT_IMG,
+                            productImgEdit = SETTING.PRODUCT_IMG_EDIT;
 
                         if (status === SETTING.AJAX_OK) {
                             productImg = productImg.replace('__SRC', json.data['thumb']);
                             $('.product-img-' + json.data['order']).css('border', 'solid 3px #000');
-                            $('.product-img-' + json.data['order']).html(productImg);
+                            $('.product-img-' + json.data['order']).html(productImg + productImgEdit);
                             $('#product-image-' + json.data['order']).val(json.data['original']);
                         }
-
+                        loading.hide();
                     }
                 });
             });

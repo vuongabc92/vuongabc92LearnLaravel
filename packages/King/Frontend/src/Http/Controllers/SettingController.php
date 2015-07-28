@@ -9,6 +9,8 @@ use App\Models\District;
 use App\Models\Ward;
 use App\Models\Category;
 use App\Helpers\Upload;
+use App\Helpers\Upload1;
+use App\Helpers\Image;
 use Validator;
 use Hash;
 use DB;
@@ -19,7 +21,7 @@ class SettingController extends FrontController
     /**
      * @var App\Models\User
      */
-    protected $user;
+    protected $_user;
 
     /**
      * @var App\Models\Store
@@ -28,7 +30,7 @@ class SettingController extends FrontController
 
     public function __construct(User $user, Store $store)
     {
-        $this->user  = $user;
+        $this->_user  = $user;
         $this->store = $store;
     }
 
@@ -119,8 +121,8 @@ class SettingController extends FrontController
         //Only accept ajax request.
         if ($request->ajax()) {
 
-            $rules           = remove_rules($this->user->getRules(), 'password.min:6');
-            $messages        = $this->user->getMessages();
+            $rules           = remove_rules($this->_user->getRules(), 'password.min:6');
+            $messages        = $this->_user->getMessages();
 
             $user            = user();
             $currentUsername = $user->user_name;
@@ -233,6 +235,60 @@ class SettingController extends FrontController
              * 4. Save new avatars
              */
             try {
+
+
+                $avatarPath = config('front.avatar_path');
+                $upload     = new Upload1($request->file('__file'));
+                $upload->setDirectory($avatarPath);
+                $uploadImage = $upload->move();
+                $image = new Image($uploadImage);
+
+                $newFileName = generate_filename($avatarPath, $upload->getFileExt(), [
+                    'prefix' => _const('AVATAR_PREFIX'),
+                    'suffix' => _const('TOBEREPLACED')
+                ]);
+
+                $abc = $image->group([
+                    'directory' => $avatarPath,
+                    'name' => $newFileName,
+                    'sizes' => [
+                        'big' => [
+                            'width'  => _const('AVATAR_BIG'),
+                            'height' => _const('AVATAR_BIG')
+                        ],
+                        'medium' => [
+                            'width'  => _const('AVATAR_MEDIUM'),
+                            'height' => _const('AVATAR_MEDIUM')
+                        ],
+                        'small' => [
+                            'width'  => _const('AVATAR_SMALL'),
+                            'height' => _const('AVATAR_SMALL')
+                        ]
+                    ]
+                ]);
+
+                var_dump($abc);die;
+                //2
+                $imageResized = $upload->resizeGroup([
+                    'big' => [
+                        'width'  => _const('AVATAR_BIG'),
+                        'height' => _const('AVATAR_BIG')
+                    ],
+                    'medium' => [
+                        'width'  => _const('AVATAR_MEDIUM'),
+                        'height' => _const('AVATAR_MEDIUM')
+                    ],
+                    'small' => [
+                        'width'  => _const('AVATAR_SMALL'),
+                        'height' => _const('AVATAR_SMALL')
+                    ]
+                ]);
+
+
+
+
+                die;
+
 
                 //1
                 $user       = user();
@@ -475,7 +531,7 @@ class SettingController extends FrontController
                 '__file.required' => _t('no_file'),
                 '__file.image'    => _t('file_not_image'),
                 '__file.mimes'    => _t('file_image_mimes'),
-                '__file.max'      => _t('avatar_max'),
+                '__file.max'      => _t('cover_max'),
             ];
 
             $validator = Validator::make($request->all(), $rules, $messages);

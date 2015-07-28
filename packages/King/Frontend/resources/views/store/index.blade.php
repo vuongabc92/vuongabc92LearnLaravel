@@ -11,7 +11,7 @@ Setting > My store
             <div class="_fwfl store-cover">
                 <div class="_fwfl _fh store-cover-img cover-big" style="background-image:url('{{ get_cover('big') }}')">
                     <button class="_fr _m10 btn _btn-sm _btn-black-opacity choose-cover-btn" data-event-trigger="#cover-file" data-event="click|click">
-                        <img class="loading-in-btn-sm" src="{{ asset('packages/king/frontend/images/loading-black-opacity1.gif') }}" />
+                        <img class="loading-in-btn-sm" src="{{ asset('packages/king/frontend/images/loading-black-opacity-24x24.gif') }}" />
                         <b>{{ _t('store_change_cover') }}</b>
                         <i class="fa fa-check _dn"></i>
                     </button>
