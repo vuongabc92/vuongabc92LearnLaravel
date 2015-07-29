@@ -231,7 +231,7 @@ class SettingController extends FrontController
              * 1. Upload
              * 2. Generate name
              * 3. Resize images
-             * 4. Delete old files
+             * 4. Delete old files and original
              * 5. Save new file info
              */
             try {
@@ -264,8 +264,7 @@ class SettingController extends FrontController
 
                 // 3
                 $image = new Image($avatarPath . $upload->getName());
-                $image->setDirectory($avatarPath)
-                      ->resizeGroup($filename->getGroup());
+                $image->setDirectory($avatarPath)->resizeGroup($filename->getGroup());
 
                 // 4
                 $user = user();
@@ -476,9 +475,8 @@ class SettingController extends FrontController
     public function ajaxChangeCover(Request $request) {
         if ($request->isMethod('POST') && user()->has_store) {
 
-            $coverMaxFileSize = _const('COVER_MAX_FILE_SIZE');
-            $rules            = [
-                '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . $coverMaxFileSize
+            $rules = [
+                '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . _const('COVER_MAX_FILE_SIZE')
             ];
 
             $messages = [
@@ -503,18 +501,18 @@ class SettingController extends FrontController
              */
             try {
 
-                //1
-                $store     = store();
-                $coverPath = config('front.cover_path');
-                $upload    = new Upload($request->file('__file'));
+                // 1
+                $coverPath  = config('front.cover_path');
+                $file       = $request->file('__file');
+                $filename   = new FileName($coverPath, $file->getClientOriginalExtension());
+                $upload     = new Upload($file);
+                $upload->setDirectory($coverPath)
+                       ->setName($filename->cover()->generate())
+                       ->move();
 
-                $upload->setDirectory($coverPath);
-                $upload->setPrefix(_const('COVER_PREFIX'));
-                $upload->setSuffix(_const('ORIGINAL_SUFFIX'));
-                $upload->move();
-
-                //2
-                $imageResized = $upload->resizeGroup([
+                // 2
+                $filename->setPrefix(_const('COVER_PREFIX'));
+                $filename->avatar()->group([
                     'big' => [
                         'width'  => _const('COVER_BIG_W'),
                         'height' => _const('COVER_BIG_H')
@@ -526,22 +524,29 @@ class SettingController extends FrontController
                     'small' => [
                         'width'  => _const('COVER_SMALL_W'),
                         'height' => _const('COVER_SMALL_H')
-                    ],
-                ]);
+                    ]
+                ], true);
 
-                //3
+                // 3
+                $image = new Image($coverPath . $upload->getName());
+                $image->setDirectory($coverPath)->resizeGroup($filename->getGroup());
+
+                // 4
+                $store = store();
                 delete_file([
+                    $coverPath . $upload->getName(),
                     $coverPath . $store->cover_original,
                     $coverPath . $store->cover_big,
                     $coverPath . $store->cover_medium,
                     $coverPath . $store->cover_small,
                 ]);
 
-                //4
-                $store->cover_original = $imageResized['original'];
-                $store->cover_big      = $imageResized['big'];
-                $store->cover_medium   = $imageResized['medium'];
-                $store->cover_small    = $imageResized['small'];
+                // 5
+                $resizes = $image->getResizes();
+                $store->cover_original = $resizes['original'];
+                $store->cover_big      = $resizes['big'];
+                $store->cover_medium   = $resizes['medium'];
+                $store->cover_small    = $resizes['small'];
                 $store->update();
 
             } catch (Exception $ex) {
@@ -557,9 +562,9 @@ class SettingController extends FrontController
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
-                    'big'    => asset($coverPath . $imageResized['big']),
-                    'medium' => asset($coverPath . $imageResized['medium']),
-                    'small'  => asset($coverPath . $imageResized['small']),
+                    'big'    => asset($coverPath . $resizes['big']),
+                    'medium' => asset($coverPath . $resizes['medium']),
+                    'small'  => asset($coverPath . $resizes['small']),
                 ]
             ]);
         }
