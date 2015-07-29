@@ -6,70 +6,163 @@ use Intervention\Image\Facades\Image as ImageIntervention;
 
 class Image
 {
-    protected $_toBeReplaced = '_ToBeReplaced';
-
-    protected $_group = [];
-
-
+    /**
+     * Image path
+     *
+     * @var string
+     */
     protected $_image;
 
+    /**
+     * List of image that was resized
+     *
+     * @var array
+     */
+    protected $_resizes;
+
+    /**
+     * Directory that contain image will be resized
+     *
+     * @var string
+     */
+    protected $_directory;
+
+    /**
+     * Set image
+     *
+     * @param array $image
+     */
+    public function setImage($image) {
+
+        $this->_image = $image;
+
+        return $this;
+    }
+
+    /**
+     * get image
+     *
+     * @param array
+     */
+    public function getImage() {
+
+        return $this->_image;
+    }
+
+    /**
+     * Set group
+     *
+     * @param array $resizes
+     */
+    public function setResizes($resizes) {
+
+        $this->_resizes = $resizes;
+
+        return $this;
+    }
+
+    /**
+     * get group
+     *
+     * @param array
+     */
+    public function getResizes() {
+
+        return $this->_resizes;
+    }
+
+    /**
+     * Set group
+     *
+     * @param array $directory
+     */
+    public function setDirectory($directory) {
+
+        $this->_directory = $directory;
+
+        return $this;
+    }
+
+    /**
+     * get group
+     *
+     * @param array
+     */
+    public function getDirectory() {
+
+        return $this->_directory;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param string $image
+     */
     public function __construct($image)
     {
         $this->_image = $image;
     }
 
-
+    /**
+     * Resize image to present size
+     *
+     * @param int    $width
+     * @param int    $height
+     * @param string $name
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
     public function resize($width, $height, $name = '') {
 
-        if ($width && $height) {
+        try {
 
-            try {
+            $image = ImageIntervention::make($this->_image)->orientate();
 
-                $image = ImageIntervention::make($this->_image)->orientate();
+            //Won't resize when no size present
+            if ($width && $height) {
                 $image->fit($width, $height, function ($constraint) {
                     $constraint->upsize();
                 });
-
-                if (empty($name)) {
-                    $image->save();
-                } else {
-                    $image->save($name);
-                }
-
-            } catch (Exception $ex) {
-                throw new \Exception("Whoop!! Couldn't resize image. {$ex->getMessage()}");
             }
 
-            return (empty($name)) ? $this->_image : $name;
+            if (empty($name)) {
+                $image->save();
+            } else {
+                $image->save($name);
+            }
+
+        } catch (Exception $ex) {
+            throw new \Exception("Whoop!! Couldn't resize image. {$ex->getMessage()}");
         }
 
-        return false;
+        return (empty($name)) ? $this->_image : $name;
+
     }
 
-    public function resizeGroup($images) {
+    /**
+     * Resize original file to group of size present
+     *
+     * @param array $group
+     *
+     * @return \App\Helpers\Image
+     */
+    public function resizeGroup($group) {
+
         $resizes = [];
-        foreach ($images as $k => $image) {
-            $name        = isset($image['name']) ? $image['name'] : '';
-            $resizes[$k] = $this->resize($image['width'], $image['height'], $name);
-        }
-
-        return $resizes;
-    }
-
-    public function group($group) {
-        $final = [];
         if (count($group)) {
-            foreach($group['sizes'] as $k => $size) {
-                $nameBySize = str_replace($this->_toBeReplaced, "_{$k}", $group['name']);
-                $final[$k]  = [
-                    'width'  => $size['width'],
-                    'height' => $size['height'],
-                    'name'   => $group['directory'] . $nameBySize,
-                ];
+            foreach ($group as $k => $size) {
+                $name = isset($size['name']) ? $this->_directory . $size['name'] : '';
+                if ($this->resize($size['width'], $size['height'], $name)) {
+                    $resizes[$k] = $size['name'];
+                }
             }
         }
 
-        return $this->_group = $final;
+        $this->_resizes = $resizes;
+
+        return $this;
     }
 
 }

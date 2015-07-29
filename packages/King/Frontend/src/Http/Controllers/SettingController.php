@@ -9,8 +9,8 @@ use App\Models\District;
 use App\Models\Ward;
 use App\Models\Category;
 use App\Helpers\Upload;
-use App\Helpers\Upload1;
 use App\Helpers\Image;
+use App\Helpers\FileName;
 use Validator;
 use Hash;
 use DB;
@@ -208,9 +208,8 @@ class SettingController extends FrontController
 
         if ($request->isMethod('POST')) {
 
-            $avatarMaxFileSize = _const('AVATAR_MAX_FILE_SIZE');
             $rules = [
-                '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . $avatarMaxFileSize
+                '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . _const('AVATAR_MAX_FILE_SIZE')
             ];
 
             $messages = [
@@ -230,46 +229,25 @@ class SettingController extends FrontController
 
             /**
              * 1. Upload
-             * 2. Resize
-             * 3. Delete old avatars
-             * 4. Save new avatars
+             * 2. Generate name
+             * 3. Resize images
+             * 4. Delete old files
+             * 5. Save new file info
              */
             try {
 
-
+                // 1
                 $avatarPath = config('front.avatar_path');
-                $upload     = new Upload1($request->file('__file'));
-                $upload->setDirectory($avatarPath);
-                $uploadImage = $upload->move();
-                $image = new Image($uploadImage);
+                $file       = $request->file('__file');
+                $filename   = new FileName($avatarPath, $file->getClientOriginalExtension());
+                $upload     = new Upload($file);
+                $upload->setDirectory($avatarPath)
+                       ->setName($filename->avatar()->generate())
+                       ->move();
 
-                $newFileName = generate_filename($avatarPath, $upload->getFileExt(), [
-                    'prefix' => _const('AVATAR_PREFIX'),
-                    'suffix' => _const('TOBEREPLACED')
-                ]);
-
-                $abc = $image->group([
-                    'directory' => $avatarPath,
-                    'name' => $newFileName,
-                    'sizes' => [
-                        'big' => [
-                            'width'  => _const('AVATAR_BIG'),
-                            'height' => _const('AVATAR_BIG')
-                        ],
-                        'medium' => [
-                            'width'  => _const('AVATAR_MEDIUM'),
-                            'height' => _const('AVATAR_MEDIUM')
-                        ],
-                        'small' => [
-                            'width'  => _const('AVATAR_SMALL'),
-                            'height' => _const('AVATAR_SMALL')
-                        ]
-                    ]
-                ]);
-
-                var_dump($abc);die;
-                //2
-                $imageResized = $upload->resizeGroup([
+                // 2
+                $filename->setPrefix(_const('AVATAR_PREFIX'));
+                $filename->avatar()->group([
                     'big' => [
                         'width'  => _const('AVATAR_BIG'),
                         'height' => _const('AVATAR_BIG')
@@ -282,53 +260,29 @@ class SettingController extends FrontController
                         'width'  => _const('AVATAR_SMALL'),
                         'height' => _const('AVATAR_SMALL')
                     ]
-                ]);
+                ], true);
 
+                // 3
+                $image = new Image($avatarPath . $upload->getName());
+                $image->setDirectory($avatarPath)
+                      ->resizeGroup($filename->getGroup());
 
-
-
-                die;
-
-
-                //1
-                $user       = user();
-                $avatarPath = config('front.avatar_path');
-                $upload     = new Upload($request->file('__file'));
-
-                $upload->setDirectory($avatarPath);
-                $upload->setPrefix(_const('AVATAR_PREFIX'));
-                $upload->setSuffix(_const('ORIGINAL_SUFFIX'));
-                $upload->move();
-
-                //2
-                $imageResized = $upload->resizeGroup([
-                    'big' => [
-                        'width'  => _const('AVATAR_BIG'),
-                        'height' => _const('AVATAR_BIG')
-                    ],
-                    'medium' => [
-                        'width'  => _const('AVATAR_MEDIUM'),
-                        'height' => _const('AVATAR_MEDIUM')
-                    ],
-                    'small' => [
-                        'width'  => _const('AVATAR_SMALL'),
-                        'height' => _const('AVATAR_SMALL')
-                    ]
-                ]);
-
-                //3
+                // 4
+                $user = user();
                 delete_file([
+                    $avatarPath . $upload->getName(),
                     $avatarPath . $user->avatar_original,
                     $avatarPath . $user->avatar_big,
                     $avatarPath . $user->avatar_medium,
                     $avatarPath . $user->avatar_small
                 ]);
 
-                //4
-                $user->avatar_original = $imageResized['original'];
-                $user->avatar_big      = $imageResized['big'];
-                $user->avatar_medium   = $imageResized['medium'];
-                $user->avatar_small    = $imageResized['small'];
+                // 5
+                $resizes = $image->getResizes();
+                $user->avatar_original = $resizes['original'];
+                $user->avatar_big      = $resizes['big'];
+                $user->avatar_medium   = $resizes['medium'];
+                $user->avatar_small    = $resizes['small'];
                 $user->update();
 
             } catch (Exception $ex) {
@@ -344,9 +298,9 @@ class SettingController extends FrontController
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
-                    'big'     => asset($avatarPath . $imageResized['big']),
-                    'medium'  => asset($avatarPath . $imageResized['medium']),
-                    'small'   => asset($avatarPath . $imageResized['small']),
+                    'big'     => asset($avatarPath . $resizes['big']),
+                    'medium'  => asset($avatarPath . $resizes['medium']),
+                    'small'   => asset($avatarPath . $resizes['small']),
                 ]
             ]);
         }

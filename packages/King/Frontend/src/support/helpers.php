@@ -395,88 +395,6 @@ if ( ! function_exists('check_file')) {
 
 }
 
-if ( ! function_exists('upload')) {
-    /**
-     *
-     * @param Illuminate\Http\Request $request
-     * @param string                  $directory
-     * @param array                   $oldFiles
-     * @param array                   $options
-     *
-     * The param options contains data below:
-     * <pre>
-     * array(
-     *  'prefix',
-     *  'suffix',
-     *  'resize' => [
-     *    'xx' => [
-     *      'width' => xx,
-     *      'height' => xx
-     *   ]
-     *  ]
-     * ]
-     * </pre>
-     *
-     * @return string|array
-     *
-     * @throws \Exception
-     */
-    function upload($request, $directory, $oldFiles = [], $options = []) {
-
-        /** Remove current file if exist. */
-        if (count($oldFiles)) {
-            foreach ($oldFiles as $one) {
-                delete_file($directory . $one);
-            }
-        }
-
-        $file              = $request->file('__file');
-        $fileExt           = $file->getClientOriginalExtension();
-        $newFileNamePrefix = isset($options['prefix']) ? $options['prefix'] : '';
-        $newFileNameSuffix = isset($options['suffix']) ? $options['suffix'] : '';
-        $newFiles          = [];
-        $newFileName       = generate_filename($directory, $fileExt, [
-            'prefix' => $newFileNamePrefix,
-            'suffix' => $newFileNameSuffix
-        ]);
-
-        try {
-            $file->move($directory, $newFileName);
-
-            //Resize image if required
-            if (isset($options['resize']) && count($options['resize'])) {
-                /*
-                 * Generate new file name for all image resize. Those images
-                 * different the suffix that is replaced with '_REPLACE'
-                 */
-                $resizeFileName = generate_filename($directory, $fileExt, [
-                    'prefix' => $newFileNamePrefix,
-                    'suffix' => '_REPLACE'
-                ]);
-                foreach ($options['resize'] as $k => $v) {
-                    $suffix        = ($newFileNameSuffix !== '') ? $newFileNameSuffix : '_' . $k;
-                    $newNameBySize = str_replace('_REPLACE', $suffix, $resizeFileName);
-
-                    if (resize_image($directory . $newFileName, $v['width'], $v['height'],
-                                     $directory . $newNameBySize)) {
-                        $newFiles[$k] = $newNameBySize;
-                    }
-                }
-
-                //Delete the original image
-                if (count($newFiles)) {
-                    delete_file($directory . $newFileName);
-                }
-            }
-        } catch (Exception $ex) {
-            throw new \Exception('Whoop!! Can not upload file. ' . $ex->getMessage());
-        }
-
-        return count($newFiles) ? $newFiles : $newFileName;
-    }
-
-}
-
 if ( ! function_exists('delete_file')) {
 
     /**
@@ -508,44 +426,6 @@ if ( ! function_exists('delete_file')) {
         }
 
         return true;
-    }
-
-}
-
-if ( ! function_exists('resize_image')) {
-
-    /**
-     * Resize image
-     *
-     * @param string $imagePath
-     * @param int    $width
-     * @param int    $height
-     * @param string $newName
-     */
-    function resize_image($imagePath, $width, $height, $newName = '') {
-
-        //Only resize when the width and height is specified.
-        if ($width && $height) {
-
-            try {
-                $image = \Intervention\Image\Facades\Image::make($imagePath)->orientate();
-                $image->fit($width, $height, function ($constraint) {
-                    $constraint->upsize();
-                });
-
-                if ($newName !== '') {
-                    $image->save($newName);
-                }
-
-                $image->save();
-            } catch (Exception $ex) {
-                throw new \Exception('Whoop!! can not resize image. ' . $ex->getMessage());
-            }
-
-            return true;
-        }
-
-        return false;
     }
 
 }
