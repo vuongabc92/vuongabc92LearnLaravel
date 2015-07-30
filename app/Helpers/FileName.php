@@ -8,6 +8,13 @@ class FileName
 {
 
     /**
+     * Name's generated
+     *
+     * @var string
+     */
+    protected $_name = '';
+
+    /**
      * File directory
      *
      * @var string
@@ -66,7 +73,9 @@ class FileName
     /**
      * Default limit character of string file name
      */
-    const LIMIT = 12;
+    const AVATAR_LIMIT  = 12;
+    const COVER_LIMIT   = 12;
+    const PRODUCT_LIMIT = 16;
 
     /**
      * Default number string to random
@@ -84,6 +93,30 @@ class FileName
     const _ORIGINAL = '_original';
 
     const ORIGINAL = 'original';
+
+    /**
+     * Set directory
+     *
+     * @param string $name
+     *
+     * @return \App\Helpers\FileName
+     */
+    public function setName($name) {
+
+        $this->_name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get directory
+     *
+     * @return string
+     */
+    public function getName() {
+
+        return $this->_name;
+    }
 
     /**
      * Set directory
@@ -305,10 +338,10 @@ class FileName
         $name       = $this->_prefix . $subName . $this->_suffix . '.' . $this->_extension;
 
         while ($this->fileExist($this->_directory . $name)) {
-            $name = $this->avatar();
+            $name = $this->generate();
         }
 
-        return $name;
+        return $this->_name = $name;
     }
 
     /**
@@ -363,7 +396,7 @@ class FileName
 
         $this->_id     = $this->guard()->user()->id;
         $this->_random = $this->random();
-        $this->_limit  = self::LIMIT;
+        $this->_limit  = self::AVATAR_LIMIT;
 
         return $this;
     }
@@ -377,7 +410,7 @@ class FileName
 
         $this->_id     = $this->guard()->user()->id;
         $this->_random = $this->random();
-        $this->_limit  = self::LIMIT;
+        $this->_limit  = self::COVER_LIMIT;
 
         return $this;
     }
@@ -391,7 +424,7 @@ class FileName
 
         $this->_id     = $this->guard()->user()->store->id;
         $this->_random = $this->random();
-        $this->_limit  = self::LIMIT;
+        $this->_limit  = self::PRODUCT_LIMIT;
 
         return $this;
     }

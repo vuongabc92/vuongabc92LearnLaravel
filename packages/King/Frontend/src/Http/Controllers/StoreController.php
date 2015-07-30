@@ -11,6 +11,8 @@ namespace King\Frontend\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator;
 use App\Helpers\Upload;
+use App\Helpers\FileName;
+use App\Helpers\Image;
 use App\Models\Product;
 
 class StoreController extends FrontController
@@ -30,20 +32,22 @@ class StoreController extends FrontController
     }
 
     public function ajaxSaveProduct(Request $request) {
+
         //Only accept ajax request
         if ($request->ajax()) {
             $rules     = $this->_product->getRules();
             $messages  = $this->_product->getMessages();
             $validator = Validator::make($request->all(), $rules, $messages);
 
-            //A product must has at least one image.
+            /**
+             * Check product image exist.
+             * A product must has at least one image
+             */
             $image1 = $request->get('product_image_1');
             $image2 = $request->get('product_image_2');
             $image3 = $request->get('product_image_3');
             $image4 = $request->get('product_image_4');
-            if (empty($image1) && empty($image2)
-                               && empty($image3)
-                               && empty($image4)) {
+            if (empty($image1) && empty($image2) && empty($image3) && empty($image4)) {
                 $validator->errors()->add('image', _t('product_image_req'));
             }
 
@@ -55,22 +59,52 @@ class StoreController extends FrontController
             }
 
             try {
+
                 $tempPath    = config('front.temp_path');
                 $productPath = config('front.product_path');
+                $images      = [];
                 foreach ([$image1, $image2, $image3, $image4] as $one) {
                     if ( ! empty($one) && check_file($tempPath . $one)) {
-                        copy($tempPath . $one, $productPath . $one);
+                        $toBeReplaced = _const('TOBEREPLACED');
+                        $imageSize = [];
+                        foreach (['original', 'big', 'thumb'] as $size) {
+                            $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $one);
+                            copy($tempPath . $nameBySize, $productPath . $nameBySize);
+                            $imageSize[$size] = $nameBySize;
+                            delete_file($tempPath . $nameBySize);
+                        }
+
+                        delete_file($tempPath . $one);
+                    }
+                    if (count($imageSize)) {
+                        $images[] = $imageSize;
                     }
                 }
 
+                $product              = new Product();
+                $product->store_id    = store()->id;
+                $product->name        = $request->get('name');
+                $product->price       = $request->get('price');
+                $product->old_price   = $request->get('old_price');
+                $product->description = $request->get('description');
+                $product->images      = json_encode($images);
+                $product->save();
+
             } catch (Exception $ex) {
+
                 $validator->errors()->add('image', _t('opp'));
 
                 return ajax_upload_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
                 ]);
+
             }
+
+            return ajax_upload_response([
+                'status'   => _const('AJAX_OK'),
+                'messages' => _t('saved_info')
+            ]);
         }
     }
 
@@ -85,9 +119,9 @@ class StoreController extends FrontController
     public function ajaxAddProductImage(Request $request) {
 
         if ($request->isMethod('POST')) {
-            $productMaxFileSize = _const('PRODUCT_MAX_FILE_SIZE');
+
             $rules = [
-                '__product' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . $productMaxFileSize
+                '__product' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . _const('PRODUCT_MAX_FILE_SIZE')
             ];
 
             $messages = [
@@ -118,28 +152,38 @@ class StoreController extends FrontController
             }
 
             /**
-             * 1. Upload
-             * 2. Resize
-             * 3. Delete old avatars
-             * 4. Save new avatars
+             * 1. Get path and file
+             * 2. Generate file name
+             * 3. Upload
+             * 4. Resize
              */
             try {
 
-                //1
+                // 1
                 $tempPath = config('front.temp_path');
-                $upload   = new Upload($request->file('__product'));
-                $upload->setDirectory($tempPath);
-                $upload->setPrefix(_const('PRODUCT_PREFIX'));
-                $upload->setSuffix(_const('ORIGINAL_SUFFIX'));
-                $original = $upload->move();
+                $file     = $request->file('__product');
 
-                //2
-                $imageResized = $upload->resizeGroup([
+                // 2
+                $filename = new FileName($tempPath, $file->getClientOriginalExtension());
+                $filename->setPrefix(_const('PRODUCT_PREFIX'))->product()->generate();
+                $filename->group([
+                    'big' => [
+                        'width'  => _const('PRODUCT_BIG'),
+                        'height' => _const('PRODUCT_BIG')
+                    ],
                     'thumb' => [
                         'width'  => _const('PRODUCT_THUMB'),
                         'height' => _const('PRODUCT_THUMB')
                     ],
-                ]);
+                ], true);
+
+                // 3
+                $upload = new Upload($file);
+                $upload->setDirectory($tempPath)->setName($filename->getName())->move();
+
+                // 4
+                $image = new Image($tempPath . $filename->getName());
+                $image->setDirectory($tempPath)->resizeGroup($filename->getGroup());
 
             } catch (Exception $ex) {
                 $validator->errors()->add('__product', _t('opp'));
@@ -150,17 +194,26 @@ class StoreController extends FrontController
                 ], 500);
             }
 
+            $resizes = $image->getResizes();
+
             return ajax_upload_response([
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
-                    'original' => $imageResized['original'],
-                    'thumb'    => asset($tempPath . $imageResized['thumb']),
+                    'original' => $filename->getName(),
+                    'thumb'    => asset($tempPath . $resizes['thumb']),
                     'order'    => $order
                 ]
             ]);
 
         }
 
+    }
+
+    public function getExtensionFromPath($path) {
+
+        $path = explode('.', $path);
+
+        return (count($path) > 1) ? $path[count($path) - 1] : 'undefined';
     }
 }

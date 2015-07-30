@@ -228,24 +228,24 @@ class SettingController extends FrontController
             }
 
             /**
-             * 1. Upload
-             * 2. Generate name
-             * 3. Resize images
-             * 4. Delete old files and original
-             * 5. Save new file info
+             * 1. Get file, path and info
+             * 2. Generate file name
+             * 3. Upload
+             * 4. Resize
+             * 5. Delete old avatar images and upload image
+             * 6. Save new info
+             *
              */
             try {
 
                 // 1
+                $user       = user();
                 $avatarPath = config('front.avatar_path');
                 $file       = $request->file('__file');
-                $filename   = new FileName($avatarPath, $file->getClientOriginalExtension());
-                $upload     = new Upload($file);
-                $upload->setDirectory($avatarPath)
-                       ->setName($filename->avatar()->generate())
-                       ->move();
 
                 // 2
+                $filename   = new FileName($avatarPath, $file->getClientOriginalExtension());
+                $filename->avatar()->generate();
                 $filename->setPrefix(_const('AVATAR_PREFIX'));
                 $filename->avatar()->group([
                     'big' => [
@@ -263,11 +263,14 @@ class SettingController extends FrontController
                 ], true);
 
                 // 3
+                $upload = new Upload($file);
+                $upload->setDirectory($avatarPath)->setName($filename->getName())->move();
+
+                // 4
                 $image = new Image($avatarPath . $upload->getName());
                 $image->setDirectory($avatarPath)->resizeGroup($filename->getGroup());
 
-                // 4
-                $user = user();
+                // 5
                 delete_file([
                     $avatarPath . $upload->getName(),
                     $avatarPath . $user->avatar_original,
@@ -276,8 +279,8 @@ class SettingController extends FrontController
                     $avatarPath . $user->avatar_small
                 ]);
 
-                // 5
-                $resizes = $image->getResizes();
+                // 6
+                $resizes               = $image->getResizes();
                 $user->avatar_original = $resizes['original'];
                 $user->avatar_big      = $resizes['big'];
                 $user->avatar_medium   = $resizes['medium'];
@@ -473,6 +476,7 @@ class SettingController extends FrontController
     }
 
     public function ajaxChangeCover(Request $request) {
+
         if ($request->isMethod('POST') && user()->has_store) {
 
             $rules = [
@@ -493,26 +497,27 @@ class SettingController extends FrontController
                     'messages' => $validator->errors()->first()
                 ]);
             }
+
             /**
-             * 1. Upload
-             * 2. Resize
-             * 3. Delete old covers
-             * 4. Save new covers
+             * 1. Get file, path and info
+             * 2. Generate file name
+             * 3. Upload
+             * 4. Resize
+             * 5. Delete old cover images and upload image
+             * 6. Save new info
              */
             try {
 
                 // 1
-                $coverPath  = config('front.cover_path');
-                $file       = $request->file('__file');
-                $filename   = new FileName($coverPath, $file->getClientOriginalExtension());
-                $upload     = new Upload($file);
-                $upload->setDirectory($coverPath)
-                       ->setName($filename->cover()->generate())
-                       ->move();
+                $store     = store();
+                $coverPath = config('front.cover_path');
+                $file      = $request->file('__file');
 
                 // 2
+                $filename = new FileName($coverPath, $file->getClientOriginalExtension());
+                $filename->cover()->generate();
                 $filename->setPrefix(_const('COVER_PREFIX'));
-                $filename->avatar()->group([
+                $filename->cover()->group([
                     'big' => [
                         'width'  => _const('COVER_BIG_W'),
                         'height' => _const('COVER_BIG_H')
@@ -528,11 +533,14 @@ class SettingController extends FrontController
                 ], true);
 
                 // 3
+                $upload = new Upload($file);
+                $upload->setDirectory($coverPath)->setName($filename->getName())->move();
+
+                // 4
                 $image = new Image($coverPath . $upload->getName());
                 $image->setDirectory($coverPath)->resizeGroup($filename->getGroup());
 
-                // 4
-                $store = store();
+                // 5
                 delete_file([
                     $coverPath . $upload->getName(),
                     $coverPath . $store->cover_original,
@@ -542,7 +550,7 @@ class SettingController extends FrontController
                 ]);
 
                 // 5
-                $resizes = $image->getResizes();
+                $resizes               = $image->getResizes();
                 $store->cover_original = $resizes['original'];
                 $store->cover_big      = $resizes['big'];
                 $store->cover_medium   = $resizes['medium'];
