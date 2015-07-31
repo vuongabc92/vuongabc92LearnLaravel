@@ -48,11 +48,11 @@ class StoreController extends FrontController
             $image3 = $request->get('product_image_3');
             $image4 = $request->get('product_image_4');
             if (empty($image1) && empty($image2) && empty($image3) && empty($image4)) {
-                $validator->errors()->add('image', _t('product_image_req'));
+                $validator->errors()->add('product_image_1', _t('product_image_req'));
             }
 
             if ($validator->fails()) {
-                return ajax_upload_response([
+                return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->messages()
                 ]);
@@ -63,25 +63,52 @@ class StoreController extends FrontController
                 $tempPath    = config('front.temp_path');
                 $productPath = config('front.product_path');
                 $images      = [];
+
                 foreach ([$image1, $image2, $image3, $image4] as $one) {
+
+                    $imageSize   = [];
                     if ( ! empty($one) && check_file($tempPath . $one)) {
+
                         $toBeReplaced = _const('TOBEREPLACED');
-                        $imageSize = [];
+
                         foreach (['original', 'big', 'thumb'] as $size) {
+
                             $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $one);
-                            copy($tempPath . $nameBySize, $productPath . $nameBySize);
-                            $imageSize[$size] = $nameBySize;
+                            if (copy($tempPath . $nameBySize, $productPath . $nameBySize)) {
+                                $imageSize[$size] = $nameBySize;
+                            }
+
                             delete_file($tempPath . $nameBySize);
                         }
 
                         delete_file($tempPath . $one);
                     }
+
                     if (count($imageSize)) {
                         $images[] = $imageSize;
                     }
                 }
 
-                $product              = new Product();
+                if (is_null($request->get('id'))) {
+
+                    $product = new Product();
+
+                } else {
+
+                    $id      = (int) $request->get('id');
+                    $product = Product::where('id', $id)->where('store_id', store()->id)->get();
+
+                    if (is_null($product)) {
+
+                        $validator->errors()->add('product_image_1', _t('opp'));
+
+                        return ajax_response([
+                            'status'   => _const('AJAX_ERROR'),
+                            'messages' => $validator->messages()
+                        ]);
+                    }
+                }
+
                 $product->store_id    = store()->id;
                 $product->name        = $request->get('name');
                 $product->price       = $request->get('price');
@@ -92,16 +119,16 @@ class StoreController extends FrontController
 
             } catch (Exception $ex) {
 
-                $validator->errors()->add('image', _t('opp'));
+                $validator->errors()->add('product_image_1', _t('opp'));
 
-                return ajax_upload_response([
+                return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
                 ]);
 
             }
 
-            return ajax_upload_response([
+            return ajax_response([
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info')
             ]);
@@ -184,6 +211,15 @@ class StoreController extends FrontController
                 // 4
                 $image = new Image($tempPath . $filename->getName());
                 $image->setDirectory($tempPath)->resizeGroup($filename->getGroup());
+
+                $currentImage = $request->get('current_image');
+                foreach (['original', 'big', 'thumb'] as $size) {
+
+                    $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $currentImage);
+
+                    delete_file($tempPath . $nameBySize);
+                }
+                delete_file($tempPath . $request->get('current_image'));
 
             } catch (Exception $ex) {
                 $validator->errors()->add('__product', _t('opp'));

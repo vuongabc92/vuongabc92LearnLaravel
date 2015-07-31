@@ -823,6 +823,7 @@
                             $('.product-img-' + json.data['order']).css('border', 'solid 3px #000');
                             $('.product-img-' + json.data['order']).html(productImg + productImgEdit);
                             $('#product-image-' + json.data['order']).val(json.data['original']);
+                            current.find('#current-image').val(json.data['original']);
                         }
                         loading.hide();
                     }
@@ -859,7 +860,124 @@
 
 }(jQuery, window));
 
+/**
+ *  @name Save Product
+ *  @description
+ *  @version 1.0
+ *  @options
+ *    option
+ *  @events
+ *    event
+ *  @methods
+ *    init
+ *    publicMethod
+ *    destroy
+ */
+;
+(function($, window, undefined) {
+    var pluginName = 'save-product';
 
+    function Plugin(element, options) {
+        this.element = $(element);
+        this.options = $.extend({}, $.fn[pluginName].defaults, options);
+        this.init();
+    }
+
+    Plugin.prototype = {
+        init: function() {
+            var current = this.element,
+                that    = this,
+                labels  = current.data('save-product').split('|'),
+                submit  = current.find(':submit'),
+                img     = submit.children('img'),
+                text    = submit.children('b'),
+                check   = submit.children('i');
+
+            current.on('submit', function(){
+                $.ajax({
+                    type: current.attr('method'),
+                    url: current.attr('action'),
+                    data: current.serialize(),
+                    beforeSend: function(){
+                        that.loading(true, img, text, check);
+                    },
+                    success: function(response){
+                        var status   = response.status,
+                            messages = response.messages;
+
+                        if (status === SETTING.AJAX_ERROR) {
+                            that.loading(false, img, text, check, false);
+                        }
+                        if (status === SETTING.AJAX_OK) {
+                            that.loading(false, img, text, check, true);
+                            current[0].reset();
+                            $('.add-product-img').html('<i class="fa fa-plus"></i>');
+                        }
+
+                        that.showFormLabels(labels, messages);
+                    }
+                });
+
+                return false;
+            });
+        },
+        showFormLabels: function(labels, messages){
+            var current = this.element;
+            $.each(labels, function(k, v) {
+                var field  = current.find('[name^=' + v + ']'),
+                    label  = field.parent('div').find('label');
+
+                if (messages.hasOwnProperty(v)) {
+                    var errorHtml = '<span class="_fwfl _tr5">' + messages[v] + '</span>'
+                    label.html(errorHtml);
+                } else {
+                    var originalText = label.attr('data-title');
+                    label.html(originalText);
+                }
+            });
+        },
+        loading: function(start, img, text, check, success) {
+            if (start) {
+                img.show();
+                text.hide();
+            } else {
+                img.hide();
+                text.show();
+                if (success) {
+                    check.show(200);
+                    setTimeout(function(){
+                        check.hide(200);
+                    }, 3000);
+                }
+            }
+        },
+        destroy: function() {
+            $.removeData(this.element[0], pluginName);
+        }
+    };
+
+    $.fn[pluginName] = function(options, params) {
+        return this.each(function() {
+            var instance = $.data(this, pluginName);
+            if (!instance) {
+                $.data(this, pluginName, new Plugin(this, options));
+            } else if (instance[options]) {
+                instance[options](params);
+            } else {
+                window.console && console.log(options ? options + ' method is not exists in ' + pluginName : pluginName + ' plugin has been initialized');
+            }
+        });
+    };
+
+    $.fn[pluginName].defaults = {
+        option: 'value'
+    };
+
+    $(function() {
+        $('[data-' + pluginName + ']')[pluginName]();
+    });
+
+}(jQuery, window));
 
 $(document).ready(function(){
 

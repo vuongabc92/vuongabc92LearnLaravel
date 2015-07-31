@@ -2,7 +2,7 @@
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="_fwfl _bgw _r3 modal-content">
-            {!! Form::open(['route' => 'front_save_product', 'method' => 'POST', 'class' => '_fwfl', 'id' => 'save-product-form', 'data-ajax-form' => 'image|name|price|old_price|description']) !!}
+            {!! Form::open(['route' => 'front_save_product', 'method' => 'POST', 'class' => '_fwfl', 'id' => 'save-product-form', 'data-save-product' => 'image|name|price|old_price|description']) !!}
             <div class=" _fwfl modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title _tg5 _fs17" id="myModalLabel">Add new product</h4>
@@ -33,25 +33,25 @@
                     {!! Form::hidden('product_image_4', '', ['id' => 'product-image-4', 'autocomplete' => 'off']) !!}
                 </div>
                 <div class="_fwfl setting-form-group">
-                    <label class="_fwfl setting-form-label" for="name" data-title="Name">
+                    <label class="_fwfl setting-form-label" for="name" data-title="Name <span class='_tr6'>*</span>">
                         Name <span class="_tr6">*</span>
                     </label>
                     {!! Form::text('name', '', ['class' => 'setting-form-field', 'id' => 'name', 'maxlength' => '250']) !!}
                 </div>
                 <div class="_fwfl setting-form-group">
-                    <label class="_fwfl setting-form-label" for="price" data-title="Price">
+                    <label class="_fwfl setting-form-label" for="price" data-title="Price <span class='_tr6'>*</span>">
                         Price <span class="_tr6">*</span>
                     </label>
                     {!! Form::text('price', '', ['class' => 'setting-form-field', 'id' => 'price', 'maxlength' => '250']) !!}
                 </div>
                 <div class="_fwfl setting-form-group">
-                    <label class="_fwfl setting-form-label" for="old-price" data-title="Old price">
+                    <label class="_fwfl setting-form-label" for="old-price" data-title="Old price <span class='_tr6'>*</span>">
                         Old price <span class="_tr6">*</span>
                     </label>
                     {!! Form::text('old_price', '', ['class' => 'setting-form-field', 'id' => 'old-price', 'maxlength' => '250']) !!}
                 </div>
                 <div class="_fwfl setting-form-group">
-                    <label class="_fwfl setting-form-label" for="description" data-title="Description">
+                    <label class="_fwfl setting-form-label" for="description" data-title="Description <span class='_tr6'>*</span>">
                         Description <span class="_tr6">*</span>
                     </label>
                     {!! Form::textarea('description', '', ['class' => 'product-description setting-form-field', 'id' => 'description', 'row' => '4']) !!}
@@ -74,20 +74,24 @@
     {!! Form::open(['route' => 'front_product_image', 'files' => true, 'method' => 'POST', 'id' => 'product-image1-form', 'data-product-image']) !!}
         {!! Form::file('__product', ['class' => 'field-file-hidden', 'id' => 'product-image1-file', 'accept' => 'image/*', 'data-event-trigger' => '#product-image1-form', 'data-event' => 'change|submit']) !!}
         {!! Form::hidden('order', 1) !!}
+        {!! Form::hidden('current_image', '', ['id' => 'current-image', 'autocomplete' => 'off']) !!}
     {!! Form::close() !!}
 
     {!! Form::open(['route' => 'front_product_image', 'files' => true, 'method' => 'POST', 'id' => 'product-image2-form', 'data-product-image']) !!}
         {!! Form::file('__product', ['class' => 'field-file-hidden', 'id' => 'product-image2-file', 'accept' => 'image/*', 'data-event-trigger' => '#product-image2-form', 'data-event' => 'change|submit']) !!}
         {!! Form::hidden('order', 2) !!}
+        {!! Form::hidden('current_image', '', ['id' => 'current-image', 'autocomplete' => 'off']) !!}
     {!! Form::close() !!}
 
     {!! Form::open(['route' => 'front_product_image', 'files' => true, 'method' => 'POST', 'id' => 'product-image3-form', 'data-product-image']) !!}
         {!! Form::file('__product', ['class' => 'field-file-hidden', 'id' => 'product-image3-file', 'accept' => 'image/*', 'data-event-trigger' => '#product-image3-form', 'data-event' => 'change|submit']) !!}
         {!! Form::hidden('order', 3) !!}
+        {!! Form::hidden('current_image', '', ['id' => 'current-image', 'autocomplete' => 'off']) !!}
     {!! Form::close() !!}
 
     {!! Form::open(['route' => 'front_product_image', 'files' => true, 'method' => 'POST', 'id' => 'product-image4-form', 'data-product-image']) !!}
         {!! Form::file('__product', ['class' => 'field-file-hidden', 'id' => 'product-image4-file', 'accept' => 'image/*', 'data-event-trigger' => '#product-image4-form', 'data-event' => 'change|submit']) !!}
         {!! Form::hidden('order', 4) !!}
+        {!! Form::hidden('current_image', '', ['id' => 'current-image', 'autocomplete' => 'off']) !!}
     {!! Form::close() !!}
 </div>

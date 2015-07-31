@@ -18,9 +18,9 @@ class Product extends Base
      */
     public function getRules() {
         return [
-            'name'        => 'required|min:6,max:250',
-            'price'       => 'required|min:3,max:16',
-            'old_price'   => 'min:3,max:16',
+            'name'        => 'required|min:6|max:250',
+            'price'       => 'required|min:3|max:16',
+            'old_price'   => 'min:3|max:16',
             'description' => 'required|min:10'
         ];
     }
