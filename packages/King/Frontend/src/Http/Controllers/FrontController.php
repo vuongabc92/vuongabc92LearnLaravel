@@ -12,6 +12,14 @@ use App\Http\Controllers\Controller;
 
 class FrontController extends Controller{
 
+
+    /**
+     * Password field name
+     *
+     * @var string
+     */
+    protected $_passwordField = 'password';
+
     /**
      * Bind form data into the present entity
      *
@@ -21,12 +29,12 @@ class FrontController extends Controller{
      *
      * @return object
      */
-    public function bind($entity, $form, $except = array('_token', 'id'))
-    {
+    public function bind($entity, $form, $except = array('_token', 'id')) {
+
         if (count($form)) {
             foreach ($form as $k => $v) {
                 if ( ! in_array($k, $except)) {
-                    $entity->$k = ($k === 'password') ? bcrypt($v) : $v;
+                    $entity->$k = ($k === $this->_passwordField) ? bcrypt($v) : $v;
                 }
             }
         }

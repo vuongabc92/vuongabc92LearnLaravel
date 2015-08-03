@@ -1,18 +1,25 @@
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="add-product-modal" tabindex="-1" role="dialog" aria-labelledby="addProductLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="_fwfl _bgw _r3 modal-content">
-            {!! Form::open(['route' => 'front_save_product', 'method' => 'POST', 'class' => '_fwfl', 'id' => 'save-product-form', 'data-save-product' => 'image|name|price|old_price|description']) !!}
+            {!! Form::open(['route' => 'front_save_product', 'method' => 'POST', 'class' => '_fwfl', 'id' => 'save-product-form', 'data-save-product' => 'product_image_1|name|price|old_price|description']) !!}
             <div class=" _fwfl modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title _tg5 _fs17" id="myModalLabel">Add new product</h4>
             </div>
             <div class="_fwfl modal-body">
                 <div class="_fwfl setting-form-group">
-                    <label class="_fwfl setting-form-label" data-title="Image">
-                        <span class="_fl">Image <span class="_tr6">*</span></span>
+                    <div class="_fwfl">
+                        <label class="_fl setting-form-label" data-title='Image <span class="_tr6">*</span>'>
+                            <span class="_fl">Image <span class="_tr6">*</span></span>
+                        </label>
                         <img class="_fl _ml10 _mt2 _dn product-img-loading" src="{{ asset('packages/king/frontend/images/loading-blue-white-16x16.gif') }}" />
-                    </label>
+                        {!! Form::hidden('product_image_1', '', ['class' => 'product-image-hidden', 'id' => 'product-image-1', 'autocomplete' => 'off']) !!}
+                        {!! Form::hidden('product_image_2', '', ['class' => 'product-image-hidden', 'id' => 'product-image-2', 'autocomplete' => 'off']) !!}
+                        {!! Form::hidden('product_image_3', '', ['class' => 'product-image-hidden', 'id' => 'product-image-3', 'autocomplete' => 'off']) !!}
+                        {!! Form::hidden('product_image_4', '', ['class' => 'product-image-hidden', 'id' => 'product-image-4', 'autocomplete' => 'off']) !!}
+                        {!! Form::hidden('reset_product_image', route('front_product_del_temp_img'), ['id' => 'reset-product-image']) !!}
+                    </div>
                     <div class="_fwfl">
                         <div class="_r3 add-product-image product-img-1" data-event-trigger="#product-image1-file" data-event="click|click">
                             <i class="fa fa-plus"></i>
@@ -27,10 +34,6 @@
                             <i class="fa fa-plus"></i>
                         </div>
                     </div>
-                    {!! Form::hidden('product_image_1', '', ['id' => 'product-image-1', 'autocomplete' => 'off']) !!}
-                    {!! Form::hidden('product_image_2', '', ['id' => 'product-image-2', 'autocomplete' => 'off']) !!}
-                    {!! Form::hidden('product_image_3', '', ['id' => 'product-image-3', 'autocomplete' => 'off']) !!}
-                    {!! Form::hidden('product_image_4', '', ['id' => 'product-image-4', 'autocomplete' => 'off']) !!}
                 </div>
                 <div class="_fwfl setting-form-group">
                     <label class="_fwfl setting-form-label" for="name" data-title="Name <span class='_tr6'>*</span>">
@@ -45,8 +48,8 @@
                     {!! Form::text('price', '', ['class' => 'setting-form-field', 'id' => 'price', 'maxlength' => '250']) !!}
                 </div>
                 <div class="_fwfl setting-form-group">
-                    <label class="_fwfl setting-form-label" for="old-price" data-title="Old price <span class='_tr6'>*</span>">
-                        Old price <span class="_tr6">*</span>
+                    <label class="_fwfl setting-form-label" for="old-price" data-title="Old price">
+                        Old price
                     </label>
                     {!! Form::text('old_price', '', ['class' => 'setting-form-field', 'id' => 'old-price', 'maxlength' => '250']) !!}
                 </div>
@@ -58,7 +61,7 @@
                 </div>
             </div>
             <div class="modal-footer _fwfl">
-                <button type="reset" class="_fr btn _btn _btn-gray close-form-pass">{{ _t('cancel') }}</button>
+                <button type="reset" class="_fr btn _btn _btn-gray add-product-reset-btn" data-reset-form="#save-product-form">{{ _t('cancel') }}</button>
                 <button type="submit" class="_fr _mr10 btn _btn _btn-blue1 _save-btn">
                     <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-white-blue-24x24.gif') }}" />
                     <b class="btn-text">{{ _t('save') }}</b>

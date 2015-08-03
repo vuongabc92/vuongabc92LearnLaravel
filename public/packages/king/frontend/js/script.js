@@ -395,12 +395,17 @@
         init: function() {
             var current     = this.element,
                 form        = $(current.data('reset-form')),
-                formElement = form.attr('data-ajax-form').split('|');
+                formElement = form.attr('data-ajax-form');
+
+            //For save product form
+            if (formElement === undefined) {
+                formElement = form.attr('data-save-product');
+            }
 
             current.on('click', function(){
-                $.each(formElement, function(k, v) {
-                    var field  = form.find('[name^=' + v + ']'),
-                        label  = field.parent('div').children('label');
+                $.each(formElement.split('|'), function(k, v) {
+                    var field = form.find('[name^=' + v + ']'),
+                        label = field.parent('div').children('label');
 
                     label.html(label.attr('data-title'));
                 });
@@ -911,7 +916,9 @@
                         if (status === SETTING.AJAX_OK) {
                             that.loading(false, img, text, check, true);
                             current[0].reset();
-                            $('.add-product-img').html('<i class="fa fa-plus"></i>');
+                            $('.add-product-image').css('border', '3px dashed #d5d5d5');
+                            $('.add-product-image').html('<i class="fa fa-plus"></i>');
+                            $('.product-image-hidden').val('');
                         }
 
                         that.showFormLabels(labels, messages);
@@ -924,8 +931,8 @@
         showFormLabels: function(labels, messages){
             var current = this.element;
             $.each(labels, function(k, v) {
-                var field  = current.find('[name^=' + v + ']'),
-                    label  = field.parent('div').find('label');
+                var field = current.find('[name^=' + v + ']'),
+                    label = field.parent('div').find('label');
 
                 if (messages.hasOwnProperty(v)) {
                     var errorHtml = '<span class="_fwfl _tr5">' + messages[v] + '</span>'
@@ -985,7 +992,28 @@ $(document).ready(function(){
     $('.location-dropdown').on('hide.bs.dropdown', function() {
         $('.search-location-form').find('[name^=location_keyword]').val('');
         $('.search-location-form').submit();
-    });
-    //End
+    });//End
+
+    //Bind event close add product modal
+    $('#add-product-modal').on('hidden.bs.modal', function (e) {
+
+        $.ajax({
+            type: 'GET',
+            data: $('.product-image-hidden').serialize(),
+            url: $('#reset-product-image').val(),
+            beforeSend: function(){},
+            success: function(){},
+        });
+
+        $('#save-product-form')[0].reset();
+        $('.product-image-hidden').val('');
+        $('.add-product-image').css('border', '3px dashed #d5d5d5');
+        $('.add-product-image').html('<i class="fa fa-plus"></i>');
+    });//End
+
+    //Click reset add product form
+    $('.add-product-reset-btn').on('click', function(e){
+        $('#add-product-modal').modal('hide');
+    });//End
 
 });

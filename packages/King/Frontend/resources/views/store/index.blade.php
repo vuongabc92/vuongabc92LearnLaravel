@@ -24,11 +24,11 @@ Setting > My store
             </div>
             <div class="_fwfl store-nav-bar">
                 <ul class="_fwfl _fh _ls store-nav-list">
-                    <li><a href="#"><b>{{ _t('store_product') }} <span class="_fs12">(12)</span></b></a></li>
+                    <li><a href="#"><b>{{ _t('store_product') }} <span class="_fs12">({{ $productCount }})</span></b></a></li>
                     <li><a href="#"><b>{{ _t('store_contact') }}</b></a></li>
                     <li><a href="#"><b>{{ _t('store_rating') }} <span class="_fs12">(17)</span></b></a></li>
                     <li><a href="#"><b>{{ _t('store_follow') }} <span class="_fs12">(22)</span></b></a></li>
-                    <li data-toggle="modal" data-target="#myModal">
+                    <li data-toggle="modal" data-target="#add-product-modal">
                         <a href="#" id="add-product-tooltip" data-toggle="tooltip" data-placement="bottom" data-original-title="{{ _t('add_product') }}">
                             <b><i class="_fs14 fa fa-plus"></i></b>
                         </a>
@@ -41,6 +41,15 @@ Setting > My store
                 </ul>
             </div>
         </div>
+
+        <div class="_fwfl store-body">
+            <ol class="_fwfl _ls product-tree">
+                @foreach([1,2,3,4,5,6,7,8,9] as $product)
+                    <li class="{{ ($product%3 === 0) ? 'the-3th-product' : '' }}"></li>
+                @endforeach
+            </ol>
+        </div>
+
     </div>
 </div>
 

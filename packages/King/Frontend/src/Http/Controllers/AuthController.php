@@ -18,11 +18,11 @@ use App\Models\User;
 class AuthController extends FrontController
 {
 
-    protected $user;
+    protected $_user;
 
     public function __construct(User $user)
     {
-        $this->user = $user;
+        $this->_user = $user;
     }
 
 
@@ -33,22 +33,22 @@ class AuthController extends FrontController
      *
      * @return response
      */
-    public function authenticate(Request $request)
-    {
+    public function authenticate(Request $request) {
 
         if ($request->isMethod('POST')) {
 
-            $rules = remove_rules($this->user->getRules(), [
+            $rules = remove_rules($this->_user->getRules(), [
                 'user_name',
                 'first_name',
                 'last_name',
                 'password.min:6',
                 'email.unique:users,email',
             ]);
-            $messages = $this->user->getMessages();
-
+            $messages  = $this->_user->getMessages();
             $validator = Validator::make($request->all(), $rules, $messages);
+
             if ($validator->passes()) {
+
                 $credentials = [
                     'email'    => $request->get('email'),
                     'password' => $request->get('password'),
@@ -76,19 +76,19 @@ class AuthController extends FrontController
      *
      * @throws Exception
      */
-    public function register(Request $request)
-    {
+    public function register(Request $request) {
+        
         if ($request->isMethod('POST')) {
 
-            $rules    = remove_rules($this->user->getRules(), ['first_name', 'last_name']);
-            $messages = $this->user->getMessages();
-
+            $rules     = remove_rules($this->_user->getRules(), ['first_name', 'last_name']);
+            $messages  = $this->_user->getMessages();
             $validator = Validator::make($request->all(), $rules, $messages);
+
             if ($validator->fails()) {
                 return back()->withInput()->withErrors($validator, 'auth');
             }
 
-            $user = $this->bind($this->user, $request->all());
+            $user = $this->bind($this->_user, $request->all());
             try {
                 $user->save();
             } catch (Exception $ex) {
@@ -112,8 +112,8 @@ class AuthController extends FrontController
      *
      * @return response
      */
-    public function logout()
-    {
+    public function logout() {
+
         auth()->logout();
 
         return redirect(route('front_home'));

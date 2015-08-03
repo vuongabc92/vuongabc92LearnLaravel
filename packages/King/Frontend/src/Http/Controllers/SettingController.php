@@ -30,7 +30,7 @@ class SettingController extends FrontController
 
     public function __construct(User $user, Store $store)
     {
-        $this->_user  = $user;
+        $this->_user = $user;
         $this->store = $store;
     }
 

@@ -28,20 +28,28 @@ class StoreController extends FrontController
     }
 
     public function index() {
-        return view('frontend::store.index');
+        return view('frontend::store.index', ['productCount' => store()->products->count()]);
     }
 
+    /**
+     *
+     * @param Illuminate\Http\Request $request
+     *
+     * @return type
+     */
     public function ajaxSaveProduct(Request $request) {
 
         //Only accept ajax request
         if ($request->ajax()) {
-            $rules     = $this->_product->getRules();
-            $messages  = $this->_product->getMessages();
-            $validator = Validator::make($request->all(), $rules, $messages);
+
+            $rules      = $this->_product->getRules();
+            $messages   = $this->_product->getMessages();
+            $validator  = Validator::make($request->all(), $rules, $messages);
+            $validFails = $validator->fails();
 
             /**
-             * Check product image exist.
-             * A product must has at least one image
+             * Check does product's image exist that a product must has at least
+             * one image
              */
             $image1 = $request->get('product_image_1');
             $image2 = $request->get('product_image_2');
@@ -51,19 +59,29 @@ class StoreController extends FrontController
                 $validator->errors()->add('product_image_1', _t('product_image_req'));
             }
 
-            if ($validator->fails()) {
+            if ($validFails) {
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->messages()
                 ]);
             }
 
+            /**
+             * 1. Get path and params.
+             * 2. Copy image from temp folder to product image folder then delete
+             * image from temp folder.
+             * 3. Validate product' image must has at least one.
+             * 4. Get product object.
+             *
+             */
             try {
 
+                // 1
                 $tempPath    = config('front.temp_path');
                 $productPath = config('front.product_path');
                 $images      = [];
 
+                // 2
                 foreach ([$image1, $image2, $image3, $image4] as $one) {
 
                     $imageSize   = [];
@@ -89,10 +107,21 @@ class StoreController extends FrontController
                     }
                 }
 
+                // 3
+                if ( ! count($images)) {
+
+                    $validator->errors()->add('product_image_1', _t('product_image_req'));
+
+                    return ajax_response([
+                        'status'   => _const('AJAX_ERROR'),
+                        'messages' => $validator->messages()
+                    ]);
+
+                }
+
+                // 4
                 if (is_null($request->get('id'))) {
-
                     $product = new Product();
-
                 } else {
 
                     $id      = (int) $request->get('id');
@@ -170,6 +199,7 @@ class StoreController extends FrontController
             $order       = (int) $request->get('order');
             $orderConfig = config('front.product_img_order');
             if ( ! in_array($order, $orderConfig)) {
+
                 $validator->errors()->add('__product', _t('opp'));
 
                 return ajax_upload_response([
@@ -183,6 +213,7 @@ class StoreController extends FrontController
              * 2. Generate file name
              * 3. Upload
              * 4. Resize
+             * 5. Delete old temporary image
              */
             try {
 
@@ -212,6 +243,7 @@ class StoreController extends FrontController
                 $image = new Image($tempPath . $filename->getName());
                 $image->setDirectory($tempPath)->resizeGroup($filename->getGroup());
 
+                // 5
                 $currentImage = $request->get('current_image');
                 foreach (['original', 'big', 'thumb'] as $size) {
 
@@ -219,7 +251,8 @@ class StoreController extends FrontController
 
                     delete_file($tempPath . $nameBySize);
                 }
-                delete_file($tempPath . $request->get('current_image'));
+
+                delete_file($tempPath . $currentImage);
 
             } catch (Exception $ex) {
                 $validator->errors()->add('__product', _t('opp'));
@@ -246,10 +279,46 @@ class StoreController extends FrontController
 
     }
 
-    public function getExtensionFromPath($path) {
+    /**
+     * Delete product's temporary image when upload image to temp directory
+     *
+     * @param Illuminate\Http\Request $request
+     *
+     * @return JSON
+     */
+    public function ajaxDeleteProductTempImg(Request $request) {
 
-        $path = explode('.', $path);
+        if ($request->ajax()) {
 
-        return (count($path) > 1) ? $path[count($path) - 1] : 'undefined';
+            try {
+
+                $tempPath = config('front.temp_path');
+                foreach ([1, 2, 3, 4] as $one) {
+                    $imgToDel = $request->get("product_image_{$one}");
+                    foreach (['original', 'big', 'thumb'] as $size) {
+                        $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $imgToDel);
+
+                        delete_file($tempPath . $nameBySize);
+                    }
+
+                    delete_file($tempPath . $imgToDel);
+                }
+
+            } catch (Exception $exc) {
+
+                return ajax_response([
+                    'status'   => _const('AJAX_ERROR'),
+                    'messages' => _t('opp')
+                ]);
+
+            }
+
+
+            return ajax_response([
+                'status'   => _const('AJAX_OK'),
+                'messages' => _t('saved_info')
+            ]);
+        }
     }
+
 }
