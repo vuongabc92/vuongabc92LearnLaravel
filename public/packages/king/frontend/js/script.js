@@ -919,6 +919,7 @@
                             $('.add-product-image').css('border', '3px dashed #d5d5d5');
                             $('.add-product-image').html('<i class="fa fa-plus"></i>');
                             $('.product-image-hidden').val('');
+                            $('#add-product-modal').modal('hide');
                         }
 
                         that.showFormLabels(labels, messages);

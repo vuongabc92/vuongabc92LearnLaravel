@@ -44,8 +44,38 @@ Setting > My store
 
         <div class="_fwfl store-body">
             <ol class="_fwfl _ls product-tree">
-                @foreach([1,2,3,4,5,6,7,8,9] as $product)
-                    <li class="{{ ($product%3 === 0) ? 'the-3th-product' : '' }}"></li>
+                <?php $i = 0; ?>
+                @foreach($products as $product)
+                <?php $i++; ?>
+                <li class="{{ ($i%3 === 0) ? 'the-3th-product' : '' }}">
+                    <div class="_fwfl product">
+                        <div class="_fwfl product-head">
+                            <ul class="_fl _ls product-handle">
+                                <li>
+                                    <span>
+                                        <i class="fa fa-retweet"></i>
+                                        <b>300</b>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span>
+                                        <i class="fa fa-share-alt"></i>
+                                        <b>42</b>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span>
+                                        <i class="fa fa-comments-o"></i>
+                                        <b>100</b>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="_fwfl product-body">
+                            <img src="{{ product_images($product->images, 1) }}" class="_fwfl" />
+                        </div>
+                    </div>
+                </li>
                 @endforeach
             </ol>
         </div>

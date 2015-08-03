@@ -28,7 +28,10 @@ class StoreController extends FrontController
     }
 
     public function index() {
-        return view('frontend::store.index', ['productCount' => store()->products->count()]);
+        return view('frontend::store.index', [
+            'productCount' => store()->products->count(),
+            'products'     => store()->products
+        ]);
     }
 
     /**

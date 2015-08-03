@@ -510,3 +510,21 @@ if ( ! function_exists('get_product')) {
                                    ->get();
     }
 }
+
+if ( ! function_exists('product_images')) {
+    function product_images($json, $order = 0) {
+        
+        $path   = config('front.product_path');
+        $images = json_decode($json);
+        
+        if ( ! $order) {
+            return $images;
+        }
+        
+        if (isset($images[$order])) {
+            return asset($path . $images[$order]->big);
+        }
+        
+        return null;
+    }
+}

@@ -36,7 +36,9 @@ background-color:rgba(0, 122, 255, 0.04);color:#007aff;}
 .mobile-head-icon{display:inline-block;color:#007aff;}
 .mobile-head-icon:hover{text-decoration:none;color:#007aff;}
 .header-location-dropdown{width:270px;height:355px;overflow-y:scroll;
--webkit-box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);}
+box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);-webkit-box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);
+-moz-box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);-ms-box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);
+-o-box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);}
 .search-location-form{padding:10px 5px;}
 .search-location-form>input{height:30px;background-color:#f5f5f5;
 padding:0 30px 0 10px;color:#999;}
@@ -50,7 +52,9 @@ background-color:#fbfbfb;}
 .avatar-dropdown .dropdown-toggle,
 .avatar-dropdown.open .dropdown-toggle{box-shadow:none;-webkit-box-shadow:none;}
 .avatar-dropdown .dropdown-menu{width:275px;left:-240px;border-color:#ddd;
--webkit-box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);}
+box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);-webkit-box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);
+-moz-box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);-ms-box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);
+-o-box-shadow:0 3px 7px rgba(0, 0, 0, 0.1);}
 .avatar-dropdown .dropdown-menu>li{width:100%;float:left;}
 .avatar-dropdown .dropdown-menu>li>a{width:100%;float:left;color:#666;
 padding:7px 15px;font-size:15px;font-weight:400;outline:none;}
@@ -114,8 +118,18 @@ background-color:rgba(0, 0, 0, 0.5);}
 
 /* Product tree */
 .store-body{margin-top:20px;}
-.product-tree>li{width:31.958762887%;height:350px;float:left;margin:0 2.06185567% 2.06185567% 0;border:solid 1px #007aff;}
+.product-tree>li{width:31.958762887%;float:left;margin:0 2.06185567% 2.06185567% 0;}
 .product-tree>li.the-3th-product{margin-right:0;}
+.product{height:350px;background-color:#fff;border:solid 1px #e5e5e5;
+border-radius:3px;-webkit-border-radius:3px;-moz-border-radius:3px;
+-ms-border-radius:3px;-o-border-radius:3px;}
+.product>.product-head{height:45px;padding:0 12px;border-bottom:solid 1px #007aff;}
+.product-handle{margin-top:12px;}
+.product-handle>li{display:inline;}
+.product-handle>li>span{color:#007aff;margin-right:10px;cursor:pointer;}
+.product-handle>li>span:hover{color:#f99;}
+.product-handle>li>span>b{font-weight:normal;font-size:12px;}
+.product-handle>li>span>i{}
 
 @media screen and (min-width: 320px){
     .header-search-form{width:90%;}
