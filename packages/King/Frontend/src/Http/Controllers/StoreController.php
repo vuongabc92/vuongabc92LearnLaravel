@@ -128,9 +128,9 @@ class StoreController extends FrontController
                 } else {
 
                     $id      = (int) $request->get('id');
-                    $product = Product::where('id', $id)->where('store_id', store()->id)->get();
+                    $product = product($id);
 
-                    if (is_null($product)) {
+                    if ($product === null) {
 
                         $validator->errors()->add('product_image_1', _t('opp'));
 
@@ -322,6 +322,27 @@ class StoreController extends FrontController
                 'messages' => _t('saved_info')
             ]);
         }
+    }
+
+    public function ajaxSearchProduct(Request $request, $id) {
+
+        //if ($request->ajax()) {
+
+            $id      = (int) $id;
+            $product = get_product($id);
+
+            if ($product === null) {
+                return ajax_response([
+                    'status'   => _const('AJAX_ERROR'),
+                    'messages' => _t('not_found')
+                ]);
+            }
+
+            return ajax_response([
+                'status' => _const('AJAX_OK'),
+                'data'   => $product
+            ]);
+        //}
     }
 
 }

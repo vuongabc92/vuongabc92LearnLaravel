@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Collection;
+
 class Product extends Base
 {
     /**
@@ -10,6 +12,16 @@ class Product extends Base
      * @var string
      */
     protected $table = 'products';
+
+    /**
+     * Product image
+     *
+     * @var string
+     */
+    public $image_1;
+    public $image_2;
+    public $image_3;
+    public $image_4;
 
     /**
      * Get product validation rules
@@ -43,5 +55,21 @@ class Product extends Base
             'description.required' => _t('product_desc_req'),
             'description.min'      => _t('product_desc_min'),
         ];
+    }
+
+    /**
+     * Product images
+     *
+     * @return \App\Models\Product
+     */
+    public function images() {
+        $images        = new Collection(json_decode($this->images));
+        $this->images  = $images;
+        $this->image_1 = isset($images[0]) ? $images[0] : null;
+        $this->image_2 = isset($images[1]) ? $images[1] : null;
+        $this->image_3 = isset($images[2]) ? $images[2] : null;
+        $this->image_4 = isset($images[3]) ? $images[3] : null;
+
+        return $this;
     }
 }

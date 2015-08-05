@@ -48,6 +48,20 @@ if ( ! function_exists('store')) {
     }
 }
 
+if ( ! function_exists('get_product')) {
+    /**
+     * Find product in current store by id
+     *
+     * @param int $id
+     *
+     * @return \App\Model\Product
+     */
+    function product($id) {
+
+        return store()->products->find($id);
+    }
+}
+
 if ( ! function_exists('_const')) {
     /**
      * Get / set the specified configuration value.
@@ -443,6 +457,7 @@ if ( ! function_exists('select')) {
      * @return array
      */
     function select($collection) {
+
         $area = $collection->keyBy('id')->toArray();
         foreach ($area as $k => $v) {
             $area[$k] = $v['name'];
@@ -463,7 +478,8 @@ if ( ! function_exists('locations')) {
      * @return \Illuminate\Support\Collection $collection
      */
     function locations($name = '') {
-        //Get table dynamically
+
+        //Get table name dynamically
         $city       = new \App\Models\City();
         $store      = new \App\Models\Store();
         $cities_tbl = DB::getQueryGrammar()->wrapTable($city->getTable());
@@ -489,6 +505,7 @@ if ( ! function_exists('current_location')) {
      * @return \App\Models\City
      */
     function current_location() {
+
         $current_id = session(_const('SESSION_LOCATION'), _const('DEFAULT_LOCATION'));
         $location   = \App\Models\City::find($current_id);
 
@@ -496,35 +513,18 @@ if ( ! function_exists('current_location')) {
     }
 }
 
-if ( ! function_exists('get_product')) {
-    /**
-     * Get product by current store id and product id
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Support\Collection $collection
-     */
-    function get_product($id) {
-        return App\Models\Product::where('store_id', store()->id)
-                                   ->where('id', (int) $id)
-                                   ->get();
-    }
-}
-
 if ( ! function_exists('product_images')) {
-    function product_images($json, $order = 0) {
-        
-        $path   = config('front.product_path');
-        $images = json_decode($json);
-        
-        if ( ! $order) {
-            return $images;
-        }
-        
-        if (isset($images[$order])) {
-            return asset($path . $images[$order]->big);
-        }
-        
-        return null;
+    /**
+     * Get product image
+     *
+     * @param string $image Product image name
+     *
+     * @return string
+     */
+    function product_image($image) {
+
+        $path = config('front.product_path');
+
+        return asset($path . $image);
     }
 }

@@ -44,13 +44,13 @@ Setting > My store
 
         <div class="_fwfl store-body">
             <ol class="_fwfl _ls product-tree">
-                <?php $i = 0; ?>
-                @foreach($products as $product)
-                <?php $i++; ?>
-                <li class="{{ ($i%3 === 0) ? 'the-3th-product' : '' }}">
-                    <div class="_fwfl product">
-                        <div class="_fwfl product-head">
-                            <ul class="_fl _ls product-handle">
+                @set $i = 1
+                @foreach( $products as $product )
+                @set $image = $product->images()
+                <li class="{{ (($i++)%3 === 0) ? 'the-3th-product' : '' }}">
+                    <div class="product">
+                        <div class="product-head">
+                            <ul class="product-handle">
                                 <li>
                                     <span>
                                         <i class="fa fa-retweet"></i>
@@ -71,8 +71,21 @@ Setting > My store
                                 </li>
                             </ul>
                         </div>
-                        <div class="_fwfl product-body">
-                            <img src="{{ product_images($product->images, 1) }}" class="_fwfl" />
+                        <div class="product-body">
+                            <div class="product-image">
+                                <img src="{{ ($product->image_1 === null) ? '' : product_image($product->image_1->big) }}" alt="{{ $product->name }}"/>
+                            </div>
+                            <div class="product-info">
+                                <span class="product-name-box">
+                                    <a href="#" class="product-name" title="{{ $product->name }}">{{ str_limit($product->name, 70) }}</a>
+                                </span>
+                                <div class="_fwfl _mt5">
+                                    <span class="product-price">{{ $product->price }} <sup>đ</sup></span>
+                                    @if( $product->old_price !== null )
+                                    <span class="product-old-price">{{ $product->old_price }} <sup>đ</sup></span>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </li>
