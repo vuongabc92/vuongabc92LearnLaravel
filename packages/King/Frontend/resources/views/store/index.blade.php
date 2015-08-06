@@ -75,7 +75,11 @@ Setting > My store
                                 <div class="btn-group">
                                     <i class="fa fa-gear product-config-btn _r2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
                                     <ul class="dropdown-menu product-control-drop">
-                                        <li><a href="#" class="product-edit" data-toggle="tooltip" data-placement="left" data-original-title="Edit"><i class="fa fa-pencil"></i></a></li>
+                                        <li data-edit-product="{{ route('front_get_product_by_id', $product->id) }}">
+                                            <a href="#" class="product-edit" data-toggle="tooltip" data-placement="left" data-original-title="Edit">
+                                                <i class="fa fa-pencil"></i>
+                                            </a>
+                                        </li>
                                         <li><a href="#" class="product-hide" data-toggle="tooltip" data-placement="left" data-original-title="Hide"><i class="fa fa-magic"></i></a></li>
                                         <li><a href="#" class="product-share" data-toggle="tooltip" data-placement="left" data-original-title="Share"><i class="fa fa-share"></i></a></li>
                                         <li role="separator" class="divider"></li>
