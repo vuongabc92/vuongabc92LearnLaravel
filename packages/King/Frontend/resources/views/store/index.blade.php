@@ -70,10 +70,23 @@ Setting > My store
                                     </span>
                                 </li>
                             </ul>
+
+                            <div class="product-control">
+                                <div class="btn-group">
+                                    <i class="fa fa-gear product-config-btn _r2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+                                    <ul class="dropdown-menu product-control-drop">
+                                        <li><a href="#"><i class="fa fa-pencil"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-magic"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-share"></i></a></li>
+                                        <li role="separator" class="divider"></li>
+                                        <li><a href="#"><i class="fa fa-trash"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                         <div class="product-body">
                             <div class="product-image">
-                                <img src="{{ ($product->image_1 === null) ? '' : product_image($product->image_1->big) }}" alt="{{ $product->name }}"/>
+                                <img src="{{ ($product->image_1 !== null) ? product_image($product->image_1->big) : '' }}" alt="{{ $product->name }}"/>
                             </div>
                             <div class="product-info">
                                 <span class="product-name-box">

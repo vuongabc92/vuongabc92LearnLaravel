@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Blade;
+use Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,10 +16,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Blade::extend(function($value) {
             return preg_replace('/\@set(.+)/', '<?php ${1}; ?>', $value);
-        });
-
-        Blade::extend(function($value) {
-            return preg_replace('/(.*)/', '<?php ${1}; ?>', $value);
         });
     }
 

@@ -17,7 +17,7 @@ position:relative;}
 
 /** Header */
 .header{height:55px;border-bottom:solid 1px #007aff;padding:0 15px;position:fixed;
-z-index:999;}
+z-index:9999;}
 .header-inside{display:none;}
 .head-left-col{width:20%;}
 .head-right-col{width:80%;}
@@ -142,6 +142,13 @@ line-height:20px;text-align:justify;text-decoration:none !important;}
 .product-name:hover{color:#007aff}
 .product-price{float:left;color:#007aff;font-size:17px;}
 .product-old-price{float:right;color:#888;text-decoration:line-through;}
+.product-control{float:right;}
+.product-config-btn{float:left;margin:16px 0 0 0;cursor:pointer;
+color:#555;font-size:16px;}
+.product-config-btn:hover{color:#007aff;}
+.product-control-drop{min-width:56px;margin:2px 0 0 -22px;}
+.product-control-drop>li>a{color:#555;text-align:center;}
+.product-control-drop>li>a:hover{color:#007aff;}
 
 @media screen and (min-width: 320px){
     .header-search-form{width:90%;}

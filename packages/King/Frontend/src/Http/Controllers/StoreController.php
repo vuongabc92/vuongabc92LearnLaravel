@@ -324,12 +324,20 @@ class StoreController extends FrontController
         }
     }
 
-    public function ajaxSearchProduct(Request $request, $id) {
+    /**
+     * Get product by id
+     *
+     * @param Illuminate\Http\Request $request
+     * @param int                     $id
+     *
+     * @return type
+     */
+    public function ajaxGetProductById(Request $request, $id) {
 
-        //if ($request->ajax()) {
+        if ($request->ajax()) {
 
             $id      = (int) $id;
-            $product = get_product($id);
+            $product = product($id);
 
             if ($product === null) {
                 return ajax_response([
@@ -342,7 +350,7 @@ class StoreController extends FrontController
                 'status' => _const('AJAX_OK'),
                 'data'   => $product
             ]);
-        //}
+        }
     }
 
 }
