@@ -75,8 +75,8 @@ Setting > My store
                                 <div class="btn-group">
                                     <i class="fa fa-gear product-config-btn _r2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
                                     <ul class="dropdown-menu product-control-drop">
-                                        <li data-edit-product="{{ route('front_get_product_by_id', $product->id) }}">
-                                            <a href="#" class="product-edit" data-toggle="tooltip" data-placement="left" data-original-title="Edit">
+                                        <li>
+                                            <a href="{{ route('front_find_product_by_id', $product->id) }}" data-product-form-edit class="product-edit" data-toggle="tooltip" data-placement="left" data-original-title="Edit">
                                                 <i class="fa fa-pencil"></i>
                                             </a>
                                         </li>

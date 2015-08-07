@@ -298,13 +298,15 @@ class StoreController extends FrontController
                 $tempPath = config('front.temp_path');
                 foreach ([1, 2, 3, 4] as $one) {
                     $imgToDel = $request->get("product_image_{$one}");
-                    foreach (['original', 'big', 'thumb'] as $size) {
-                        $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $imgToDel);
+                    if ($imgToDel !== '') {
+                        foreach (['original', 'big', 'thumb'] as $size) {
+                            $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $imgToDel);
 
-                        delete_file($tempPath . $nameBySize);
+                            delete_file($tempPath . $nameBySize);
+                        }
+
+                        delete_file($tempPath . $imgToDel);
                     }
-
-                    delete_file($tempPath . $imgToDel);
                 }
 
             } catch (Exception $exc) {
@@ -325,15 +327,16 @@ class StoreController extends FrontController
     }
 
     /**
-     * Get product by id
+     * Find product by id
      *
      * @param Illuminate\Http\Request $request
      * @param int                     $id
      *
      * @return type
      */
-    public function ajaxGetProductById(Request $request, $id) {
+    public function ajaxFindProductById(Request $request, $id) {
 
+        // Only accept AJAX request
         if ($request->ajax()) {
 
             $id      = (int) $id;
@@ -346,9 +349,27 @@ class StoreController extends FrontController
                 ]);
             }
 
+            // Rebuild product data structure
+            $productPath = config('front.product_path');
+            $product->images();
+            $productRebuild = [
+                'id'           => $product->id,
+                'name'         => $product->name,
+                'price'        => $product->price,
+                'old_price'    => $product->old_price,
+                'description'  => $product->description,
+                'images'       => [
+                    'image_1' => ($product->image_1 !== null) ? asset($productPath . $product->image_1->thumb) : '',
+                    'image_2' => ($product->image_2 !== null) ? asset($productPath . $product->image_2->thumb) : '',
+                    'image_3' => ($product->image_3 !== null) ? asset($productPath . $product->image_3->thumb) : '',
+                    'image_4' => ($product->image_4 !== null) ? asset($productPath . $product->image_4->thumb) : '',
+                ],
+                'lastModified' => $product->updated_at
+            ];
+
             return ajax_response([
                 'status' => _const('AJAX_OK'),
-                'data'   => $product
+                'data'   => $productRebuild
             ]);
         }
     }

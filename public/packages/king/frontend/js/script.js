@@ -987,34 +987,166 @@
 
 }(jQuery, window));
 
+/**
+ *  @name Product Form Edit
+ *  @description Display edit product modal with available data
+ *  @version 1.0
+ *  @options
+ *    option
+ *  @events
+ *    event
+ *  @methods
+ *    init
+ *    publicMethod
+ *    destroy
+ */
+;
+(function($, window, undefined) {
+    var pluginName = 'product-form-edit';
+
+    function Plugin(element, options) {
+        this.element = $(element);
+        this.options = $.extend({}, $.fn[pluginName].defaults, options);
+        this.init();
+    }
+
+    Plugin.prototype = {
+        init: function() {
+            var current   = this.element,
+                modal     = $('#add-product-modal'),
+                form      = $('#save-product-form'),
+                fields    = form.attr('data-save-product').split('|');
+
+            current.on('click', function(e){
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'GET',
+                    url: current.attr('href'),
+                    beforeSend: function(){},
+                    success: function(response){
+                        var status         = response.status,
+                            data           = response.data,
+                            productImg     = SETTING.PRODUCT_IMG,
+                            productImgEdit = SETTING.PRODUCT_IMG_EDIT;;
+
+                        if (status === SETTING.AJAX_OK) {
+                            $.each(fields, function(k, v){
+                                form.find('[name^=' + v +']').val(data[v]);
+                            });
+
+                            for(var i = 1; i <= 4; i++){
+                                productImg = productImg.replace('__SRC', data['images']['image_' + i]);
+                                $('.product-img-' + i).css('border', 'solid 3px #000');
+                                $('.product-img-' + i).html(productImg + productImgEdit);
+                            }
+
+                        }
+
+                        if (status === SETTING.AJAX_ERROR) {
+
+                        }
+
+                        modal.modal('show');
+                    }
+                });
+            });
+
+        },
+        destroy: function() {
+            $.removeData(this.element[0], pluginName);
+        }
+    };
+
+    $.fn[pluginName] = function(options, params) {
+        return this.each(function() {
+            var instance = $.data(this, pluginName);
+            if (!instance) {
+                $.data(this, pluginName, new Plugin(this, options));
+            } else if (instance[options]) {
+                instance[options](params);
+            } else {
+                window.console && console.log(options ? options + ' method is not exists in ' + pluginName : pluginName + ' plugin has been initialized');
+            }
+        });
+    };
+
+    $.fn[pluginName].defaults = {
+        option: 'value'
+    };
+
+    $(function() {
+        $('[data-' + pluginName + ']')[pluginName]();
+    });
+
+}(jQuery, window));
+
+
 $(document).ready(function(){
 
-    //Reset list location when location dropdown is closed
+    /**
+     * Bind event close dropdown of bootstap to
+     * reset location dropdown to orginal
+     */
     $('.location-dropdown').on('hide.bs.dropdown', function() {
         $('.search-location-form').find('[name^=location_keyword]').val('');
         $('.search-location-form').submit();
-    });//End
+    });
 
-    //Bind event close add product modal
+    /**
+     * Bind event close modal of bootstrap to
+     * reset product modal to original
+     */
     $('#add-product-modal').on('hidden.bs.modal', function (e) {
+        resetProductModal();
+    });
 
-        $.ajax({
-            type: 'GET',
-            data: $('.product-image-hidden').serialize(),
-            url: $('#reset-product-image').val(),
-            beforeSend: function(){},
-            success: function(){},
-        });
+    /**
+     * Close product modal when reset product form
+     */
+    $('.add-product-reset-btn').on('click', function(e){
+        $('#add-product-modal').modal('hide');
+    });
+
+    /**
+     * Reset save product modal when it close
+     *
+     * 1. Delete temporary product image
+     * 2. Reset form
+     * 3. Reset hidden input
+     * 4. Clear image on DOM
+     *
+     * @returns void
+     */
+    function resetProductModal() {
+
+        ajaxDeleteTempProductImg();
 
         $('#save-product-form')[0].reset();
         $('.product-image-hidden').val('');
         $('.add-product-image').css('border', '3px dashed #d5d5d5');
         $('.add-product-image').html('<i class="fa fa-plus"></i>');
-    });//End
+    }
 
-    //Click reset add product form
-    $('.add-product-reset-btn').on('click', function(e){
-        $('#add-product-modal').modal('hide');
-    });//End
+    /**
+     * Ajax delete temporary product image
+     *
+     * @returns void
+     */
+    function ajaxDeleteTempProductImg() {
 
+        for (var i = 1; i<= 4; i++){
+            if ($('#product-image-' + i).val() !== '') {
+                $.ajax({
+                    type: 'GET',
+                    data: $('.product-image-hidden').serialize(),
+                    url: $('#reset-product-image').val(),
+                    beforeSend: function(){},
+                    success: function(){}
+                });
+
+                break;
+            }
+        };
+    }
 });
