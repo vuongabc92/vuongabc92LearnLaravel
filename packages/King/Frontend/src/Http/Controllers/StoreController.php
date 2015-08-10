@@ -50,11 +50,11 @@ class StoreController extends FrontController
         //Only accept ajax request
         if ($request->ajax()) {
 
-            $productId  = (int) $request->get('id');
-            $product    = $this->getProduct($productId);
+            $productId = (int) $request->get('id');
+            $product   = $this->getProduct($productId);
 
-            $rules      = $this->_product->getRules();
-            $messages   = $this->_product->getMessages();
+            $rules     = $this->_product->getRules();
+            $messages  = $this->_product->getMessages();
 
             if ($productId) {
                 $rules = remove_rules($rules, 'product_image_1');
@@ -85,11 +85,10 @@ class StoreController extends FrontController
             /**
              * Save product steps:
              *
-             *  1. Get path and params.
-             *  2. Copy image from temp folder to product image folder then delete
+             *  1. Copy image from temp folder to product image folder then delete
              *  image from temp folder.
-             *  3. Validate product' image must has at least one.
-             *  4. Get product object.
+             *  2. Validate product' image must has at least one.
+             *  3. Save product.
              *
              */
             try {
