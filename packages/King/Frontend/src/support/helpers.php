@@ -273,8 +273,8 @@ if ( ! function_exists('remove_rules')) {
     /**
      * Remove one or many rules in a list of rules
      *
-     * @param type $rules       List of rules will be removed out
-     * @param type $rulesRemove Rule to be found in $rules to remove
+     * @param array        $rules       List of rules will be removed out
+     * @param array|string $rulesRemove Rule to be found in $rules to remove
      *
      * @return array
      */

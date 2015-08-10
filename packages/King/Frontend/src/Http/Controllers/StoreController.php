@@ -27,6 +27,11 @@ class StoreController extends FrontController
         $this->_product = $product;
     }
 
+    /**
+     * Display store page
+     *
+     * @return response
+     */
     public function index() {
         return view('frontend::store.index', [
             'productCount' => store()->products->count(),
@@ -45,100 +50,62 @@ class StoreController extends FrontController
         //Only accept ajax request
         if ($request->ajax()) {
 
+            $productId  = (int) $request->get('id');
+            $product    = $this->getProduct($productId);
+
             $rules      = $this->_product->getRules();
             $messages   = $this->_product->getMessages();
+
+            if ($productId) {
+                $rules = remove_rules($rules, 'product_image_1');
+            }
+
             $validator  = Validator::make($request->all(), $rules, $messages);
             $validFails = $validator->fails();
-            $productId  = (int) $request->get('id');
-            
-            if ($productId) {
-                
-                if ((($product = product($productId)) === null)) {
-                    
-                    $validator->errors()->add('product_image_1', _t('opp'));
 
-                    return ajax_response([
-                        'status'   => _const('AJAX_ERROR'),
-                        'messages' => $validator->messages()
-                    ]);
-                }
-                
-            } else {
-                $product = new Product();
-            }
-            
-            /**
-             * Check does product's image exist that a product must has at least
-             * one image
-             */
-            $image1 = $request->get('product_image_1');
-            $image2 = $request->get('product_image_2');
-            $image3 = $request->get('product_image_3');
-            $image4 = $request->get('product_image_4');
-            if (empty($image1) && empty($image2) && empty($image3) && empty($image4) && ( ! $productId)) {
-                $validator->errors()->add('product_image_1', _t('product_image_req'));
+            $tempImages = [
+                $request->get('product_image_1'),
+                $request->get('product_image_2'),
+                $request->get('product_image_3'),
+                $request->get('product_image_4')
+            ];
+
+            if (is_null($product)) {
+                $validator->errors()->add('product_image_1', _t('not_found'));
             }
 
-            if ($validFails) {
+            if ($validFails || is_null($product)) {
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->messages()
                 ]);
             }
 
+
             /**
-             * 1. Get path and params.
-             * 2. Copy image from temp folder to product image folder then delete
-             * image from temp folder.
-             * 3. Validate product' image must has at least one.
-             * 4. Get product object.
+             * Save product steps:
+             *
+             *  1. Get path and params.
+             *  2. Copy image from temp folder to product image folder then delete
+             *  image from temp folder.
+             *  3. Validate product' image must has at least one.
+             *  4. Get product object.
              *
              */
             try {
 
-                // 1
-                $tempPath    = config('front.temp_path');
-                $productPath = config('front.product_path');
-                $images      = [];
+                $images = $this->copyTempProductImages($tempImages);
 
-                // 2
-                foreach ([$image1, $image2, $image3, $image4] as $one) {
+                if ( ! $productId && ! count($images)) {
 
-                    $imageSize   = [];
-                    
-                    if ( ! empty($one) && check_file($tempPath . $one)) {
-
-                        foreach (['original', 'big', 'thumb'] as $size) {
-
-                            $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $one);
-                            if (copy($tempPath . $nameBySize, $productPath . $nameBySize)) {
-                                $imageSize[$size] = $nameBySize;
-                            }
-
-                            delete_file($tempPath . $nameBySize);
-                        }
-
-                        delete_file($tempPath . $one);
-                    }
-
-                    if (count($imageSize)) {
-                        $images[] = $imageSize;
-                    }
-                }
-
-                // 3
-                if (( ! count($images)) && ( ! $productId)) {
-                    
                     $validator->errors()->add('product_image_1', _t('product_image_req'));
 
                     return ajax_response([
                         'status'   => _const('AJAX_ERROR'),
                         'messages' => $validator->messages()
                     ]);
-
                 }
 
-                // 4
                 $product->store_id    = store()->id;
                 $product->name        = $request->get('name');
                 $product->price       = $request->get('price');
@@ -372,4 +339,65 @@ class StoreController extends FrontController
         }
     }
 
+    /**
+     * Get product entity
+     *
+     * @param int $id Product id
+     *
+     * @return App\Models\Product
+     */
+    public function getProduct($id = 0) {
+
+        if ($id) {
+            $product = product($productId);
+        } else {
+            $product = new Product();
+        }
+
+        return $product;
+    }
+
+    /**
+     * Copy temporary product image from temp folder to product folder
+     * then delete image on temp folder
+     *
+     * @param array $tempImages Temporary product image that was updated
+     *
+     * @return array
+     */
+    public function copyTempProductImages($tempImages) {
+
+        $tempPath    = config('front.temp_path');
+        $productPath = config('front.product_path');
+        $images      = [];
+
+        if (count($tempImages)) {
+
+            foreach ($tempImages as $image) {
+
+                $imageSize = [];
+
+                if (check_file($tempPath . $image)) {
+
+                    foreach (['original', 'big', 'thumb'] as $size) {
+
+                        $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $image);
+                        if (copy($tempPath . $nameBySize, $productPath . $nameBySize)) {
+                            $imageSize[$size] = $nameBySize;
+                        }
+
+                        delete_file($tempPath . $nameBySize);
+                    }
+
+                    delete_file($tempPath . $image);
+                }
+
+                if (count($imageSize)) {
+                    $images[] = $imageSize;
+                }
+            }
+        }
+
+        return $images;
+    }
 }

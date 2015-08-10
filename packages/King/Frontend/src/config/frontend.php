@@ -11,5 +11,6 @@ return [
     'cover_path'          => 'uploads/images/covers/',
     'product_path'        => 'uploads/images/products/',
     'temp_path'           => 'uploads/temp/',
-    'product_img_order'   => [1, 2, 3, 4]
+    'product_img_order'   => [1, 2, 3, 4],
+    'max_product_img'     => 4
 ];

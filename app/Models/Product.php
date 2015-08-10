@@ -30,10 +30,11 @@ class Product extends Base
      */
     public function getRules() {
         return [
-            'name'        => 'required|min:6|max:250',
-            'price'       => 'required|min:3|max:16',
-            'old_price'   => 'min:3|max:16',
-            'description' => 'required|min:10'
+            'name'            => 'required|min:6|max:250',
+            'price'           => 'required|min:3|max:16',
+            'old_price'       => 'min:3|max:16',
+            'description'     => 'required|min:10',
+            'product_image_1' => 'required_without_all:product_image_2,product_image_3,product_image_4',
         ];
     }
 
@@ -44,16 +45,17 @@ class Product extends Base
      */
     public function getMessages() {
         return [
-            'name.required'        => _t('product_name_req'),
-            'name.min'             => _t('product_name_min'),
-            'name.max'             => _t('product_name_max'),
-            'price.required'       => _t('product_price_req'),
-            'price.min'            => _t('product_price_min'),
-            'price.max'            => _t('product_price_max'),
-            'old_price.min'        => _t('product_oldprice_min'),
-            'old_price.max'        => _t('product_oldprice_max'),
-            'description.required' => _t('product_desc_req'),
-            'description.min'      => _t('product_desc_min'),
+            'name.required'                        => _t('product_name_req'),
+            'name.min'                             => _t('product_name_min'),
+            'name.max'                             => _t('product_name_max'),
+            'price.required'                       => _t('product_price_req'),
+            'price.min'                            => _t('product_price_min'),
+            'price.max'                            => _t('product_price_max'),
+            'old_price.min'                        => _t('product_oldprice_min'),
+            'old_price.max'                        => _t('product_oldprice_max'),
+            'description.required'                 => _t('product_desc_req'),
+            'description.min'                      => _t('product_desc_min'),
+            'product_image_1.required_without_all' => _t('product_image_req'),
         ];
     }
 
