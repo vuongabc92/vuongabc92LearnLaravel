@@ -49,7 +49,24 @@ class StoreController extends FrontController
             $messages   = $this->_product->getMessages();
             $validator  = Validator::make($request->all(), $rules, $messages);
             $validFails = $validator->fails();
+            $productId  = (int) $request->get('id');
+            
+            if ($productId) {
+                
+                if ((($product = product($productId)) === null)) {
+                    
+                    $validator->errors()->add('product_image_1', _t('opp'));
 
+                    return ajax_response([
+                        'status'   => _const('AJAX_ERROR'),
+                        'messages' => $validator->messages()
+                    ]);
+                }
+                
+            } else {
+                $product = new Product();
+            }
+            
             /**
              * Check does product's image exist that a product must has at least
              * one image
@@ -58,7 +75,7 @@ class StoreController extends FrontController
             $image2 = $request->get('product_image_2');
             $image3 = $request->get('product_image_3');
             $image4 = $request->get('product_image_4');
-            if (empty($image1) && empty($image2) && empty($image3) && empty($image4)) {
+            if (empty($image1) && empty($image2) && empty($image3) && empty($image4) && ( ! $productId)) {
                 $validator->errors()->add('product_image_1', _t('product_image_req'));
             }
 
@@ -88,9 +105,8 @@ class StoreController extends FrontController
                 foreach ([$image1, $image2, $image3, $image4] as $one) {
 
                     $imageSize   = [];
+                    
                     if ( ! empty($one) && check_file($tempPath . $one)) {
-
-                        $toBeReplaced = _const('TOBEREPLACED');
 
                         foreach (['original', 'big', 'thumb'] as $size) {
 
@@ -111,8 +127,8 @@ class StoreController extends FrontController
                 }
 
                 // 3
-                if ( ! count($images)) {
-
+                if (( ! count($images)) && ( ! $productId)) {
+                    
                     $validator->errors()->add('product_image_1', _t('product_image_req'));
 
                     return ajax_response([
@@ -123,24 +139,6 @@ class StoreController extends FrontController
                 }
 
                 // 4
-                if (is_null($request->get('id'))) {
-                    $product = new Product();
-                } else {
-
-                    $id      = (int) $request->get('id');
-                    $product = product($id);
-
-                    if ($product === null) {
-
-                        $validator->errors()->add('product_image_1', _t('opp'));
-
-                        return ajax_response([
-                            'status'   => _const('AJAX_ERROR'),
-                            'messages' => $validator->messages()
-                        ]);
-                    }
-                }
-
                 $product->store_id    = store()->id;
                 $product->name        = $request->get('name');
                 $product->price       = $request->get('price');

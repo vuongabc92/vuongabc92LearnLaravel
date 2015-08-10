@@ -2,7 +2,8 @@
 <div class="modal fade" id="add-product-modal" tabindex="-1" role="dialog" aria-labelledby="addProductLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="_fwfl _bgw _r3 modal-content">
-            {!! Form::open(['route' => 'front_save_product', 'method' => 'POST', 'class' => '_fwfl', 'id' => 'save-product-form', 'data-save-product' => 'product_image_1|name|price|old_price|description']) !!}
+            {!! Form::open(['route' => 'front_save_product', 'method' => 'POST', 'class' => '_fwfl', 'id' => 'save-product-form', 'data-save-product' => 'product_image_1|id|name|price|old_price|description']) !!}
+            {!! Form::hidden('id', '', ['id' => 'product-id']) !!}
             <div class=" _fwfl modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title _tg5 _fs17" id="myModalLabel">Add new product</h4>
