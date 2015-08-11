@@ -34,38 +34,6 @@ class StoreController extends FrontController
      * @return response
      */
     public function index() {
-//        $new = [
-//            0 => [
-//                'original' => 'product_72f98b0899652112_original.jpg',
-//                'big' => 'product_72f98b0899652112_big.jpg',
-//                'thumb' => 'product_72f98b0899652112_thumb.jpg',
-//            ],
-//            2 => [
-//                'original' => 'product_ca1dc1e5f8ad3bdc_original.jpg',
-//                'big' => 'product_ca1dc1e5f8ad3bdc_big.jpg',
-//                'thumb' => 'product_ca1dc1e5f8ad3bdc_thumb.jpg',
-//            ],
-//            3 => [
-//                'original' => 'product_c92f3d90402bcd0c_original.jpeg',
-//                'big' => 'product_c92f3d90402bcd0c_big.jpeg',
-//                'thumb' => 'product_c92f3d90402bcd0c_thumb.jpeg',
-//            ],
-//        ];
-//
-//        $old = new \Illuminate\Support\Collection(json_decode('[{"original":"product_d3bdcb9355d7c0ae_original.jpg","big":"product_d3bdcb9355d7c0ae_big.jpg","thumb":"product_d3bdcb9355d7c0ae_thumb.jpg"},{"original":"product_eac691b0731dd2d4_original.jpg","big":"product_eac691b0731dd2d4_big.jpg","thumb":"product_eac691b0731dd2d4_thumb.jpg"},{"original":"product_1f747d09ea9453a1_original.jpeg","big":"product_1f747d09ea9453a1_big.jpeg","thumb":"product_1f747d09ea9453a1_thumb.jpeg"},{"original":"product_c813e5dbbd597578_original.jpg","big":"product_c813e5dbbd597578_big.jpg","thumb":"product_c813e5dbbd597578_thumb.jpg"}]'));
-//        $new = new \Illuminate\Support\Collection($new);
-//        dd($new->count());
-//        if (count($new) === 4) {
-//            dd($new->fetch());
-//        } else {
-//            foreach ($new as $k => $one) {
-//                $old[$k] = $one;
-//            }
-//        }
-//
-//        dd($old->toJson());
-//
-
         return view('frontend::store.index', [
             'productCount' => store()->products->count(),
             'products'     => store()->products
@@ -118,20 +86,22 @@ class StoreController extends FrontController
             /**
              * Save product steps:
              *
-             *  1. Copy image from temp folder to product image folder then delete
-             *  image from temp folder.
-             *  2. Validate product' image must has at least one.
+             *  1. Copy product images from temporary folder to product folder.
+             *  2. Delete old product image(s).
              *  3. Save product.
              *
              */
             try {
 
+                // 1
                 $images = $this->copyTempProductImages($tempImages);
 
+                // 2
                 if ($productId) {
                     $this->deleteOldImages($images, $product->images);
                 }
 
+                // 3
                 $product->store_id    = store()->id;
                 $product->name        = $request->get('name');
                 $product->price       = $request->get('price');
@@ -170,18 +140,10 @@ class StoreController extends FrontController
 
         if ($request->isMethod('POST')) {
 
-            $rules = [
-                '__product' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . _const('PRODUCT_MAX_FILE_SIZE')
-            ];
-
-            $messages = [
-                '__product.required' => _t('no_file'),
-                '__product.image'    => _t('file_not_image'),
-                '__product.mimes'    => _t('file_image_mimes'),
-                '__product.max'      => _t('avatar_max'),
-            ];
-
+            $rules     = $this->_getProductImageRules();
+            $messages  = $this->_getProductImageMessages();
             $validator = Validator::make($request->all(), $rules, $messages);
+
             if ($validator->fails()) {
                 return ajax_upload_response([
                     'status'   => _const('AJAX_ERROR'),
@@ -207,47 +169,11 @@ class StoreController extends FrontController
              * 2. Generate file name
              * 3. Upload
              * 4. Resize
-             * 5. Delete old temporary image
+             * 5. Delete old temporary image(s)
              */
             try {
 
-                // 1
-                $tempPath = config('front.temp_path');
-                $file     = $request->file('__product');
-
-                // 2
-                $filename = new FileName($tempPath, $file->getClientOriginalExtension());
-                $filename->setPrefix(_const('PRODUCT_PREFIX'))->product()->generate();
-                $filename->group([
-                    'big' => [
-                        'width'  => _const('PRODUCT_BIG'),
-                        'height' => _const('PRODUCT_BIG')
-                    ],
-                    'thumb' => [
-                        'width'  => _const('PRODUCT_THUMB'),
-                        'height' => _const('PRODUCT_THUMB')
-                    ],
-                ], true);
-
-                // 3
-                $upload = new Upload($file);
-                $upload->setDirectory($tempPath)->setName($filename->getName())->move();
-
-                // 4
-                $image = new Image($tempPath . $filename->getName());
-                $image->setDirectory($tempPath)->resizeGroup($filename->getGroup());
-
-                // 5
-                $currentImage   = $request->get('current_image');
-                $productImgType = config('front.product_img_type');
-                foreach ($productImgType as $size) {
-
-                    $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $currentImage);
-
-                    delete_file($tempPath . $nameBySize);
-                }
-
-                delete_file($tempPath . $currentImage);
+                $upload = $this->_uploadProductImage($request);
 
             } catch (Exception $ex) {
                 $validator->errors()->add('__product', _t('opp'));
@@ -258,14 +184,14 @@ class StoreController extends FrontController
                 ], 500);
             }
 
-            $resizes = $image->getResizes();
+            $resizes = $upload['image']->getResizes();
 
             return ajax_upload_response([
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
-                    'original' => $filename->getName(),
-                    'thumb'    => asset($tempPath . $resizes['thumb']),
+                    'original' => $upload['filename']->getName(),
+                    'thumb'    => asset($upload['temp_path'] . $resizes['thumb']),
                     'order'    => $order
                 ]
             ]);
@@ -289,8 +215,11 @@ class StoreController extends FrontController
 
                 $tempPath       = config('front.temp_path');
                 $productImgType = config('front.product_img_type');
+
                 foreach ([1, 2, 3, 4] as $one) {
+
                     $imgToDel = $request->get("product_image_{$one}");
+
                     if ($imgToDel !== '') {
                         foreach ($productImgType as $size) {
                             $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $imgToDel);
@@ -302,7 +231,7 @@ class StoreController extends FrontController
                     }
                 }
 
-            } catch (Exception $exc) {
+            } catch (Exception $ex) {
 
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
@@ -386,11 +315,12 @@ class StoreController extends FrontController
 
     /**
      * Copy temporary product image from temp folder to product folder
-     * then delete image on temp folder
+     * and delete images on temp folder
      *
      * @param array $tempImages Temporary product image that was updated
+     * to temp folder
      *
-     * @return array
+     * @return Illuminate\Support\Collection
      */
     public function copyTempProductImages($tempImages) {
 
@@ -405,7 +335,7 @@ class StoreController extends FrontController
 
                 $imageSize = [];
 
-                if (check_file($tempPath . $image)) {
+                if (check_file($tempPath . $image) && count($productImgType)) {
 
                     foreach ($productImgType as $size) {
 
@@ -451,5 +381,95 @@ class StoreController extends FrontController
                 }
             }
         }
+    }
+
+    /**
+     * Get product image rules
+     *
+     * @return array
+     */
+    protected function _getProductImageRules() {
+
+        $maxFileSize = _const('PRODUCT_MAX_FILE_SIZE');
+
+        return [
+            '__product' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . $maxFileSize
+        ];
+    }
+
+    /**
+     * Get product image rule messages
+     *
+     * @return array
+     */
+    protected function _getProductImageMessages() {
+
+        return [
+            '__product.required' => _t('no_file'),
+            '__product.image'    => _t('file_not_image'),
+            '__product.mimes'    => _t('file_image_mimes'),
+            '__product.max'      => _t('avatar_max'),
+        ];
+    }
+
+    /**
+     * Upload and resize product image
+     *
+     * 1. Get path and file
+     * 2. Generate file name
+     * 3. Upload
+     * 4. Resize
+     * 5. Delete old temporary image(s)
+     *
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile|array $file
+     *
+     * @return App\Helpers\Image
+     */
+    protected function _uploadProductImage(Request $request) {
+
+        // 1
+        $tempPath = config('front.temp_path');
+        $file     = $request->file('__product');
+
+        // 2
+        $filename = new FileName($tempPath, $file->getClientOriginalExtension());
+        $filename->setPrefix(_const('PRODUCT_PREFIX'))->product()->generate();
+        $filename->group([
+            'big' => [
+                'width'  => _const('PRODUCT_BIG'),
+                'height' => _const('PRODUCT_BIG')
+            ],
+            'thumb' => [
+                'width'  => _const('PRODUCT_THUMB'),
+                'height' => _const('PRODUCT_THUMB')
+            ],
+                ], true);
+
+        // 3
+        $upload = new Upload($file);
+        $upload->setDirectory($tempPath)->setName($filename->getName())->move();
+
+        // 4
+        $image = new Image($tempPath . $filename->getName());
+        $image->setDirectory($tempPath)->resizeGroup($filename->getGroup());
+
+        // 5
+        $currentImage   = $request->get('current_image');
+        $productImgType = config('front.product_img_type');
+
+        foreach ($productImgType as $size) {
+
+            $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $currentImage);
+
+            delete_file($tempPath . $nameBySize);
+        }
+
+        delete_file($tempPath . $currentImage);
+
+        return [
+            'image'     => $image,
+            'temp_path' => $tempPath,
+            'filename'  => $filename
+        ];
     }
 }

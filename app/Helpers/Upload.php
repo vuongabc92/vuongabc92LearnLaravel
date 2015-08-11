@@ -143,7 +143,7 @@ class Upload {
     /**
      * Constructor
      *
-     * @param string $file
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile|array $file
      */
     public function __construct($file)
     {
