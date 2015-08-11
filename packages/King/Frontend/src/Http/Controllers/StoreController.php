@@ -343,7 +343,7 @@ class StoreController extends FrontController
 
             // Rebuild product data structure
             $productPath = config('front.product_path');
-            $product->images();
+            $product->toImage();
             $productRebuild = [
                 'id'           => $product->id,
                 'name'         => $product->name,

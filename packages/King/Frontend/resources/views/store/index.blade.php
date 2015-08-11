@@ -46,7 +46,7 @@ Setting > My store
             <ol class="_fwfl _ls product-tree">
                 @set $i = 1
                 @foreach( $products as $product )
-                @set $image = $product->images()
+                @set $image = $product->toImage()
                 <li class="{{ (($i++)%3 === 0) ? 'the-3th-product' : '' }}">
                     <div class="product">
                         <div class="product-head">

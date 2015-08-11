@@ -76,7 +76,7 @@ class Product extends Base
      *
      * @return \App\Models\Product
      */
-    public function images() {
+    public function toImage() {
         $images        = new Collection(json_decode($this->images));
         $this->images  = $images;
         $this->image_1 = isset($images[0]) ? $images[0] : null;
@@ -108,7 +108,7 @@ class Product extends Base
             foreach ($images as $k => $image) {
                 $oldImages[$k] = $image;
             }
-            
+
             $this->images = $oldImages->values()->toJson();
         }
 
