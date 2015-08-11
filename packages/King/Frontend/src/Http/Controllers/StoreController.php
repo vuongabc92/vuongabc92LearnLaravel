@@ -9,6 +9,7 @@
 namespace King\Frontend\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Validator;
 use App\Helpers\Upload;
 use App\Helpers\FileName;
@@ -33,6 +34,38 @@ class StoreController extends FrontController
      * @return response
      */
     public function index() {
+//        $new = [
+//            0 => [
+//                'original' => 'product_72f98b0899652112_original.jpg',
+//                'big' => 'product_72f98b0899652112_big.jpg',
+//                'thumb' => 'product_72f98b0899652112_thumb.jpg',
+//            ],
+//            2 => [
+//                'original' => 'product_ca1dc1e5f8ad3bdc_original.jpg',
+//                'big' => 'product_ca1dc1e5f8ad3bdc_big.jpg',
+//                'thumb' => 'product_ca1dc1e5f8ad3bdc_thumb.jpg',
+//            ],
+//            3 => [
+//                'original' => 'product_c92f3d90402bcd0c_original.jpeg',
+//                'big' => 'product_c92f3d90402bcd0c_big.jpeg',
+//                'thumb' => 'product_c92f3d90402bcd0c_thumb.jpeg',
+//            ],
+//        ];
+//
+//        $old = new \Illuminate\Support\Collection(json_decode('[{"original":"product_d3bdcb9355d7c0ae_original.jpg","big":"product_d3bdcb9355d7c0ae_big.jpg","thumb":"product_d3bdcb9355d7c0ae_thumb.jpg"},{"original":"product_eac691b0731dd2d4_original.jpg","big":"product_eac691b0731dd2d4_big.jpg","thumb":"product_eac691b0731dd2d4_thumb.jpg"},{"original":"product_1f747d09ea9453a1_original.jpeg","big":"product_1f747d09ea9453a1_big.jpeg","thumb":"product_1f747d09ea9453a1_thumb.jpeg"},{"original":"product_c813e5dbbd597578_original.jpg","big":"product_c813e5dbbd597578_big.jpg","thumb":"product_c813e5dbbd597578_thumb.jpg"}]'));
+//        $new = new \Illuminate\Support\Collection($new);
+//        dd($new->count());
+//        if (count($new) === 4) {
+//            dd($new->fetch());
+//        } else {
+//            foreach ($new as $k => $one) {
+//                $old[$k] = $one;
+//            }
+//        }
+//
+//        dd($old->toJson());
+//
+
         return view('frontend::store.index', [
             'productCount' => store()->products->count(),
             'products'     => store()->products
@@ -95,14 +128,8 @@ class StoreController extends FrontController
 
                 $images = $this->copyTempProductImages($tempImages);
 
-                if ( ! $productId && ! count($images)) {
-
-                    $validator->errors()->add('product_image_1', _t('product_image_req'));
-
-                    return ajax_response([
-                        'status'   => _const('AJAX_ERROR'),
-                        'messages' => $validator->messages()
-                    ]);
+                if ($productId) {
+                    $this->deleteOldImages($images, $product->images);
                 }
 
                 $product->store_id    = store()->id;
@@ -110,7 +137,7 @@ class StoreController extends FrontController
                 $product->price       = $request->get('price');
                 $product->old_price   = $request->get('old_price');
                 $product->description = $request->get('description');
-                $product->images      = json_encode($images);
+                $product->setImages($images);
                 $product->save();
 
             } catch (Exception $ex) {
@@ -211,8 +238,9 @@ class StoreController extends FrontController
                 $image->setDirectory($tempPath)->resizeGroup($filename->getGroup());
 
                 // 5
-                $currentImage = $request->get('current_image');
-                foreach (['original', 'big', 'thumb'] as $size) {
+                $currentImage   = $request->get('current_image');
+                $productImgType = config('front.product_img_type');
+                foreach ($productImgType as $size) {
 
                     $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $currentImage);
 
@@ -259,11 +287,12 @@ class StoreController extends FrontController
 
             try {
 
-                $tempPath = config('front.temp_path');
+                $tempPath       = config('front.temp_path');
+                $productImgType = config('front.product_img_type');
                 foreach ([1, 2, 3, 4] as $one) {
                     $imgToDel = $request->get("product_image_{$one}");
                     if ($imgToDel !== '') {
-                        foreach (['original', 'big', 'thumb'] as $size) {
+                        foreach ($productImgType as $size) {
                             $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $imgToDel);
 
                             delete_file($tempPath . $nameBySize);
@@ -281,7 +310,6 @@ class StoreController extends FrontController
                 ]);
 
             }
-
 
             return ajax_response([
                 'status'   => _const('AJAX_OK'),
@@ -348,7 +376,7 @@ class StoreController extends FrontController
     public function getProduct($id = 0) {
 
         if ($id) {
-            $product = product($productId);
+            $product = product($id);
         } else {
             $product = new Product();
         }
@@ -366,19 +394,20 @@ class StoreController extends FrontController
      */
     public function copyTempProductImages($tempImages) {
 
-        $tempPath    = config('front.temp_path');
-        $productPath = config('front.product_path');
-        $images      = [];
+        $tempPath       = config('front.temp_path');
+        $productPath    = config('front.product_path');
+        $productImgType = config('front.product_img_type');
+        $images         = [];
 
         if (count($tempImages)) {
 
-            foreach ($tempImages as $image) {
+            foreach ($tempImages as $k => $image) {
 
                 $imageSize = [];
 
                 if (check_file($tempPath . $image)) {
 
-                    foreach (['original', 'big', 'thumb'] as $size) {
+                    foreach ($productImgType as $size) {
 
                         $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $image);
                         if (copy($tempPath . $nameBySize, $productPath . $nameBySize)) {
@@ -392,11 +421,35 @@ class StoreController extends FrontController
                 }
 
                 if (count($imageSize)) {
-                    $images[] = $imageSize;
+                    $images[$k] = $imageSize;
                 }
             }
         }
 
-        return $images;
+        return new Collection($images);
+    }
+
+    /**
+     * Delete product old images
+     *
+     * @param Illuminate\Support\Collection $newImages
+     * @param array                         $oldImages
+     *
+     * @return void
+     */
+    public function deleteOldImages($newImages, $oldImages) {
+
+        $oldImages   = new Collection(json_decode($oldImages));
+        $productPath = config('front.product_path');
+
+        if ($oldImages->count()) {
+            foreach ($newImages as $k => $image) {
+                if (isset($oldImages[$k])) {
+                    foreach ($oldImages[$k] as $one) {
+                        delete_file($productPath . $one);
+                    }
+                }
+            }
+        }
     }
 }

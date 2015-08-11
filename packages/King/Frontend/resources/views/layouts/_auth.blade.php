@@ -1,4 +1,4 @@
-<?php /* ?>php <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
     <head>
         <title> @yield('title') - Suris - The world of online store</title>
@@ -27,6 +27,4 @@
         <script src="{{ asset('packages/king/frontend/js/bootstrap.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/script.js') }}"></script>
     </body>
-</html><?php */ ?>
-<h3>Internal header</h3>
-<iframe src="https://kadjar-preprod.renault.com/index_prp.php/facecool/ct_CT" width="100%" height="100%" frameborder="0" marginwidth="0" marginheight="0"></iframe>
+</html>

@@ -24,6 +24,11 @@ class Product extends Base
     public $image_4;
 
     /**
+     * Maximun image of a product
+     */
+    const MAX_PRODUCT_IMG = 4;
+
+    /**
      * Get product validation rules
      *
      * @return array
@@ -35,6 +40,9 @@ class Product extends Base
             'old_price'       => 'min:3|max:16',
             'description'     => 'required|min:10',
             'product_image_1' => 'required_without_all:product_image_2,product_image_3,product_image_4',
+            //'product_image_2' => 'product_image',
+            //'product_image_3' => 'product_image',
+            //'product_image_4' => 'product_image',
         ];
     }
 
@@ -56,6 +64,10 @@ class Product extends Base
             'description.required'                 => _t('product_desc_req'),
             'description.min'                      => _t('product_desc_min'),
             'product_image_1.required_without_all' => _t('product_image_req'),
+            //'product_image_1.product_image'        => _t('product_image_req'),
+            //'product_image_2.product_image'        => _t('product_image_req'),
+            //'product_image_3.product_image'        => _t('product_image_req'),
+            //'product_image_4.product_image'        => _t('product_image_req'),
         ];
     }
 
@@ -74,4 +86,33 @@ class Product extends Base
 
         return $this;
     }
+
+    /**
+     * Set product images
+     *
+     * @param Illuminate\Support\Collection $images
+     *
+     * @return \App\Models\Product
+     */
+    public function setImages($images) {
+
+        $oldImages     = new Collection(json_decode($this->images));
+        $maxProductImg = (int) config('front.max_product_img');
+
+        if ($images->count() === $maxProductImg || ( ! $oldImages->count())) {
+
+            $this->images = $images->values()->toJson();
+
+        } else {
+
+            foreach ($images as $k => $image) {
+                $oldImages[$k] = $image;
+            }
+            
+            $this->images = $oldImages->values()->toJson();
+        }
+
+        return $this;
+    }
+
 }

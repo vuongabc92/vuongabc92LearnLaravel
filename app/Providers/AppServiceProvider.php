@@ -3,7 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Blade;
+use App\Helpers\Blade;
+use App\Helpers\Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,9 +15,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Blade::extend(function($value) {
-            return preg_replace('/\@set(.+)/', '<?php ${1}; ?>', $value);
-        });
+        new Blade();
+        new Validator();
     }
 
     /**
