@@ -52,19 +52,19 @@ Setting > My store
                         <div class="product-head">
                             <ul class="product-handle">
                                 <li>
-                                    <span>
-                                        <i class="fa fa-retweet"></i>
+                                    <span class="product-pin">
+                                        <i class="fa fa-thumb-tack"></i>
                                         <b>300</b>
                                     </span>
                                 </li>
                                 <li>
-                                    <span>
+                                    <span class="product-share">
                                         <i class="fa fa-share-alt"></i>
                                         <b>42</b>
                                     </span>
                                 </li>
                                 <li>
-                                    <span>
+                                    <span class="product-comment">
                                         <i class="fa fa-comments-o"></i>
                                         <b>100</b>
                                     </span>
@@ -81,7 +81,6 @@ Setting > My store
                                             </a>
                                         </li>
                                         <li><a href="#" class="product-hide" data-toggle="tooltip" data-placement="left" data-original-title="Hide"><i class="fa fa-magic"></i></a></li>
-                                        <li><a href="#" class="product-share" data-toggle="tooltip" data-placement="left" data-original-title="Share"><i class="fa fa-share"></i></a></li>
                                         <li role="separator" class="divider"></li>
                                         <li><a href="#" class="product-remove" data-toggle="tooltip" data-placement="left" data-original-title="Remove"><i class="fa fa-trash"></i></a></li>
                                     </ul>
@@ -109,7 +108,6 @@ Setting > My store
                 @endforeach
             </ol>
         </div>
-
     </div>
 </div>
 
@@ -124,7 +122,6 @@ Setting > My store
     $('#search-product-tooltip').tooltip();
     $('.product-edit').tooltip();
     $('.product-hide').tooltip();
-    $('.product-share').tooltip();
     $('.product-remove').tooltip();
 
 </script>

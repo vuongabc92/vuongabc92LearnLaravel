@@ -1030,18 +1030,19 @@
                             productImg     = SETTING.PRODUCT_IMG,
                             productImgEdit = SETTING.PRODUCT_IMG_EDIT,
                             productRep     = '';
-                    
+
                         if (status === SETTING.AJAX_OK) {
                             $.each(fields, function(k, v){
                                 form.find('[name^=' + v +']').val(data[v]);
                             });
 
                             for(var i = 1; i <= 4; i++){
-                                productRep = productImg.replace('__SRC', data['images']['image_' + i]);
-                                $('.product-img-' + i).css('border', 'solid 3px #000');
-                                $('.product-img-' + i).html(productRep + productImgEdit);
+                                if (data['images']['image_' + i] !== '') {
+                                    productRep = productImg.replace('__SRC', data['images']['image_' + i]);
+                                    $('.product-img-' + i).css('border', 'solid 3px #000');
+                                    $('.product-img-' + i).html(productRep + productImgEdit);
+                                }
                             }
-
                         }
 
                         if (status === SETTING.AJAX_ERROR) {

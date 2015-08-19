@@ -7,6 +7,23 @@
  * @author   Taylor Otwell <taylorotwell@gmail.com>
  */
 
+
+/*
+|--------------------------------------------------------------------------
+| Access permision
+|--------------------------------------------------------------------------
+|
+| Do not people access from outside
+|
+*/
+
+$httpClientIp = filter_input(INPUT_SERVER, 'HTTP_CLIENT_IP');
+$remoteAddr   = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
+if ($httpClientIp !== NULL || ! in_array($remoteAddr, ['127.0.0.1'])) {
+    header('HTTP/1.0 403 Forbidden');
+    exit('You have no name.');
+}
+
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader
