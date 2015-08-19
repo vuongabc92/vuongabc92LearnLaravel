@@ -35,5 +35,6 @@ Route::group(['middleware' => 'auth'], function(){
         $route->post('add-product-image', ['as' => 'front_product_image', 'uses' => 'StoreController@ajaxAddProductImage']);
         $route->get('product-del-temp-img', ['as' => 'front_product_del_temp_img', 'uses' => 'StoreController@ajaxDeleteProductTempImg']);
         $route->get('find-product-by-id/{id}', ['as' => 'front_find_product_by_id', 'uses' => 'StoreController@ajaxFindProductById']);
+        $route->delete('delete-product', ['as' => 'front_delete_product', 'uses' => 'StoreController@ajaxDeleteProduct']);
     });
 });

@@ -126,6 +126,8 @@ body{background-color:#f5f8fa;}
 .product-control-drop{min-width:56px;margin:2px 0 0 -22px;}
 .product-control-drop>li>a{color:#7a7a7a;font-size:16px;text-align:center;}
 .product-control-drop>li>a:hover{color:#007aff;}
+.product-control-drop>li>a.product-remove:hover{color:#f77;}
+.product-control-drop>li>a.product-edit:hover{color:#2ab27b;}
 
 @media screen and (min-width: 320px){
     .header-search-form{width:90%;}

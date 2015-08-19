@@ -80,9 +80,8 @@ Setting > My store
                                                 <i class="fa fa-pencil"></i>
                                             </a>
                                         </li>
-                                        <li><a href="#" class="product-hide" data-toggle="tooltip" data-placement="left" data-original-title="Hide"><i class="fa fa-magic"></i></a></li>
-                                        <li role="separator" class="divider"></li>
-                                        <li><a href="#" class="product-remove" data-toggle="tooltip" data-placement="left" data-original-title="Remove"><i class="fa fa-trash"></i></a></li>
+                                        <li><a href="#" class="product-hide" data-toggle="tooltip" data-placement="left" data-original-title="Hide"><i class="fa fa-genderless"></i></a></li>
+                                        <li><a href="#" class="product-remove" data-toggle="tooltip" data-placement="left" data-original-title="Remove"><i class="fa fa-close"></i></a></li>
                                     </ul>
                                 </div>
                             </div>

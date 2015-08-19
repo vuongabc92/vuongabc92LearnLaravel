@@ -140,24 +140,19 @@ class StoreController extends FrontController
 
         if ($request->isMethod('POST')) {
 
+            $order     = (int) $request->get('order');
             $rules     = $this->_getProductImageRules();
             $messages  = $this->_getProductImageMessages();
             $validator = Validator::make($request->all(), $rules, $messages);
 
-            if ($validator->fails()) {
-                return ajax_upload_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->errors()->first()
-                ]);
+            /* Check does the product image order exist */
+            if ( ! $this->_checkProductImageOrder($order)) {
+                $validator->after(function($validator) {
+                    $validator->errors()->add('__product', _t('opp'));
+                });
             }
 
-            /** Check the order of product image when upload */
-            $order       = (int) $request->get('order');
-            $orderConfig = config('front.product_img_order');
-            if ( ! in_array($order, $orderConfig)) {
-
-                $validator->errors()->add('__product', _t('opp'));
-
+            if ($validator->fails()) {
                 return ajax_upload_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
@@ -209,6 +204,7 @@ class StoreController extends FrontController
      */
     public function ajaxDeleteProductTempImg(Request $request) {
 
+        //Only accept ajax request
         if ($request->ajax()) {
 
             try {
@@ -292,6 +288,14 @@ class StoreController extends FrontController
                 'status' => _const('AJAX_OK'),
                 'data'   => $productRebuild
             ]);
+        }
+    }
+
+    public function ajaxDeleteProduct(Request $request) {
+
+        // Only accept ajax request with method is delete
+        if ($request->ajax() && $request->isMethod('DELETE')) {
+
         }
     }
 
@@ -410,6 +414,25 @@ class StoreController extends FrontController
             '__product.mimes'    => _t('file_image_mimes'),
             '__product.max'      => _t('avatar_max'),
         ];
+    }
+
+    /**
+     * Check does the image order exist
+     *
+     * @param int $order product image order
+     *
+     * @return boolean
+     */
+    protected function _checkProductImageOrder($order) {
+
+        $orderConfig = (array) config('front.product_img_order');
+
+        if ( ! in_array($order, $orderConfig)) {
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
