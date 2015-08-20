@@ -62,7 +62,6 @@ class StoreController extends FrontController
             }
 
             $validator  = Validator::make($request->all(), $rules, $messages);
-            $validFails = $validator->fails();
 
             $tempImages = [
                 $request->get('product_image_1'),
@@ -72,24 +71,23 @@ class StoreController extends FrontController
             ];
 
             if (is_null($product)) {
-                $validator->errors()->add('product_image_1', _t('not_found'));
+                $validator->after(function($validator) {
+                    $validator->errors()->add('product_image_1', _t('not_found'));
+                });
             }
 
-            if ($validFails || is_null($product)) {
+            if ($validator->fails()) {
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->messages()
-                ]);
+                ], is_null($product) ? 404 : 500);
             }
 
 
             /**
-             * Save product steps:
-             *
              *  1. Copy product images from temporary folder to product folder.
              *  2. Delete old product image(s).
              *  3. Save product.
-             *
              */
             try {
 
@@ -136,7 +134,7 @@ class StoreController extends FrontController
      *
      * return JSON
      */
-    public function ajaxAddProductImage(Request $request) {
+    public function ajaxUploadProductImage(Request $request) {
 
         if ($request->isMethod('POST')) {
 
@@ -145,7 +143,7 @@ class StoreController extends FrontController
             $messages  = $this->_getProductImageMessages();
             $validator = Validator::make($request->all(), $rules, $messages);
 
-            /* Check does the product image order exist */
+            // Check does the product image's order exist
             if ( ! $this->_checkProductImageOrder($order)) {
                 $validator->after(function($validator) {
                     $validator->errors()->add('__product', _t('opp'));
@@ -156,21 +154,17 @@ class StoreController extends FrontController
                 return ajax_upload_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
-                ]);
+                ], 500);
             }
 
-            /**
-             * 1. Get path and file
-             * 2. Generate file name
-             * 3. Upload
-             * 4. Resize
-             * 5. Delete old temporary image(s)
-             */
             try {
 
-                $upload = $this->_uploadProductImage($request);
+                $file         = $request->file('__product');
+                $currentImage = $request->get('current_image');
+                $upload       = $this->_uploadProductImage($file, $currentImage);
 
             } catch (Exception $ex) {
+
                 $validator->errors()->add('__product', _t('opp'));
 
                 return ajax_upload_response([
@@ -253,8 +247,8 @@ class StoreController extends FrontController
      */
     public function ajaxFindProductById(Request $request, $id) {
 
-        // Only accept AJAX request
-        if ($request->ajax()) {
+        // Only accept AJAX with HTTP GET request
+        if ($request->ajax() && $request->isMethod('GET')) {
 
             $id      = (int) $id;
             $product = product($id);
@@ -263,7 +257,7 @@ class StoreController extends FrontController
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => _t('not_found')
-                ]);
+                ], 404);
             }
 
             // Rebuild product data structure
@@ -438,21 +432,21 @@ class StoreController extends FrontController
     /**
      * Upload and resize product image
      *
-     * 1. Get path and file
+     * 1. Get path
      * 2. Generate file name
      * 3. Upload
      * 4. Resize
      * 5. Delete old temporary image(s)
      *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile|array $file
+     * @param string                                                    $currentImage
      *
-     * @return App\Helpers\Image
+     * @return array
      */
-    protected function _uploadProductImage(Request $request) {
+    protected function _uploadProductImage($file, $currentImage) {
 
         // 1
         $tempPath = config('front.temp_path');
-        $file     = $request->file('__product');
 
         // 2
         $filename = new FileName($tempPath, $file->getClientOriginalExtension());
@@ -477,9 +471,7 @@ class StoreController extends FrontController
         $image->setDirectory($tempPath)->resizeGroup($filename->getGroup());
 
         // 5
-        $currentImage   = $request->get('current_image');
         $productImgType = config('front.product_img_type');
-
         foreach ($productImgType as $size) {
 
             $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $currentImage);

@@ -906,21 +906,21 @@
                     beforeSend: function(){
                         that.loading(true, img, text, check);
                     },
-                    success: function(response){
-                        var status   = response.status,
-                            messages = response.messages;
+                    error: function(request, textStatus, errorThrown) {
+                        var messages = request.responseJSON.messages;
 
-                        if (status === SETTING.AJAX_ERROR) {
-                            that.loading(false, img, text, check, false);
-                        }
-                        if (status === SETTING.AJAX_OK) {
-                            that.loading(false, img, text, check, true);
-                            current[0].reset();
-                            $('.add-product-image').css('border', '3px dashed #d5d5d5');
-                            $('.add-product-image').html('<i class="fa fa-plus"></i>');
-                            $('.product-image-hidden').val('');
-                            $('#add-product-modal').modal('hide');
-                        }
+                        that.loading(false, img, text, check, false);
+                        that.showFormLabels(labels, messages);
+                    },
+                    success: function(response){
+                        var messages = response.messages;
+
+                        that.loading(false, img, text, check, true);
+                        current[0].reset();
+                        $('.add-product-image').css('border', '3px dashed #d5d5d5');
+                        $('.add-product-image').html('<i class="fa fa-plus"></i>');
+                        $('.product-image-hidden').val('');
+                        $('#add-product-modal').modal('hide');
 
                         that.showFormLabels(labels, messages);
                     }
@@ -1125,6 +1125,7 @@ $(document).ready(function(){
         ajaxDeleteTempProductImg();
 
         $('#save-product-form')[0].reset();
+        $('#save-product-form').find('#product-id').val('');
         $('.product-image-hidden').val('');
         $('.add-product-image').css('border', '3px dashed #d5d5d5');
         $('.add-product-image').html('<i class="fa fa-plus"></i>');
