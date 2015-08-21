@@ -24,7 +24,9 @@
                     </div>
                     <div class="_fwfl">
                         <div class="_r3 add-product-image product-img-1" data-event-trigger="#product-image1-file" data-event="click|click">
-                            <i class="fa fa-plus"></i>
+                            <span class="_fwfl _fh">
+                                <i class="fa fa-plus"></i>
+                            </span>
                         </div>
                         <div class="_r3 add-product-image product-img-2" data-event-trigger="#product-image2-file" data-event="click|click">
                             <i class="fa fa-plus"></i>

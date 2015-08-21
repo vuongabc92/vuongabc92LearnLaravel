@@ -71,7 +71,6 @@ class StoreController extends FrontController
             }
 
             $validator  = Validator::make($request->all(), $rules, $messages);
-            $validFails = $validator->fails();
 
             $tempImages = [
                 $request->get('product_image_1'),
@@ -81,24 +80,23 @@ class StoreController extends FrontController
             ];
 
             if (is_null($product)) {
-                $validator->errors()->add('product_image_1', _t('not_found'));
+                $validator->after(function($validator) {
+                    $validator->errors()->add('product_image_1', _t('not_found'));
+                });
             }
 
-            if ($validFails || is_null($product)) {
+            if ($validator->fails()) {
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->messages()
-                ]);
+                ], is_null($product) ? 404 : 500);
             }
 
 
             /**
-             * Save product steps:
-             *
              *  1. Copy product images from temporary folder to product folder.
              *  2. Delete old product image(s).
              *  3. Save product.
-             *
              */
             try {
 
@@ -145,46 +143,37 @@ class StoreController extends FrontController
      *
      * return JSON
      */
-    public function ajaxAddProductImage(Request $request) {
+    public function ajaxUploadProductImage(Request $request) {
 
         if ($request->isMethod('POST')) {
 
+            $order     = (int) $request->get('order');
             $rules     = $this->_getProductImageRules();
             $messages  = $this->_getProductImageMessages();
             $validator = Validator::make($request->all(), $rules, $messages);
+
+            // Check does the product image's order exist
+            if ( ! $this->_checkProductImageOrder($order)) {
+                $validator->after(function($validator) {
+                    $validator->errors()->add('__product', _t('opp'));
+                });
+            }
 
             if ($validator->fails()) {
                 return ajax_upload_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
-                ]);
+                ], 500);
             }
 
-            /** Check the order of product image when upload */
-            $order       = (int) $request->get('order');
-            $orderConfig = config('front.product_img_order');
-            if ( ! in_array($order, $orderConfig)) {
-
-                $validator->errors()->add('__product', _t('opp'));
-
-                return ajax_upload_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->errors()->first()
-                ]);
-            }
-
-            /**
-             * 1. Get path and file
-             * 2. Generate file name
-             * 3. Upload
-             * 4. Resize
-             * 5. Delete old temporary image(s)
-             */
             try {
 
-                $upload = $this->_uploadProductImage($request);
+                $file         = $request->file('__product');
+                $currentImage = $request->get('current_image');
+                $upload       = $this->_uploadProductImage($file, $currentImage);
 
             } catch (Exception $ex) {
+
                 $validator->errors()->add('__product', _t('opp'));
 
                 return ajax_upload_response([
@@ -218,6 +207,7 @@ class StoreController extends FrontController
      */
     public function ajaxDeleteProductTempImg(Request $request) {
 
+        //Only accept ajax request
         if ($request->ajax()) {
 
             try {
@@ -250,8 +240,8 @@ class StoreController extends FrontController
      */
     public function ajaxFindProductById(Request $request, $id) {
 
-        // Only accept AJAX request
-        if ($request->ajax()) {
+        // Only accept AJAX with HTTP GET request
+        if ($request->ajax() && $request->isMethod('GET')) {
 
             $id      = (int) $id;
             $product = product($id);
@@ -260,7 +250,7 @@ class StoreController extends FrontController
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => _t('not_found')
-                ]);
+                ], 404);
             }
             
             $productRebuild = $this->_rebuildProductData($product);
@@ -272,13 +262,15 @@ class StoreController extends FrontController
         }
     }
     
+
+
     public function ajaxDeleteProduct(Request $request) {
-        
-        if ($request->ajax()) {
-            
+
+        // Only accept ajax request with method is delete
+        if ($request->ajax() && $request->isMethod('DELETE')) {
+
         }
     }
-
 
     /**
      * Get product entity
@@ -397,23 +389,50 @@ class StoreController extends FrontController
     }
 
     /**
+     * Check does the image order exist
+     *
+     * @param int $order product image order
+     *
+     * @return boolean
+     */
+    protected function _checkProductImageOrder($order) {
+
+        $orderConfig = (array) config('front.product_img_order');
+
+        if ( ! in_array($order, $orderConfig)) {
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Upload and resize product image
      *
+<<<<<<< HEAD
      * 1. Get path and file upload
+=======
+     * 1. Get path
+>>>>>>> 2c1f0bdafd78d5faae8770660083855c33cb6275
      * 2. Generate file name
      * 3. Upload
      * 4. Resize
      * 5. Delete old temporary image(s)
      *
+<<<<<<< HEAD
      * @param Illuminate\Http\Request $request
+=======
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile|array $file
+     * @param string                                                    $currentImage
+>>>>>>> 2c1f0bdafd78d5faae8770660083855c33cb6275
      *
      * @return array
      */
-    protected function _uploadProductImage(Request $request) {
+    protected function _uploadProductImage($file, $currentImage) {
 
         // 1
         $tempPath = config('front.temp_path');
-        $file     = $request->file('__product');
 
         // 2
         $filename = new FileName($tempPath, $file->getClientOriginalExtension());
@@ -439,7 +458,6 @@ class StoreController extends FrontController
 
         // 5
         $currentImage = $request->get('current_image');
-
         foreach ($this->_productImgSizes as $size) {
 
             $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $currentImage);

@@ -68,7 +68,7 @@ return [
     'avatar_max' => 'The file may not be greater than 10 megabytes.',
     'cover_max' => 'The file may not be greater than 10 megabytes.',
     'opp' => 'Opp!! Somethings went wrong. Please try again!',
-    'not_found' => "Page not found!",
+    'not_found' => "Resource not founds.",
     'saved_pass' => 'Saved password',
     'curr_pass_wrong' => 'Current password is incorrect.',
     'store' => 'Store',

@@ -911,21 +911,21 @@
                     beforeSend: function(){
                         that.loading(true, img, text, check);
                     },
-                    success: function(response){
-                        var status   = response.status,
-                            messages = response.messages;
+                    error: function(request, textStatus, errorThrown) {
+                        var messages = request.responseJSON.messages;
 
-                        if (status === SETTING.AJAX_ERROR) {
-                            that.loading(false, img, text, check, false);
-                        }
-                        if (status === SETTING.AJAX_OK) {
-                            that.loading(false, img, text, check, true);
-                            current[0].reset();
-                            $('.add-product-image').css('border', '3px dashed #d5d5d5');
-                            $('.add-product-image').html('<i class="fa fa-plus"></i>');
-                            $('.product-image-hidden').val('');
-                            $('#add-product-modal').modal('hide');
-                        }
+                        that.loading(false, img, text, check, false);
+                        that.showFormLabels(labels, messages);
+                    },
+                    success: function(response){
+                        var messages = response.messages;
+
+                        that.loading(false, img, text, check, true);
+                        current[0].reset();
+                        $('.add-product-image').css('border', '3px dashed #d5d5d5');
+                        $('.add-product-image').html('<i class="fa fa-plus"></i>');
+                        $('.product-image-hidden').val('');
+                        $('#add-product-modal').modal('hide');
 
                         that.showFormLabels(labels, messages);
                     }
@@ -1035,18 +1035,19 @@
                             productImg     = SETTING.PRODUCT_IMG,
                             productImgEdit = SETTING.PRODUCT_IMG_EDIT,
                             productRep     = '';
-                    
+
                         if (status === SETTING.AJAX_OK) {
                             $.each(fields, function(k, v){
                                 form.find('[name^=' + v +']').val(data[v]);
                             });
 
                             for(var i = 1; i <= 4; i++){
-                                productRep = productImg.replace('__SRC', data['images']['image_' + i]);
-                                $('.product-img-' + i).css('border', 'solid 3px #000');
-                                $('.product-img-' + i).html(productRep + productImgEdit);
+                                if (data['images']['image_' + i] !== '') {
+                                    productRep = productImg.replace('__SRC', data['images']['image_' + i]);
+                                    $('.product-img-' + i).css('border', 'solid 3px #000');
+                                    $('.product-img-' + i).html(productRep + productImgEdit);
+                                }
                             }
-
                         }
 
                         if (status === SETTING.AJAX_ERROR) {
@@ -1129,6 +1130,7 @@ $(document).ready(function(){
         ajaxDeleteTempProductImg();
 
         $('#save-product-form')[0].reset();
+        $('#save-product-form').find('#product-id').val('');
         $('.product-image-hidden').val('');
         $('.add-product-image').css('border', '3px dashed #d5d5d5');
         $('.add-product-image').html('<i class="fa fa-plus"></i>');

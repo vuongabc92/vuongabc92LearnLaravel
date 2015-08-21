@@ -445,6 +445,7 @@ if ( ! function_exists('delete_file')) {
 }
 
 if ( ! function_exists('select')) {
+
     /**
      * From collection get the list use for generate select box HTML::select
      * The final result will be:
@@ -469,6 +470,7 @@ if ( ! function_exists('select')) {
 }
 
 if ( ! function_exists('locations')) {
+
     /**
      * Get locations and number of store per location or
      * return specify location by name.
@@ -482,8 +484,8 @@ if ( ! function_exists('locations')) {
         //Get table name dynamically
         $city       = new \App\Models\City();
         $store      = new \App\Models\Store();
-        $cities_tbl = DB::getQueryGrammar()->wrapTable($city->getTable());
-        $stores_tbl = DB::getQueryGrammar()->wrapTable($store->getTable());
+        $citiesTbl = DB::getQueryGrammar()->wrapTable($city->getTable());
+        $storesTbl = DB::getQueryGrammar()->wrapTable($store->getTable());
 
         $join = DB::table($city->getTable())
                     ->leftJoin($store->getTable(), "{$city->getTable()}.id", '=', "{$store->getTable()}.city_id");
@@ -492,13 +494,14 @@ if ( ! function_exists('locations')) {
             $join->where("{$city->getTable()}.name",'LIKE', "%{$name}%");
         }
 
-        return $join->select(DB::raw("{$cities_tbl}.id, {$cities_tbl}.name, COUNT({$stores_tbl}.id) AS count_store"))
+        return $join->select(DB::raw("{$citiesTbl}.id, {$citiesTbl}.name, COUNT({$storesTbl}.id) AS count_store"))
                     ->groupBy("{$city->getTable()}.id")
                     ->get();
     }
 }
 
 if ( ! function_exists('current_location')) {
+
     /**
      * Get current location (city)
      *
@@ -506,14 +509,15 @@ if ( ! function_exists('current_location')) {
      */
     function current_location() {
 
-        $current_id = session(_const('SESSION_LOCATION'), _const('DEFAULT_LOCATION'));
-        $location   = \App\Models\City::find($current_id);
+        $currentId = session(_const('SESSION_LOCATION'), _const('DEFAULT_LOCATION'));
+        $location   = \App\Models\City::find($currentId);
 
         return $location;
     }
 }
 
 if ( ! function_exists('product_images')) {
+
     /**
      * Get product image
      *
@@ -527,4 +531,71 @@ if ( ! function_exists('product_images')) {
 
         return asset($path . $image);
     }
+}
+
+if ( ! function_exists('product_price')) {
+
+    /**
+     * Format product price to good looking type
+     * Such as:
+     * + 120000 = 120.000
+     * + 120000 = 120K
+     * .....
+     *
+     * @param int    $price
+     * @param string $type
+     *
+     * @return string
+     */
+    function product_price($price, $type = '.') {
+
+        $precision = 3;
+
+        switch ($type) {
+
+            case '.' :
+                $priceReversing = strrev($price);
+                $priceSplit     = str_split($priceReversing, $precision);
+                $priceByDot     = implode('.', $priceSplit);
+                $price          = strrev($priceByDot);
+                break;
+
+            case 'k':
+                $price = number_to_kmbt($price);
+                break;
+
+            default :
+                break;
+        }
+
+        return $price;
+    }
+}
+
+
+if ( ! function_exists('number_to_kmbt')) {
+
+    /**
+     * Format number to K or M or B or T
+     * Such as:
+     * + 1000 = 1k, 5500 = 5.5k, 1234 = 1.2k
+     * + 1000000 = 1m
+     * + 1000000000000 = 1b
+     * + 1000000000000000 = 1t
+     *
+     * @param int $number
+     *
+     * @return string
+     */
+    function number_to_kmbt($number) {
+
+        $numberRound  = $number;
+        $numberFormat = number_format($numberRound);
+        $numberSplit  = explode(',', $numberFormat);
+        $formats      = array('k', 'm', 'b', 't');
+        $display      = $numberSplit[0] . ((int) $numberSplit[1][0] !== 0 ? '.' . $numberSplit[1][0] : '');
+        $display     .= $formats[count($numberSplit) - 2];
+
+        return $display;
+   }
 }
