@@ -56,19 +56,10 @@ class SettingController extends FrontController
         //Only accept AJAX request
         if ($request->ajax()) {
 
-            $rules = [
-                'password'     => 'required',
-                'new_password' => 'required|min:6|max:60',
-            ];
-
-            $messages = [
-                'password.required'     => _t('user_pass_req'),
-                'new_password.required' => _t('user_pass_req'),
-                'new_password.min'      => _t('user_pass_min'),
-                'new_password.max'      => _t('user_pass_max'),
-            ];
-
+            $rules     = $this->_getPasswordRules();
+            $messages  = $this->_getPasswordMessages();
             $validator = Validator::make($request->all(), $rules, $messages);
+            
             if ($validator->fails()) {
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
@@ -83,10 +74,11 @@ class SettingController extends FrontController
             /** Check password confirmation */
             if (Hash::check($password, $user->password)) {
 
-                $user->password = bcrypt($newPass);
-
                 try {
+                    
+                    $user->password = bcrypt($newPass);
                     $user->save();
+                    
                 } catch (Exception $ex) {
                     return ajax_response([
                         'status'   => _const('AJAX_ERROR'),
@@ -577,4 +569,31 @@ class SettingController extends FrontController
             ]);
         }
     }
+    
+    /**
+     * Password validation rules
+     * 
+     * @return array
+     */
+    protected function _getPasswordRules() {
+        return [
+            'password'     => 'required',
+            'new_password' => 'required|min:6|max:60',
+        ];
+    }
+    
+    /**
+     * Password validation messages
+     * 
+     * @return array
+     */
+    protected function _getPasswordMessages() {
+        return [
+            'password.required'     => _t('user_pass_req'),
+            'new_password.required' => _t('user_pass_req'),
+            'new_password.min'      => _t('user_pass_min'),
+            'new_password.max'      => _t('user_pass_max'),
+        ];
+    }
+
 }

@@ -830,6 +830,11 @@
                             $('#product-image-' + json.data['order']).val(json.data['original']);
                             current.find('#current-image').val(json.data['original']);
                         }
+                        
+                        if (status === SETTING.AJAX_ERROR) {
+                            $('.add-product-image-error').html(messages);
+                        }
+                        
                         loading.hide();
                     }
                 });

@@ -79,10 +79,17 @@
                                     </li>
                                     <li role="separator" class="divider"></li>
                                     <li>
-                                        <a href="#">
-                                            <i class="fa fa-eye"></i>
-                                            <span>{{ _t('view_store') }}</span>
-                                        </a>
+                                        @if(user()->has_store)
+                                            <a href="{{ route('front_my_store') }}">
+                                                <i class="fa fa-eye"></i>
+                                                <span>{{ _t('view_store') }}</span>
+                                            </a>
+                                        @else
+                                            <a href="#">
+                                                <i class="fa fa-eye"></i>
+                                                <span>{{ _t('create_store_link') }}</span>
+                                            </a>
+                                        @endif
                                     </li>
                                     <li>
                                         <a href="{{ route('front_setting_account') }}">

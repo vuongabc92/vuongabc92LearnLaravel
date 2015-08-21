@@ -31,6 +31,7 @@ return [
     //Home
     'head-search-placeholder' => 'Search stores, locations and everythings...',
     'view_store' => 'View my store',
+    'create_store_link' => 'Create your own store',
     'setting' => 'Setting',
     'help' => 'Help',
     //Setting

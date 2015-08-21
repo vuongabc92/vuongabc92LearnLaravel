@@ -22,10 +22,18 @@ class StoreController extends FrontController
      * @var App\Models\Product
      */
     protected $_product;
+    
+    /**
+     * Product image sizes type thumb, big, ...
+     * 
+     * @var array
+     */
+    protected $_productImgSizes;
 
     public function __construct(Product $product)
     {
-        $this->_product = $product;
+        $this->_product         = $product;
+        $this->_productImgSizes = config('front.product_img_size');
     }
 
     /**
@@ -41,7 +49,8 @@ class StoreController extends FrontController
     }
 
     /**
-     *
+     * Save product info
+     * 
      * @param Illuminate\Http\Request $request
      *
      * @return type
@@ -52,7 +61,7 @@ class StoreController extends FrontController
         if ($request->ajax()) {
 
             $productId = (int) $request->get('id');
-            $product   = $this->getProduct($productId);
+            $product   = $this->_getProduct($productId);
 
             $rules     = $this->_product->getRules();
             $messages  = $this->_product->getMessages();
@@ -94,11 +103,11 @@ class StoreController extends FrontController
             try {
 
                 // 1
-                $images = $this->copyTempProductImages($tempImages);
+                $images = $this->_copyTempProductImages($tempImages);
 
                 // 2
                 if ($productId) {
-                    $this->deleteOldImages($images, $product->images);
+                    $this->_deleteOldImages($images, $product->images);
                 }
 
                 // 3
@@ -213,23 +222,7 @@ class StoreController extends FrontController
 
             try {
 
-                $tempPath       = config('front.temp_path');
-                $productImgType = config('front.product_img_type');
-
-                foreach ([1, 2, 3, 4] as $one) {
-
-                    $imgToDel = $request->get("product_image_{$one}");
-
-                    if ($imgToDel !== '') {
-                        foreach ($productImgType as $size) {
-                            $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $imgToDel);
-
-                            delete_file($tempPath . $nameBySize);
-                        }
-
-                        delete_file($tempPath . $imgToDel);
-                    }
-                }
+                $this->_deleteProductTempImg($request);
 
             } catch (Exception $ex) {
 
@@ -269,24 +262,8 @@ class StoreController extends FrontController
                     'messages' => _t('not_found')
                 ]);
             }
-
-            // Rebuild product data structure
-            $productPath = config('front.product_path');
-            $product->toImage();
-            $productRebuild = [
-                'id'           => $product->id,
-                'name'         => $product->name,
-                'price'        => $product->price,
-                'old_price'    => $product->old_price,
-                'description'  => $product->description,
-                'images'       => [
-                    'image_1' => ($product->image_1 !== null) ? asset($productPath . $product->image_1->thumb) : '',
-                    'image_2' => ($product->image_2 !== null) ? asset($productPath . $product->image_2->thumb) : '',
-                    'image_3' => ($product->image_3 !== null) ? asset($productPath . $product->image_3->thumb) : '',
-                    'image_4' => ($product->image_4 !== null) ? asset($productPath . $product->image_4->thumb) : '',
-                ],
-                'lastModified' => $product->updated_at
-            ];
+            
+            $productRebuild = $this->_rebuildProductData($product);
 
             return ajax_response([
                 'status' => _const('AJAX_OK'),
@@ -294,6 +271,14 @@ class StoreController extends FrontController
             ]);
         }
     }
+    
+    public function ajaxDeleteProduct(Request $request) {
+        
+        if ($request->ajax()) {
+            
+        }
+    }
+
 
     /**
      * Get product entity
@@ -302,7 +287,7 @@ class StoreController extends FrontController
      *
      * @return App\Models\Product
      */
-    public function getProduct($id = 0) {
+    protected function _getProduct($id = 0) {
 
         if ($id) {
             $product = product($id);
@@ -322,12 +307,11 @@ class StoreController extends FrontController
      *
      * @return Illuminate\Support\Collection
      */
-    public function copyTempProductImages($tempImages) {
+    protected function _copyTempProductImages($tempImages) {
 
-        $tempPath       = config('front.temp_path');
-        $productPath    = config('front.product_path');
-        $productImgType = config('front.product_img_type');
-        $images         = [];
+        $tempPath    = config('front.temp_path');
+        $productPath = config('front.product_path');
+        $images      = [];
 
         if (count($tempImages)) {
 
@@ -335,9 +319,9 @@ class StoreController extends FrontController
 
                 $imageSize = [];
 
-                if (check_file($tempPath . $image) && count($productImgType)) {
+                if (check_file($tempPath . $image) && count($this->_productImgSizes)) {
 
-                    foreach ($productImgType as $size) {
+                    foreach ($this->_productImgSizes as $size) {
 
                         $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $image);
                         if (copy($tempPath . $nameBySize, $productPath . $nameBySize)) {
@@ -367,7 +351,7 @@ class StoreController extends FrontController
      *
      * @return void
      */
-    public function deleteOldImages($newImages, $oldImages) {
+    protected function _deleteOldImages($newImages, $oldImages) {
 
         $oldImages   = new Collection(json_decode($oldImages));
         $productPath = config('front.product_path');
@@ -415,15 +399,15 @@ class StoreController extends FrontController
     /**
      * Upload and resize product image
      *
-     * 1. Get path and file
+     * 1. Get path and file upload
      * 2. Generate file name
      * 3. Upload
      * 4. Resize
      * 5. Delete old temporary image(s)
      *
-     * @param \Symfony\Component\HttpFoundation\File\UploadedFile|array $file
+     * @param Illuminate\Http\Request $request
      *
-     * @return App\Helpers\Image
+     * @return array
      */
     protected function _uploadProductImage(Request $request) {
 
@@ -454,10 +438,9 @@ class StoreController extends FrontController
         $image->setDirectory($tempPath)->resizeGroup($filename->getGroup());
 
         // 5
-        $currentImage   = $request->get('current_image');
-        $productImgType = config('front.product_img_type');
+        $currentImage = $request->get('current_image');
 
-        foreach ($productImgType as $size) {
+        foreach ($this->_productImgSizes as $size) {
 
             $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $currentImage);
 
@@ -470,6 +453,63 @@ class StoreController extends FrontController
             'image'     => $image,
             'temp_path' => $tempPath,
             'filename'  => $filename
+        ];
+    }
+    
+    /**
+     * Delete product temporary images that was uploaded to temp folder
+     * 
+     * @param Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
+    protected function _deleteProductTempImg($request) {
+        
+        $tempPath = config('front.temp_path');
+
+        foreach ([1, 2, 3, 4] as $one) {
+
+            $imgToDel = $request->get("product_image_{$one}");
+
+            if ($imgToDel !== '' && check_file($tempPath . $imgToDel)) {
+                
+                foreach ($this->_productImgSizes as $size) {
+                    
+                    $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $imgToDel);
+
+                    delete_file($tempPath . $nameBySize);
+                }
+
+                delete_file($tempPath . $imgToDel);
+            }
+        }
+    }
+    
+    /**
+     * Rebuild product data, only get necessary infos
+     * 
+     * @param App\Models\Product $product
+     * 
+     * @return array
+     */
+    protected function _rebuildProductData($product) {
+        
+        $productPath = config('front.product_path');
+        $product->toImage();
+
+        return [
+            'id'          => $product->id,
+            'name'        => $product->name,
+            'price'       => $product->price,
+            'old_price'   => $product->old_price,
+            'description' => $product->description,
+            'images'      => [
+                'image_1' => ($product->image_1 !== null) ? asset($productPath . $product->image_1->thumb) : '',
+                'image_2' => ($product->image_2 !== null) ? asset($productPath . $product->image_2->thumb) : '',
+                'image_3' => ($product->image_3 !== null) ? asset($productPath . $product->image_3->thumb) : '',
+                'image_4' => ($product->image_4 !== null) ? asset($productPath . $product->image_4->thumb) : '',
+            ],
+            'lastModified' => $product->updated_at
         ];
     }
 }

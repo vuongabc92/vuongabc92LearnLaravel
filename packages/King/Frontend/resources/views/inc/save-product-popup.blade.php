@@ -15,6 +15,7 @@
                             <span class="_fl">Image <span class="_tr6">*</span></span>
                         </label>
                         <img class="_fl _ml10 _mt2 _dn product-img-loading" src="{{ asset('packages/king/frontend/images/loading-blue-white-16x16.gif') }}" />
+                        <span class="_fr _fs12 _mt3 _tr6 add-product-image-error"></span>
                         {!! Form::hidden('product_image_1', '', ['class' => 'product-image-hidden', 'id' => 'product-image-1', 'autocomplete' => 'off']) !!}
                         {!! Form::hidden('product_image_2', '', ['class' => 'product-image-hidden', 'id' => 'product-image-2', 'autocomplete' => 'off']) !!}
                         {!! Form::hidden('product_image_3', '', ['class' => 'product-image-hidden', 'id' => 'product-image-3', 'autocomplete' => 'off']) !!}
