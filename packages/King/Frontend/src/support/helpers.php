@@ -231,6 +231,39 @@ if ( ! function_exists('ajax_response')) {
 
 }
 
+if ( ! function_exists('simple_json')) {
+
+    /**
+     * Return a new JSON response from the application.
+     *
+     * @param  string $status
+     * @param  string $message
+     * @param  int    $status_code
+     * @param  array  $headers
+     * @param  int    $options
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    function ajax_response($status, $message, $status_code = 200, array $headers = [], $options = 0) {
+
+        switch ($status) {
+
+            case 0:
+                $status_text = _const('AJAX_ERROR');
+                break;
+
+            case 1:
+                $status_text = _const('AJAX_OK');
+                break;
+        }
+
+//        $data =
+
+        return response()->json($data, $status_code, $headers, $options);
+    }
+
+}
+
 if ( ! function_exists('ajax_upload_response')) {
 
     /**

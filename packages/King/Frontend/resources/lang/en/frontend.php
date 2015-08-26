@@ -67,7 +67,7 @@ return [
     'avatar_max' => 'The file may not be greater than 10 megabytes.',
     'cover_max' => 'The file may not be greater than 10 megabytes.',
     'opp' => 'Opp!! Somethings went wrong. Please try again!',
-    'not_found' => "Resource not founds.",
+    'not_found' => "Sorry, that page does not exist.",
     'saved_pass' => 'Saved password',
     'curr_pass_wrong' => 'Current password is incorrect.',
     'store' => 'Store',
@@ -133,4 +133,5 @@ return [
     'product_oldprice_max' => 'Old price is too long.',
     'product_desc_req' => 'Desciption is required.',
     'product_desc_min' => 'Desciption is too short.',
+    'product_order_wrong' => 'Prouduct\'s order is incorrect.'
 ];

@@ -183,17 +183,15 @@
                     beforeSend: function(){
                         that.loading(true, img, text, check);
                     },
+                    error: function(response) {
+                        var messages = response.responseJSON.messages;
+
+                        that.loading(false, img, text, check, false);
+                        that.showFormLabels(labels, messages);
+                    },
                     success: function(response){
-                        var status   = response.status,
-                            messages = response.messages;
-
-                        if (status === SETTING.AJAX_ERROR) {
-                            that.loading(false, img, text, check, false);
-                        }
-                        if (status === SETTING.AJAX_OK) {
-                            that.loading(false, img, text, check, true);
-                        }
-
+                        var messages = response.messages;
+                        that.loading(false, img, text, check, true);
                         that.showFormLabels(labels, messages);
                     }
                 });
@@ -208,7 +206,7 @@
                     label  = field.parent('div').children('label');
 
                 if (messages.hasOwnProperty(v)) {
-                    var errorHtml = '<span class="_fwfl _tr5">' + messages[v] + '</span>'
+                    var errorHtml = '<span class="_fwfl _tr5">' + messages[v][0] + '</span>'
                     label.html(errorHtml);
                 } else {
                     var originalText = label.attr('data-title');
@@ -476,19 +474,16 @@
                     url: actionUrl.replace('0', $(this).val()),
                     beforeSend: function(){},
                     success: function(response){
-                        var status = response.status,
-                            data   = response.data;
+                        var data   = response.data;
 
-                        if (status === SETTING.AJAX_OK) {
-                            target.find('option').remove();
-                            target.append($('<option>', {value: '', text : selectCity}));
-                            $.each(data, function (k, v) {
-                                target.append($('<option>', {
-                                    value: v.id,
-                                    text : v.name
-                                }));
-                            });
-                        }
+                        target.find('option').remove();
+                        target.append($('<option>', {value: '', text: selectCity}));
+                        $.each(data, function(k, v) {
+                            target.append($('<option>', {
+                                value: v.id,
+                                text: v.name
+                            }));
+                        });
                     }
                 });
             });
@@ -906,8 +901,8 @@
                     beforeSend: function(){
                         that.loading(true, img, text, check);
                     },
-                    error: function(request, textStatus, errorThrown) {
-                        var messages = request.responseJSON.messages;
+                    error: function(response) {
+                        var messages = response.responseJSON.messages;
 
                         that.loading(false, img, text, check, false);
                         that.showFormLabels(labels, messages);
@@ -1024,29 +1019,23 @@
                     type: 'GET',
                     url: current.attr('href'),
                     beforeSend: function(){},
-                    success: function(response){
-                        var status         = response.status,
-                            data           = response.data,
+                    error: function() {},
+                    success: function(response) {
+                        var data           = response.data,
                             productImg     = SETTING.PRODUCT_IMG,
                             productImgEdit = SETTING.PRODUCT_IMG_EDIT,
                             productRep     = '';
 
-                        if (status === SETTING.AJAX_OK) {
-                            $.each(fields, function(k, v){
-                                form.find('[name^=' + v +']').val(data[v]);
-                            });
+                        $.each(fields, function(k, v) {
+                            form.find('[name^=' + v + ']').val(data[v]);
+                        });
 
-                            for(var i = 1; i <= 4; i++){
-                                if (data['images']['image_' + i] !== '') {
-                                    productRep = productImg.replace('__SRC', data['images']['image_' + i]);
-                                    $('.product-img-' + i).css('border', 'solid 3px #000');
-                                    $('.product-img-' + i).html(productRep + productImgEdit);
-                                }
+                        for (var i = 1; i <= 4; i++) {
+                            if (data['images']['image_' + i] !== '') {
+                                productRep = productImg.replace('__SRC', data['images']['image_' + i]);
+                                $('.product-img-' + i).css('border', 'solid 3px #000');
+                                $('.product-img-' + i).html(productRep + productImgEdit);
                             }
-                        }
-
-                        if (status === SETTING.AJAX_ERROR) {
-
                         }
 
                         modal.modal('show');
@@ -1124,6 +1113,7 @@ $(document).ready(function(){
 
         ajaxDeleteTempProductImg();
 
+        $('.add-product-reset-btn').click();
         $('#save-product-form')[0].reset();
         $('#save-product-form').find('#product-id').val('');
         $('.product-image-hidden').val('');

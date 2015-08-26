@@ -49,7 +49,7 @@ class StoreController extends FrontController
     public function ajaxSaveProduct(Request $request) {
 
         //Only accept ajax request
-        if ($request->ajax()) {
+        if ($request->ajax() && $request->isMethod('POST')) {
 
             $productId = (int) $request->get('id');
             $product   = $this->getProduct($productId);
@@ -80,9 +80,8 @@ class StoreController extends FrontController
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->messages()
-                ], is_null($product) ? 404 : 500);
+                ], is_null($product) ? 404 : 403);
             }
-
 
             /**
              *  1. Copy product images from temporary folder to product folder.
@@ -115,7 +114,7 @@ class StoreController extends FrontController
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
-                ]);
+                ], 500);
 
             }
 
@@ -146,7 +145,7 @@ class StoreController extends FrontController
             // Check does the product image's order exist
             if ( ! $this->_checkProductImageOrder($order)) {
                 $validator->after(function($validator) {
-                    $validator->errors()->add('__product', _t('opp'));
+                    $validator->errors()->add('__product', _t('product_order_wrong'));
                 });
             }
 
@@ -154,7 +153,7 @@ class StoreController extends FrontController
                 return ajax_upload_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
-                ], 500);
+                ], 403);
             }
 
             try {
@@ -168,7 +167,7 @@ class StoreController extends FrontController
                 $validator->errors()->add('__product', _t('opp'));
 
                 return ajax_upload_response([
-                    'status'   => _const('AJAX_OK'),
+                    'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
                 ], 500);
             }
@@ -226,7 +225,7 @@ class StoreController extends FrontController
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => _t('opp')
-                ]);
+                ], 500);
 
             }
 
