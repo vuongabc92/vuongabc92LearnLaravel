@@ -124,7 +124,7 @@ class StoreController extends FrontController
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
-                ]);
+                ], 500);
 
             }
 
@@ -219,7 +219,7 @@ class StoreController extends FrontController
                 return ajax_response([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => _t('opp')
-                ]);
+                ], 500);
 
             }
 
@@ -410,22 +410,14 @@ class StoreController extends FrontController
     /**
      * Upload and resize product image
      *
-<<<<<<< HEAD
-     * 1. Get path and file upload
-=======
      * 1. Get path
->>>>>>> 2c1f0bdafd78d5faae8770660083855c33cb6275
      * 2. Generate file name
      * 3. Upload
      * 4. Resize
      * 5. Delete old temporary image(s)
      *
-<<<<<<< HEAD
-     * @param Illuminate\Http\Request $request
-=======
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile|array $file
      * @param string                                                    $currentImage
->>>>>>> 2c1f0bdafd78d5faae8770660083855c33cb6275
      *
      * @return array
      */

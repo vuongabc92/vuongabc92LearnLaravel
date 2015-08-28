@@ -74,17 +74,8 @@ class SettingController extends FrontController
             /** Check password confirmation */
             if (Hash::check($password, $user->password)) {
 
-                try {
-                    
-                    $user->password = bcrypt($newPass);
-                    $user->save();
-                    
-                } catch (Exception $ex) {
-                    return ajax_response([
-                        'status'   => _const('AJAX_ERROR'),
-                        'messages' => _t('opp')
-                    ], 500);
-                }
+                $user->password = bcrypt($newPass);
+                $user->save();
 
                 return ajax_response([
                     'status'   => _const('AJAX_OK'),
