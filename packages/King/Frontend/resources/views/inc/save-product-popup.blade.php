@@ -24,9 +24,16 @@
                     </div>
                     <div class="_fwfl">
                         <div class="_r3 add-product-image product-img-1" data-event-trigger="#product-image1-file" data-event="click|click">
-                            <span class="_fwfl _fh">
+<!--                            <span class="_fwfl _fh">
                                 <i class="fa fa-plus"></i>
-                            </span>
+                            </span>-->
+                            <img src="http://wiki.laravel5.dev/uploads/images/products/product_281cbdcc6cb407c0_thumb.jpg" class="_fwfl _fh">
+                            <div class="edit-product-img">
+                                <span class="_fwfl _fh">
+                                    <b class="fa fa-pencil"></b>
+                                    <b class="fa fa-remove"></b>
+                                </span>
+                            </div>
                         </div>
                         <div class="_r3 add-product-image product-img-2" data-event-trigger="#product-image2-file" data-event="click|click">
                             <i class="fa fa-plus"></i>
