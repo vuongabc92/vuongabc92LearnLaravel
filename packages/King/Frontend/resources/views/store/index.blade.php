@@ -48,7 +48,7 @@ Setting > My store
                 @foreach( $products as $product )
                 @set $image = $product->toImage()
                 <li class="{{ (($i++)%3 === 0) ? 'the-3th-product' : '' }}">
-                    <div class="product">
+                    <div class="product {{ $product->id }}" data-product-id="{{ $product->id }}">
                         <div class="product-head">
                             <ul class="product-handle">
                                 <li>
@@ -81,7 +81,11 @@ Setting > My store
                                             </a>
                                         </li>
                                         <li><a href="#" class="product-hide" data-toggle="tooltip" data-placement="left" data-original-title="Hide"><i class="fa fa-genderless"></i></a></li>
-                                        <li><a href="#" class="product-remove" data-toggle="tooltip" data-placement="left" data-original-title="Remove"><i class="fa fa-close"></i></a></li>
+                                        <li>
+                                            <a href="{{ route('front_delete_product') }}" data-delete-product="" class="product-remove" data-toggle="tooltip" data-placement="left" data-original-title="Remove">
+                                                <i class="fa fa-close"></i>
+                                            </a>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>

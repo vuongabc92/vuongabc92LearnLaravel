@@ -70,10 +70,7 @@ class SettingController extends FrontController
             }
 
             if ($validator->fails()) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->messages()
-                ], 403);
+                return pong(0, $validator->messages(), 403);
             }
 
             try {
@@ -83,16 +80,10 @@ class SettingController extends FrontController
 
             } catch (Exception $ex) {
 
-                return ajax_response([
-                    'status' => _const('AJAX_ERROR'),
-                    'messages' => _t('opp')
-                ], 500);
+                return pong(0, _t('opp'), 500);
             }
 
-            return ajax_response([
-                'status' => _const('AJAX_OK'),
-                'messages' => _t('saved_pass')
-            ]);
+            return pong(1, _t('saved_pass'));
         }
     }
 
@@ -146,10 +137,7 @@ class SettingController extends FrontController
             }
 
             if ($validator->fails()) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->messages()
-                ], 403);
+                return pong(0, $validator->messages(), 403);
             }
 
             try {
@@ -162,16 +150,10 @@ class SettingController extends FrontController
 
             } catch (Exception $ex) {
 
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => _t('opp')
-                ], 500);
+                return pong(0, _t('opp'), 500);
             }
 
-            return ajax_response([
-                'status'   => _const('AJAX_OK'),
-                'messages' => _t('saved_info')
-            ]);
+            return pong(1, _t('saved_info'));
         }
     }
 
@@ -191,7 +173,7 @@ class SettingController extends FrontController
             $validator = Validator::make($request->all(), $rules, $messages);
 
             if ($validator->fails()) {
-                return ajax_upload_response([
+                return file_pong([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
                 ], 403);
@@ -248,13 +230,13 @@ class SettingController extends FrontController
 
                 $validator->errors()->add('__file', _t('opp'));
 
-                return ajax_upload_response([
+                return file_pong([
                     'status'   => _const('AJAX_OK'),
                     'messages' => $validator->errors()->first()
                 ], 500);
             }
 
-            return ajax_upload_response([
+            return file_pong([
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
@@ -280,8 +262,8 @@ class SettingController extends FrontController
         $store      = store();
 
         if (user()->has_store) {
-            $districts += select($this->getDistrictsByCityId($store->city_id)->keyBy('id'));
-            $wards     += select($this->getWardsByCityId($store->district_id)->keyBy('id'));
+            $districts += select($this->_getDistrictsByCityId($store->city_id)->keyBy('id'));
+            $wards     += select($this->_getWardsByCityId($store->district_id)->keyBy('id'));
         }
 
         return view('frontend::setting.store', [
@@ -307,18 +289,12 @@ class SettingController extends FrontController
         if ($request->ajax() && $request->isMethod('GET')) {
 
             if (City::find((int) $id) === null) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => _t('not_found')
-                ], 404);
+                return pong(0, _t('not_found'), 404);
             }
 
             $districts = $this->_getDistrictsByCityId($id);
 
-            return ajax_response([
-                'status' => _const('AJAX_OK'),
-                'data'   => $districts->toArray()
-            ]);
+            return pong(1, ['data' => $districts->toArray()]);
         }
 
     }
@@ -336,18 +312,12 @@ class SettingController extends FrontController
         //Only accept AJAX request with GET method
         if ($request->ajax() && $request->isMethod('GET')) {
             if (District::find((int) $id) === null) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => _t('opp')
-                ], 404);
+                return pong(0, _t('opp'), 404);
             }
 
             $wards = $this->_getWardsByCityId($id);
 
-            return ajax_response([
-                'status' => _const('AJAX_OK'),
-                'data'   => $wards->toArray()
-            ]);
+            return pong(1, ['data' => $wards->toArray()]);
         }
 
     }
@@ -370,10 +340,7 @@ class SettingController extends FrontController
             $validator = Validator::make($request->all(), $rules, $messages);
 
             if ($validator->fails()) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->messages()
-                ], 403);
+                return pong(0, $validator->messages(), 403);
             }
 
             try {
@@ -387,23 +354,26 @@ class SettingController extends FrontController
                 $store->phone_number = $request->get('phone_number');
 
                 if ($store->save()) {
+
                     $user->has_store = true;
                     $user->update();
+
+                    $productPath = config('front.product_path') . $store->id;
+                    $oldmask     = umask(0);
+
+                    if ( ! file_exists($productPath)) {
+                        mkdir($productPath, 0777);
+                        umask($oldmask);
+                    }
                 }
             } catch (Exception $ex) {
 
                 $validator->errors()->add('name', _t('opp'));
 
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->messages()
-                ], 500);
+                return pong(0, $validator->messages(), 500);
             }
 
-            return ajax_response([
-                'status'   => _const('AJAX_OK'),
-                'messages' => _t('saved_info')
-            ]);
+            return pong(1, _t('saved_info'));
         }
     }
 
@@ -450,7 +420,7 @@ class SettingController extends FrontController
             $validator = Validator::make($request->all(), $rules, $messages);
 
             if ($validator->fails()) {
-                return ajax_upload_response([
+                return file_pong([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
                 ], 403);
@@ -506,13 +476,13 @@ class SettingController extends FrontController
 
                 $validator->errors()->add('__file', _t('opp'));
 
-                return ajax_upload_response([
+                return file_pong([
                     'status'   => _const('AJAX_OK'),
                     'messages' => $validator->errors()->first()
                 ], 500);
             }
 
-            return ajax_upload_response([
+            return file_pong([
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [

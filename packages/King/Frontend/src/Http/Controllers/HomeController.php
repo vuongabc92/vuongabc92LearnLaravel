@@ -29,13 +29,11 @@ class HomeController extends FrontController
 
         //Only accept ajax request
         if ($request->ajax()) {
+
             $city_name = $request->get('location_keyword');
             $results   = locations(trim($city_name));
 
-            return ajax_response([
-                'status' => _const('AJAX_OK'),
-                'data'   => $results
-            ]);
+            return pong(1, ['data' => $results]);
         }
     }
 
@@ -48,10 +46,14 @@ class HomeController extends FrontController
      * @return \Illuminate\Http\JsonResponse
      */
     public function ajaxSelectLocation(Request $request, $id) {
+
         //Only accept ajax request
         if ($request->ajax()) {
+
             $id = (int) $id;
+
             if (City::find($id) !== null) {
+
                 //Start session if it wasn't started
                 if ( ! $request->session()->isStarted()) {
                     $request->session()->start();
@@ -59,10 +61,7 @@ class HomeController extends FrontController
 
                 $request->session()->put(_const('SESSION_LOCATION'), $id);
 
-                return ajax_response([
-                    'status' => _const('AJAX_OK'),
-                    'data'   => _t('saved_info')
-                ]);
+                return pong(1, _t('saved_info'));
             }
         }
     }

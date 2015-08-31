@@ -77,10 +77,7 @@ class StoreController extends FrontController
             }
 
             if ($validator->fails()) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->messages()
-                ], is_null($product) ? 404 : 403);
+                return pong(0, $validator->messages(), is_null($product) ? 404 : 403);
             }
 
             /**
@@ -95,7 +92,7 @@ class StoreController extends FrontController
 
                 // 2
                 if ($productId) {
-                    $this->deleteOldImages($images, $product->images);
+                    $this->_deleteOldImages($images, $product->images);
                 }
 
                 // 3
@@ -111,17 +108,11 @@ class StoreController extends FrontController
 
                 $validator->errors()->add('product_image_1', _t('opp'));
 
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->errors()->first()
-                ], 500);
+                return pong(0, $validator->errors()->first(), 500);
 
             }
 
-            return ajax_response([
-                'status'   => _const('AJAX_OK'),
-                'messages' => _t('saved_info')
-            ]);
+            return pong(1, _t('saved_info'));
         }
     }
 
@@ -150,7 +141,7 @@ class StoreController extends FrontController
             }
 
             if ($validator->fails()) {
-                return ajax_upload_response([
+                return file_pong([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
                 ], 403);
@@ -166,7 +157,7 @@ class StoreController extends FrontController
 
                 $validator->errors()->add('__product', _t('opp'));
 
-                return ajax_upload_response([
+                return file_pong([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
                 ], 500);
@@ -174,7 +165,7 @@ class StoreController extends FrontController
 
             $resizes = $upload['image']->getResizes();
 
-            return ajax_upload_response([
+            return file_pong([
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
@@ -222,17 +213,11 @@ class StoreController extends FrontController
 
             } catch (Exception $ex) {
 
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => _t('opp')
-                ], 500);
+                return pong(0, _t('opp'), 500);
 
             }
 
-            return ajax_response([
-                'status'   => _const('AJAX_OK'),
-                'messages' => _t('saved_info')
-            ]);
+            return pong(1, _t('saved_info'));
         }
     }
 
@@ -253,14 +238,11 @@ class StoreController extends FrontController
             $product = product($id);
 
             if ($product === null) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => _t('not_found')
-                ], 404);
+                return pong(0, _t('not_found'), 404);
             }
 
             // Rebuild product data structure
-            $productPath = config('front.product_path');
+            $productPath = config('front.product_path') . store()->id . '/';
             $product->toImage();
             $productRebuild = [
                 'id'           => $product->id,
@@ -277,10 +259,7 @@ class StoreController extends FrontController
                 'lastModified' => $product->updated_at
             ];
 
-            return ajax_response([
-                'status' => _const('AJAX_OK'),
-                'data'   => $productRebuild
-            ]);
+            return pong(1, ['data' => $productRebuild]);
         }
     }
 
@@ -322,7 +301,7 @@ class StoreController extends FrontController
     public function copyTempProductImages($tempImages) {
 
         $tempPath       = config('front.temp_path');
-        $productPath    = config('front.product_path');
+        $productPath    = config('front.product_path') . store()->id . '/';
         $productImgType = config('front.product_img_type');
         $images         = [];
 
@@ -364,7 +343,7 @@ class StoreController extends FrontController
      *
      * @return void
      */
-    public function deleteOldImages($newImages, $oldImages) {
+    protected function _deleteOldImages($newImages, $oldImages) {
 
         $oldImages   = new Collection(json_decode($oldImages));
         $productPath = config('front.product_path');
