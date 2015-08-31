@@ -1102,13 +1102,16 @@
 
     Plugin.prototype = {
         init: function() {
-            var current = this.element;
-
+            var current = this.element,
+                productId = current.parents('.product').data('product-id');
+        
             current.on('click', function(e){
                 $.ajax({
                     type: 'POST',
-                    url: SETTING.PIN_PRODUCT_URI,
+                    url: SETTING.PIN_URI,
+                    data:{_token: SETTING.CSRF_TOKEN, product_id: productId} ,
                     error: function(response){},
+                    success: function(response){}
                 });
             });
 

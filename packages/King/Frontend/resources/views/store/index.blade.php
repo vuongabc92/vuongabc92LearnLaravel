@@ -43,7 +43,7 @@ Setting > My store
         </div>
 
         <div class="_fwfl store-body">
-            <ol class="_fwfl _ls product-tree" id="product-tree" data-pin-uri="{{ route('front_product_pin') }}">
+            <ol class="_fwfl _ls product-tree" id="product-tree" data-pin-uri="{{ route('front_product_pin') }}" data-csrf-token="{{ csrf_token() }}">
                 @set $i = 1
                 @foreach( $products as $product )
                 @set $image = $product->toImage()

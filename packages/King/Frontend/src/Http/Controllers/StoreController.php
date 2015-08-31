@@ -302,22 +302,22 @@ class StoreController extends FrontController
      */
     protected function _togglePin($user_id, $product_id) {
 
-        $pin = Pin::where('product_id', $product_id)->get();
+        $pin = Pin::where('product_id', $product_id)->first();
 
         if ($pin === null) {
 
             $pin             = new Pin();
             $pin->product_id = $product_id;
-            $pin->user_id    = json_encode([$user_id]);
+            $pin->user_id    = json_encode([$user_id => $user_id]);
 
         } else {
-
-            $uidArray = json_decode($pin->user_id);
-
+            
+            $uidArray = json_decode($pin->user_id, true);
+            
             if (isset($uidArray[$user_id])) {
                 unset($uidArray[$user_id]);
             } else {
-                $uidArray[] = $user_id;
+                $uidArray[$user_id] = $user_id;
             }
 
             $pin->user_id = json_encode($uidArray);
@@ -503,7 +503,6 @@ class StoreController extends FrontController
         $image->setDirectory($tempPath)->resizeGroup($filename->getGroup());
 
         // 5
-        $currentImage = $request->get('current_image');
         foreach ($this->_productImgSizes as $size) {
 
             $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $currentImage);
