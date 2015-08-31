@@ -213,25 +213,51 @@ if ( ! function_exists('cover_default')) {
     }
 }
 
-if ( ! function_exists('ajax_response')) {
+if ( ! function_exists('pong')) {
 
     /**
-     * Return a new JSON response from the application.
+     * Return a new simple JSON response from the application.
      *
-     * @param  string|array  $data
-     * @param  int           $status
-     * @param  array         $headers
-     * @param  int           $options
+     * @param  string $status
+     * @param  string $messages
+     * @param  int    $status_code
+     * @param  array  $headers
+     * @param  int    $options
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    function ajax_response($data = [], $status = 200, array $headers = [], $options = 0) {
-        return response()->json($data, $status, $headers, $options);
+    function pong($status, $messages, $status_code = 200, array $headers = [], $options = 0) {
+
+        switch ($status) {
+
+            case 0:
+                $status_text = _const('AJAX_ERROR');
+                break;
+
+            case 1:
+                $status_text = _const('AJAX_OK');
+                break;
+
+            default :
+                $status_text = _t('UNDEFINED');
+                break;
+        }
+
+        if (is_array($messages)) {
+            $data = array_merge(['status'   => $status_text], $messages);
+        } else {
+            $data = [
+                'status'   => $status_text,
+                'messages' => $messages
+            ];
+        }
+
+        return response()->json($data, $status_code, $headers, $options);
     }
 
 }
 
-if ( ! function_exists('ajax_upload_response')) {
+if ( ! function_exists('file_pong')) {
 
     /**
      * Return a new JSON response from the application.
@@ -242,7 +268,7 @@ if ( ! function_exists('ajax_upload_response')) {
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    function ajax_upload_response($data = [], $status = 200, $options = 0) {
+    function file_pong($data = [], $status = 200, $options = 0) {
         return response()->json($data, $status, ['Content-Type' => 'text/html'], $options);
     }
 
@@ -527,7 +553,7 @@ if ( ! function_exists('product_images')) {
      */
     function product_image($image) {
 
-        $path = config('front.product_path');
+        $path = config('front.product_path') . store()->id . '/';
 
         return asset($path . $image);
     }

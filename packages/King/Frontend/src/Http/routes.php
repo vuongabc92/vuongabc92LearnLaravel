@@ -37,4 +37,8 @@ Route::group(['middleware' => 'auth'], function(){
         $route->get('find-product-by-id/{id}', ['as' => 'front_find_product_by_id', 'uses' => 'StoreController@ajaxFindProductById']);
         $route->delete('delete-product', ['as' => 'front_delete_product', 'uses' => 'StoreController@ajaxDeleteProduct']);
     });
+
+    Route::group(['prefix' => 'product'], function($route){
+        $route->post('pin', ['as' => 'front_product_pin', 'uses' => 'StoreController@ajaxPinProduct']);
+    });
 });

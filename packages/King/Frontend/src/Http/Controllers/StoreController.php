@@ -15,6 +15,7 @@ use App\Helpers\Upload;
 use App\Helpers\FileName;
 use App\Helpers\Image;
 use App\Models\Product;
+use App\Models\Pin;
 
 class StoreController extends FrontController
 {
@@ -58,7 +59,7 @@ class StoreController extends FrontController
     public function ajaxSaveProduct(Request $request) {
 
         //Only accept ajax request
-        if ($request->ajax()) {
+        if ($request->ajax() && $request->isMethod('POST')) {
 
             $productId = (int) $request->get('id');
             $product   = $this->_getProduct($productId);
@@ -86,12 +87,8 @@ class StoreController extends FrontController
             }
 
             if ($validator->fails()) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->messages()
-                ], is_null($product) ? 404 : 500);
+                return pong(0, $validator->messages(), is_null($product) ? 404 : 403);
             }
-
 
             /**
              *  1. Copy product images from temporary folder to product folder.
@@ -121,17 +118,10 @@ class StoreController extends FrontController
 
                 $validator->errors()->add('product_image_1', _t('opp'));
 
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->errors()->first()
-                ], 500);
-
+                return pong(0, $validator->errors()->first(), 500);
             }
 
-            return ajax_response([
-                'status'   => _const('AJAX_OK'),
-                'messages' => _t('saved_info')
-            ]);
+            return pong(1, _t('saved_info'));
         }
     }
 
@@ -155,15 +145,15 @@ class StoreController extends FrontController
             // Check does the product image's order exist
             if ( ! $this->_checkProductImageOrder($order)) {
                 $validator->after(function($validator) {
-                    $validator->errors()->add('__product', _t('opp'));
+                    $validator->errors()->add('__product', _t('product_order_wrong'));
                 });
             }
 
             if ($validator->fails()) {
-                return ajax_upload_response([
+                return file_pong([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
-                ], 500);
+                ], 403);
             }
 
             try {
@@ -176,15 +166,15 @@ class StoreController extends FrontController
 
                 $validator->errors()->add('__product', _t('opp'));
 
-                return ajax_upload_response([
-                    'status'   => _const('AJAX_OK'),
+                return file_pong([
+                    'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
                 ], 500);
             }
 
             $resizes = $upload['image']->getResizes();
 
-            return ajax_upload_response([
+            return file_pong([
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
@@ -215,18 +205,10 @@ class StoreController extends FrontController
                 $this->_deleteProductTempImg($request);
 
             } catch (Exception $ex) {
-
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => _t('opp')
-                ], 500);
-
+                return pong(0, _t('opp'), 500);
             }
 
-            return ajax_response([
-                'status'   => _const('AJAX_OK'),
-                'messages' => _t('saved_info')
-            ]);
+            return pong(1, _t('saved_info'));
         }
     }
 
@@ -247,18 +229,28 @@ class StoreController extends FrontController
             $product = product($id);
 
             if ($product === null) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => _t('not_found')
-                ], 404);
+                return pong(0, _t('not_found'), 404);
             }
-            
-            $productRebuild = $this->_rebuildProductData($product);
 
-            return ajax_response([
-                'status' => _const('AJAX_OK'),
-                'data'   => $productRebuild
-            ]);
+            // Rebuild product data structure
+            $productPath = config('front.product_path') . store()->id . '/';
+            $product->toImage();
+            $productRebuild = [
+                'id'           => $product->id,
+                'name'         => $product->name,
+                'price'        => $product->price,
+                'old_price'    => $product->old_price,
+                'description'  => $product->description,
+                'images'       => [
+                    'image_1' => ($product->image_1 !== null) ? asset($productPath . $product->image_1->thumb) : '',
+                    'image_2' => ($product->image_2 !== null) ? asset($productPath . $product->image_2->thumb) : '',
+                    'image_3' => ($product->image_3 !== null) ? asset($productPath . $product->image_3->thumb) : '',
+                    'image_4' => ($product->image_4 !== null) ? asset($productPath . $product->image_4->thumb) : '',
+                ],
+                'lastModified' => $product->updated_at
+            ];
+
+            return pong(1, ['data' => $productRebuild]);
         }
     }
     
@@ -270,6 +262,68 @@ class StoreController extends FrontController
         if ($request->ajax() && $request->isMethod('DELETE')) {
 
         }
+    }
+
+    /**
+     *
+     * @param Request $request
+     *
+     * @return type
+     */
+    public function ajaxPinProduct(Request $request) {
+
+        // Only accept ajax request with post method
+        if ($request->ajax() && $request->isMethod('POST')) {
+
+            $product_id = (int) $request->get('product_id');
+            $user_id    = user()->id;
+
+            if (product($product_id) === null) {
+                return pong(0, _t('not_found'), 404);
+            }
+
+            try {
+                $this->_togglePin($user_id, $product_id);
+            } catch (Exception $ex) {
+                return pong(0, _t('opp'), 500);
+            }
+
+            return pong(1, _t('saved_info'));
+        }
+    }
+
+    /**
+     * Toggle pin product
+     *
+     * @param int $user_id
+     * @param int $product_id
+     *
+     * return int pin id
+     */
+    protected function _togglePin($user_id, $product_id) {
+
+        $pin = Pin::where('product_id', $product_id)->get();
+
+        if ($pin === null) {
+
+            $pin             = new Pin();
+            $pin->product_id = $product_id;
+            $pin->user_id    = json_encode([$user_id]);
+
+        } else {
+
+            $uidArray = json_decode($pin->user_id);
+
+            if (isset($uidArray[$user_id])) {
+                unset($uidArray[$user_id]);
+            } else {
+                $uidArray[] = $user_id;
+            }
+
+            $pin->user_id = json_encode($uidArray);
+        }
+
+        return $pin->save();
     }
 
     /**
@@ -301,9 +355,9 @@ class StoreController extends FrontController
      */
     protected function _copyTempProductImages($tempImages) {
 
-        $tempPath    = config('front.temp_path');
-        $productPath = config('front.product_path');
-        $images      = [];
+        $tempPath       = config('front.temp_path');
+        $productPath    = config('front.product_path') . store()->id . '/';
+        $images         = [];
 
         if (count($tempImages)) {
 

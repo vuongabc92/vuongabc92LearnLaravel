@@ -128,6 +128,7 @@
         </div>
 
         <script src="{{ asset('packages/king/frontend/js/jquery_v1.11.1.js') }}"></script>
+        <script src="{{ asset('packages/king/frontend/js/jquery-ui-1.11.4.min.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/bootstrap.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/webtoolkit.aim.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/setting.js') }}"></script>

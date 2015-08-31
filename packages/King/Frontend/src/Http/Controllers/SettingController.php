@@ -59,36 +59,32 @@ class SettingController extends FrontController
             $rules     = $this->_getPasswordRules();
             $messages  = $this->_getPasswordMessages();
             $validator = Validator::make($request->all(), $rules, $messages);
-            
-            if ($validator->fails()) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->messages()
-                ]);
+
+            $password  = $request->get('password');
+            $newPass   = $request->get('new_password');
+            $user      = user();
+
+            if ( ! Hash::check($password, $user->password)) {
+                $validator->after(function($validator) {
+                     $validator->errors()->add('password', _t('pass_wrong'));
+                });
             }
 
-            $user     = user();
-            $password = $request->get('password');
-            $newPass  = $request->get('new_password');
+            if ($validator->fails()) {
+                return pong(0, $validator->messages(), 403);
+            }
 
-            /** Check password confirmation */
-            if (Hash::check($password, $user->password)) {
+            try {
 
                 $user->password = bcrypt($newPass);
                 $user->save();
 
-                return ajax_response([
-                    'status'   => _const('AJAX_OK'),
-                    'messages' => _t('saved_pass')
-                ]);
+            } catch (Exception $ex) {
+
+                return pong(0, _t('opp'), 500);
             }
 
-            $validator->errors()->add('password', _t('pass_wrong'));
-
-            return ajax_response([
-                'status'   => _const('AJAX_ERROR'),
-                'messages' => $validator->messages()
-            ]);
+            return pong(1, _t('saved_pass'));
         }
     }
 
@@ -104,35 +100,26 @@ class SettingController extends FrontController
         //Only accept ajax request.
         if ($request->ajax()) {
 
-            $rules           = remove_rules($this->_user->getRules(), 'password.min:6');
-            $messages        = $this->_user->getMessages();
+            $rules     = remove_rules($this->_user->getRules(), 'password.min:6');
+            $messages  = $this->_user->getMessages();
+            $user      = user();
+            $dbUname   = $user->user_name;
+            $dbEmail   = $user->email;
+            $dbPass    = $user->password;
+            $uname     = $request->get('user_name');
+            $email     = $request->get('email');
+            $fname     = $request->get('first_name');
+            $lname     = $request->get('last_name');
+            $password  = $request->get('password');
+            $checkPass = false;
 
-            $user            = user();
-            $currentUsername = $user->user_name;
-            $currentEmail    = $user->email;
-            $hashingPass     = $user->password;
-
-            $username        = $request->get('user_name');
-            $email           = $request->get('email');
-            $fname           = $request->get('first_name');
-            $lname           = $request->get('last_name');
-            $password        = $request->get('password');
-            $checkPass       = false;
-
-            /**
-             * Check whether current user name in DB matchs to user name
-             * from user input. If does, remove validate unique, otherwise
-             * will check password to ensure the user change this info
-             * is the owner.
-             */
-            if (str_equal($currentUsername, $username)) {
+            if (str_equal($dbUname, $uname)) {
                 $rules = remove_rules($rules, 'user_name.unique:users,user_name');
             } else {
                 $checkPass = true;
             }
 
-            //Email is same with username.
-            if (str_equal($currentEmail, $email)) {
+            if (str_equal($dbEmail, $email)) {
                 $rules = remove_rules($rules, 'email.unique:users,email');
             } else {
                 $checkPass = true;
@@ -143,40 +130,31 @@ class SettingController extends FrontController
             }
 
             $validator = Validator::make($request->all(), $rules, $messages);
+
+            if ($checkPass && ! Hash::check($password, $dbPass)) {
+                $validator->after(function($validator) {
+                     $validator->errors()->add('password', _t('pass_incorrect'));
+                });
+            }
+
             if ($validator->fails()) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->messages()
-                ]);
+                return pong(0, $validator->messages(), 403);
             }
-
-            //Check does password from input match to password in DB.
-            if ($checkPass && ! Hash::check($password, $hashingPass)) {
-                $validator->errors()->add('password', _t('pass_incorrect'));
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->messages()
-                ]);
-            }
-
-            $user->user_name  = $username;
-            $user->email      = $email;
-            $user->first_name = $fname;
-            $user->last_name  = $lname;
 
             try {
+
+                $user->user_name  = $uname;
+                $user->email      = $email;
+                $user->first_name = $fname;
+                $user->last_name  = $lname;
                 $user->save();
+
             } catch (Exception $ex) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => _t('opp')
-                ], 500);
+
+                return pong(0, _t('opp'), 500);
             }
 
-            return ajax_response([
-                'status'   => _const('AJAX_OK'),
-                'messages' => _t('saved_info')
-            ]);
+            return pong(1, _t('saved_info'));
         }
     }
 
@@ -191,23 +169,15 @@ class SettingController extends FrontController
 
         if ($request->isMethod('POST')) {
 
-            $rules = [
-                '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . _const('AVATAR_MAX_FILE_SIZE')
-            ];
-
-            $messages = [
-                '__file.required' => _t('no_file'),
-                '__file.image'    => _t('file_not_image'),
-                '__file.mimes'    => _t('file_image_mimes'),
-                '__file.max'      => _t('avatar_max'),
-            ];
-
+            $rules     = $this->_getAvatarRules();
+            $messages  = $this->_getAvatarMessages();
             $validator = Validator::make($request->all(), $rules, $messages);
+
             if ($validator->fails()) {
-                return ajax_upload_response([
+                return file_pong([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
-                ]);
+                ], 403);
             }
 
             /**
@@ -227,23 +197,10 @@ class SettingController extends FrontController
                 $file       = $request->file('__file');
 
                 // 2
-                $filename   = new FileName($avatarPath, $file->getClientOriginalExtension());
+                $filename = new FileName($avatarPath, $file->getClientOriginalExtension());
                 $filename->avatar()->generate();
                 $filename->setPrefix(_const('AVATAR_PREFIX'));
-                $filename->avatar()->group([
-                    'big' => [
-                        'width'  => _const('AVATAR_BIG'),
-                        'height' => _const('AVATAR_BIG')
-                    ],
-                    'medium' => [
-                        'width'  => _const('AVATAR_MEDIUM'),
-                        'height' => _const('AVATAR_MEDIUM')
-                    ],
-                    'small' => [
-                        'width'  => _const('AVATAR_SMALL'),
-                        'height' => _const('AVATAR_SMALL')
-                    ]
-                ], true);
+                $filename->avatar()->group($this->_getAvatarGroup(), true);
 
                 // 3
                 $upload = new Upload($file);
@@ -271,15 +228,16 @@ class SettingController extends FrontController
                 $user->update();
 
             } catch (Exception $ex) {
+
                 $validator->errors()->add('__file', _t('opp'));
 
-                return ajax_upload_response([
+                return file_pong([
                     'status'   => _const('AJAX_OK'),
                     'messages' => $validator->errors()->first()
                 ], 500);
             }
 
-            return ajax_upload_response([
+            return file_pong([
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
@@ -292,11 +250,12 @@ class SettingController extends FrontController
     }
 
     /**
-     * Display save store page
+     * Display setting store page
      *
      * @return response
      */
     public function store() {
+
         $cities     = select(City::select('id', 'name')->get());
         $districts  = ['' => _t('select_district')];
         $wards      = ['' => _t('select_ward')];
@@ -304,8 +263,8 @@ class SettingController extends FrontController
         $store      = store();
 
         if (user()->has_store) {
-            $districts += select($this->getDistrictsByCityId($store->city_id)->keyBy('id'));
-            $wards     += select($this->getWardsByCityId($store->district_id)->keyBy('id'));
+            $districts += select($this->_getDistrictsByCityId($store->city_id)->keyBy('id'));
+            $wards     += select($this->_getWardsByCityId($store->district_id)->keyBy('id'));
         }
 
         return view('frontend::setting.store', [
@@ -321,27 +280,22 @@ class SettingController extends FrontController
      * Get the list districts by city id
      *
      * @param \Illuminate\Http\Request $request
-     * @param App\Models\District      $district
      * @param int                      $id
      *
      * @return JSON
      */
-    public function ajaxGetDistrictByCityId(Request $request, District $district, $id) {
-        //Only accept AJAX request
-        if ($request->ajax()) {
-            if (City::find((int) $id) !== null) {
-                $districts = $this->getDistrictsByCityId($id);
+    public function ajaxGetDistrictByCityId(Request $request, $id) {
 
-                return ajax_response([
-                    'status' => _const('AJAX_OK'),
-                    'data'   => $districts->toArray()
-                ]);
+        //Only accept AJAX request with GET method
+        if ($request->ajax() && $request->isMethod('GET')) {
+
+            if (City::find((int) $id) === null) {
+                return pong(0, _t('not_found'), 404);
             }
 
-            return ajax_response([
-                'status'   => _const('AJAX_ERROR'),
-                'messages' => _t('opp')
-            ]);
+            $districts = $this->_getDistrictsByCityId($id);
+
+            return pong(1, ['data' => $districts->toArray()]);
         }
 
     }
@@ -350,37 +304,34 @@ class SettingController extends FrontController
      * Get the list wards by ditrict id
      *
      * @param \Illuminate\Http\Request $request
-     * @param App\Models\Ward          $ward
      * @param int                      $id
      *
      * @return JSON
      */
-    public function ajaxGetWardByCityId(Request $request, Ward $ward, $id) {
-        //Only accept AJAX request
-        if ($request->ajax()) {
-            if (District::find((int) $id) !== null) {
-                $wards = $this->getWardsByCityId($id);
+    public function ajaxGetWardByCityId(Request $request, $id) {
 
-                return ajax_response([
-                    'status' => _const('AJAX_OK'),
-                    'data'   => $wards->toArray()
-                ]);
+        //Only accept AJAX request with GET method
+        if ($request->ajax() && $request->isMethod('GET')) {
+            if (District::find((int) $id) === null) {
+                return pong(0, _t('opp'), 404);
             }
 
-            return ajax_response([
-                'status'   => _const('AJAX_ERROR'),
-                'messages' => _t('opp')
-            ]);
+            $wards = $this->_getWardsByCityId($id);
+
+            return pong(1, ['data' => $wards->toArray()]);
         }
 
     }
 
 
     public function ajaxSaveStoreInfo(Request $request) {
+
         //Only accept AJAX request
-        if ($request->ajax()) {
+        if ($request->ajax() && $request->isMethod('POST')) {
+
             $store = $this->store;
             $user  = user();
+
             if ($user->has_store) {
                 $store = store();
             }
@@ -388,11 +339,9 @@ class SettingController extends FrontController
             $rules     = $store->getRules();
             $messages  = $store->getMessages();
             $validator = Validator::make($request->all(), $rules, $messages);
+
             if ($validator->fails()) {
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->messages()
-                ]);
+                return pong(0, $validator->messages(), 403);
             }
 
             try {
@@ -404,23 +353,28 @@ class SettingController extends FrontController
                 $store->district_id  = $request->get('district_id');
                 $store->ward_id      = $request->get('ward_id');
                 $store->phone_number = $request->get('phone_number');
+
                 if ($store->save()) {
+
                     $user->has_store = true;
                     $user->update();
+
+                    $productPath = config('front.product_path') . $store->id;
+                    $oldmask     = umask(0);
+
+                    if ( ! file_exists($productPath)) {
+                        mkdir($productPath, 0777);
+                        umask($oldmask);
+                    }
                 }
             } catch (Exception $ex) {
+
                 $validator->errors()->add('name', _t('opp'));
 
-                return ajax_response([
-                    'status'   => _const('AJAX_ERROR'),
-                    'messages' => $validator->messages()
-                ]);
+                return pong(0, $validator->messages(), 500);
             }
 
-            return ajax_response([
-                'status'   => _const('AJAX_OK'),
-                'messages' => _t('saved_info')
-            ]);
+            return pong(1, _t('saved_info'));
         }
     }
 
@@ -431,7 +385,7 @@ class SettingController extends FrontController
      *
      * @return \Illuminate\Support\Collection $collection
      */
-    public function getDistrictsByCityId($id) {
+    protected function _getDistrictsByCityId($id) {
 
         $dbRaw     = DB::raw("id, CONCAT(type, ' ', name) as name");
         $districts = District::where('city_id', $id)->select($dbRaw)
@@ -448,7 +402,7 @@ class SettingController extends FrontController
      *
      * @return \Illuminate\Support\Collection $collection
      */
-    public function getWardsByCityId($id) {
+    protected function _getWardsByCityId($id) {
 
         $dbRaw = DB::raw("id, CONCAT(type, ' ', name) as name");
         $wards = Ward::where('district_id', $id)->select($dbRaw)
@@ -462,23 +416,15 @@ class SettingController extends FrontController
 
         if ($request->isMethod('POST') && user()->has_store) {
 
-            $rules = [
-                '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . _const('COVER_MAX_FILE_SIZE')
-            ];
-
-            $messages = [
-                '__file.required' => _t('no_file'),
-                '__file.image'    => _t('file_not_image'),
-                '__file.mimes'    => _t('file_image_mimes'),
-                '__file.max'      => _t('cover_max'),
-            ];
-
+            $rules     = $this->_getCoverRules();
+            $messages  = $this->_getCoverMessages();
             $validator = Validator::make($request->all(), $rules, $messages);
+
             if ($validator->fails()) {
-                return ajax_upload_response([
+                return file_pong([
                     'status'   => _const('AJAX_ERROR'),
                     'messages' => $validator->errors()->first()
-                ]);
+                ], 403);
             }
 
             /**
@@ -500,20 +446,7 @@ class SettingController extends FrontController
                 $filename = new FileName($coverPath, $file->getClientOriginalExtension());
                 $filename->cover()->generate();
                 $filename->setPrefix(_const('COVER_PREFIX'));
-                $filename->cover()->group([
-                    'big' => [
-                        'width'  => _const('COVER_BIG_W'),
-                        'height' => _const('COVER_BIG_H')
-                    ],
-                    'medium' => [
-                        'width'  => _const('COVER_MEDIUM_W'),
-                        'height' => _const('COVER_MEDIUM_H')
-                    ],
-                    'small' => [
-                        'width'  => _const('COVER_SMALL_W'),
-                        'height' => _const('COVER_SMALL_H')
-                    ]
-                ], true);
+                $filename->cover()->group($this->_getCoverGroup(), true);
 
                 // 3
                 $upload = new Upload($file);
@@ -541,15 +474,16 @@ class SettingController extends FrontController
                 $store->update();
 
             } catch (Exception $ex) {
+
                 $validator->errors()->add('__file', _t('opp'));
 
-                return ajax_upload_response([
+                return file_pong([
                     'status'   => _const('AJAX_OK'),
                     'messages' => $validator->errors()->first()
                 ], 500);
             }
 
-            return ajax_upload_response([
+            return file_pong([
                 'status'   => _const('AJAX_OK'),
                 'messages' => _t('saved_info'),
                 'data'     => [
@@ -560,10 +494,10 @@ class SettingController extends FrontController
             ]);
         }
     }
-    
+
     /**
-     * Password validation rules
-     * 
+     * Get password validation rules
+     *
      * @return array
      */
     protected function _getPasswordRules() {
@@ -572,10 +506,10 @@ class SettingController extends FrontController
             'new_password' => 'required|min:6|max:60',
         ];
     }
-    
+
     /**
-     * Password validation messages
-     * 
+     * Get password validation messages
+     *
      * @return array
      */
     protected function _getPasswordMessages() {
@@ -587,4 +521,105 @@ class SettingController extends FrontController
         ];
     }
 
+    /**
+     * Get avatar validation rules
+     *
+     * @return array
+     */
+    protected function _getAvatarRules() {
+
+        $avatarMaxFileSize = _const('AVATAR_MAX_FILE_SIZE');
+
+        return [
+            '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . $avatarMaxFileSize
+        ];
+    }
+
+    /**
+     * Get avatar validation messages
+     *
+     * @return array
+     */
+    protected function _getAvatarMessages() {
+
+        return [
+            '__file.required' => _t('no_file'),
+            '__file.image'    => _t('file_not_image'),
+            '__file.mimes'    => _t('file_image_mimes'),
+            '__file.max'      => _t('avatar_max'),
+        ];
+    }
+
+    /**
+     * Avatar group to resize
+     *
+     * @return array
+     */
+    protected function _getAvatarGroup() {
+        return [
+            'big' => [
+                'width'  => _const('AVATAR_BIG'),
+                'height' => _const('AVATAR_BIG')
+            ],
+            'medium' => [
+                'width' => _const('AVATAR_MEDIUM'),
+                'height' => _const('AVATAR_MEDIUM')
+            ],
+            'small' => [
+                'width' => _const('AVATAR_SMALL'),
+                'height' => _const('AVATAR_SMALL')
+            ]
+        ];
+    }
+
+    /**
+     * Get cover rules validation
+     *
+     * @return array
+     */
+    protected function _getCoverRules() {
+
+        $maxFileSize = _const('COVER_MAX_FILE_SIZE');
+
+        return [
+            '__file' => 'required|image|mimes:jpg,png,jpeg,gif|max:' . $maxFileSize
+        ];
+
+    }
+
+    /**
+     * Get cover messages validation
+     *
+     * @return array
+     */
+    protected function _getCoverMessages() {
+        return [
+            '__file.required' => _t('no_file'),
+            '__file.image'    => _t('file_not_image'),
+            '__file.mimes'    => _t('file_image_mimes'),
+            '__file.max'      => _t('cover_max'),
+        ];
+    }
+
+    /**
+     * cover group to resize
+     *
+     * @return array
+     */
+    protected function _getCoverGroup() {
+        return [
+            'big' => [
+                'width' => _const('COVER_BIG_W'),
+                'height' => _const('COVER_BIG_H')
+            ],
+            'medium' => [
+                'width' => _const('COVER_MEDIUM_W'),
+                'height' => _const('COVER_MEDIUM_H')
+            ],
+            'small' => [
+                'width' => _const('COVER_SMALL_W'),
+                'height' => _const('COVER_SMALL_H')
+            ]
+        ];
+    }
 }
