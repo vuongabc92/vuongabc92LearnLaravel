@@ -12,6 +12,9 @@
 ._fwfr{width: 100%;float: right;}
 ._fhfl{height: 100%;float: left;}
 ._fhfr{height: 100%;float: right;}
+
+button{background: transparent none repeat scroll 0 0; border: 0 none;padding: 0;}
+
 button._btn, button._btn-sm{padding-top:5px !important;}
 ._btn, ._btn-sm{height:34px;line-height:19px;font-size:13px;outline:none !important;
 font-weight:bold;border-radius:2px;-webkit-border-radius:2px;

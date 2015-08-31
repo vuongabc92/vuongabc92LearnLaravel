@@ -43,31 +43,31 @@ Setting > My store
         </div>
 
         <div class="_fwfl store-body">
-            <ol class="_fwfl _ls product-tree">
+            <ol class="_fwfl _ls product-tree" id="product-tree" data-pin-uri="{{ route('front_product_pin') }}">
                 @set $i = 1
                 @foreach( $products as $product )
                 @set $image = $product->toImage()
                 <li class="{{ (($i++)%3 === 0) ? 'the-3th-product' : '' }}">
-                    <div class="product {{ $product->id }}" data-product-id="{{ $product->id }}">
+                    <div class="product product-{{ $product->id }}" data-product-id="{{ $product->id }}">
                         <div class="product-head">
                             <ul class="product-handle">
                                 <li>
-                                    <span class="product-pin">
+                                    <button class="product-pin" data-pin-product>
                                         <i class="fa fa-thumb-tack"></i>
                                         <b>300</b>
-                                    </span>
+                                    </button>
                                 </li>
                                 <li>
-                                    <span class="product-share">
+                                    <button class="product-share">
                                         <i class="fa fa-share-alt"></i>
                                         <b>42</b>
-                                    </span>
+                                    </button>
                                 </li>
                                 <li>
-                                    <span class="product-comment">
+                                    <button class="product-comment">
                                         <i class="fa fa-comments-o"></i>
                                         <b>100</b>
-                                    </span>
+                                    </button>
                                 </li>
                             </ul>
 

@@ -29,6 +29,16 @@ class Product extends Base
     const MAX_PRODUCT_IMG = 4;
 
     /**
+     * Get pin
+     *
+     * @return App\Models\Pin
+     */
+    public function pin()
+    {
+        return $this->hasOne('App\Models\Pin');
+    }
+
+    /**
      * Get product validation rules
      *
      * @return array

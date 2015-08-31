@@ -15,6 +15,7 @@ use App\Helpers\Upload;
 use App\Helpers\FileName;
 use App\Helpers\Image;
 use App\Models\Product;
+use App\Models\Pin;
 
 class StoreController extends FrontController
 {
@@ -52,7 +53,7 @@ class StoreController extends FrontController
         if ($request->ajax() && $request->isMethod('POST')) {
 
             $productId = (int) $request->get('id');
-            $product   = $this->getProduct($productId);
+            $product   = $this->_getProduct($productId);
 
             $rules     = $this->_product->getRules();
             $messages  = $this->_product->getMessages();
@@ -88,7 +89,7 @@ class StoreController extends FrontController
             try {
 
                 // 1
-                $images = $this->copyTempProductImages($tempImages);
+                $images = $this->_copyTempProductImages($tempImages);
 
                 // 2
                 if ($productId) {
@@ -272,13 +273,75 @@ class StoreController extends FrontController
     }
 
     /**
+     *
+     * @param Request $request
+     *
+     * @return type
+     */
+    public function ajaxPinProduct(Request $request) {
+
+        // Only accept ajax request with post method
+        if ($request->ajax() && $request->isMethod('POST')) {
+
+            $product_id = (int) $request->get('product_id');
+            $user_id    = user()->id;
+
+            if (product($product_id) === null) {
+                return pong(0, _t('not_found'), 404);
+            }
+
+            try {
+                $this->_togglePin($user_id, $product_id);
+            } catch (Exception $ex) {
+                return pong(0, _t('opp'), 500);
+            }
+
+            return pong(1, _t('saved_info'));
+        }
+    }
+
+    /**
+     * Toggle pin product
+     *
+     * @param int $user_id
+     * @param int $product_id
+     *
+     * return int pin id
+     */
+    protected function _togglePin($user_id, $product_id) {
+
+        $pin = Pin::where('product_id', $product_id)->get();
+
+        if ($pin === null) {
+
+            $pin             = new Pin();
+            $pin->product_id = $product_id;
+            $pin->user_id    = json_encode([$user_id]);
+
+        } else {
+
+            $uidArray = json_decode($pin->user_id);
+
+            if (isset($uidArray[$user_id])) {
+                unset($uidArray[$user_id]);
+            } else {
+                $uidArray[] = $user_id;
+            }
+
+            $pin->user_id = json_encode($uidArray);
+        }
+
+        return $pin->save();
+    }
+
+    /**
      * Get product entity
      *
      * @param int $id Product id
      *
      * @return App\Models\Product
      */
-    public function getProduct($id = 0) {
+    protected function _getProduct($id = 0) {
 
         if ($id) {
             $product = product($id);
@@ -298,7 +361,7 @@ class StoreController extends FrontController
      *
      * @return Illuminate\Support\Collection
      */
-    public function copyTempProductImages($tempImages) {
+    protected function _copyTempProductImages($tempImages) {
 
         $tempPath       = config('front.temp_path');
         $productPath    = config('front.product_path') . store()->id . '/';
