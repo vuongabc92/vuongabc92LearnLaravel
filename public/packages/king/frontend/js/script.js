@@ -825,11 +825,11 @@
                             $('#product-image-' + json.data['order']).val(json.data['original']);
                             current.find('#current-image').val(json.data['original']);
                         }
-                        
+
                         if (status === SETTING.AJAX_ERROR) {
                             $('.add-product-image-error').html(messages);
                         }
-                        
+
                         loading.hide();
                     }
                 });
@@ -1102,16 +1102,26 @@
 
     Plugin.prototype = {
         init: function() {
-            var current = this.element,
-                productId = current.parents('.product').data('product-id');
-        
+            var current   = this.element,
+                productId = current.parents('.product').data('product-id'),
+                pinSent   = parseInt(current.data('pin-product'));
+
             current.on('click', function(e){
                 $.ajax({
                     type: 'POST',
                     url: SETTING.PIN_URI,
                     data:{_token: SETTING.CSRF_TOKEN, product_id: productId} ,
-                    error: function(response){},
-                    success: function(response){}
+                    error: function(){},
+                    success: function(response){
+                        var pinResponse = parseInt(response.data.current_pin);
+                        if (pinResponse > pinSent) {
+                            current.addClass('pinned');
+                        } else {
+                            current.removeClass('pinned');
+                        }
+                        current.attr('data-pin-product', pinResponse);
+                        current.children('b').html(pinResponse);
+                    }
                 });
             });
 

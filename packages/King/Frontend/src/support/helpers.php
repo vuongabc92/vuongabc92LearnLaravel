@@ -625,3 +625,16 @@ if ( ! function_exists('number_to_kmbt')) {
         return $display;
    }
 }
+
+if ( ! function_exists('is_pin')) {
+    
+    function is_pin($pin) {
+
+        if ( ! is_null($pin)) {
+
+            $pinUsers = json_decode($pin->user_id, true);
+
+            return isset($pinUsers[user()->id]);
+        }
+    }
+}

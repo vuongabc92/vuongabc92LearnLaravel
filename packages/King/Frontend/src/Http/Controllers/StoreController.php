@@ -23,10 +23,10 @@ class StoreController extends FrontController
      * @var App\Models\Product
      */
     protected $_product;
-    
+
     /**
      * Product image sizes type thumb, big, ...
-     * 
+     *
      * @var array
      */
     protected $_productImgSizes;
@@ -51,7 +51,7 @@ class StoreController extends FrontController
 
     /**
      * Save product info
-     * 
+     *
      * @param Illuminate\Http\Request $request
      *
      * @return type
@@ -253,7 +253,7 @@ class StoreController extends FrontController
             return pong(1, ['data' => $productRebuild]);
         }
     }
-    
+
 
 
     public function ajaxDeleteProduct(Request $request) {
@@ -283,12 +283,12 @@ class StoreController extends FrontController
             }
 
             try {
-                $this->_togglePin($user_id, $product_id);
+                $pin = $this->_togglePin($user_id, $product_id);
             } catch (Exception $ex) {
                 return pong(0, _t('opp'), 500);
             }
 
-            return pong(1, _t('saved_info'));
+            return pong(1, ['data' => ['current_pin' => $pin]]);
         }
     }
 
@@ -302,7 +302,8 @@ class StoreController extends FrontController
      */
     protected function _togglePin($user_id, $product_id) {
 
-        $pin = Pin::where('product_id', $product_id)->first();
+        $pin     = Pin::where('product_id', $product_id)->first();
+        $product = product($product_id);
 
         if ($pin === null) {
 
@@ -310,20 +311,27 @@ class StoreController extends FrontController
             $pin->product_id = $product_id;
             $pin->user_id    = json_encode([$user_id => $user_id]);
 
+            $product->total_pin = ((int) $product->total_pin) + 1;
+
         } else {
-            
+
             $uidArray = json_decode($pin->user_id, true);
-            
+
             if (isset($uidArray[$user_id])) {
                 unset($uidArray[$user_id]);
+                $product->total_pin = ((int) $product->total_pin) - 1;
             } else {
                 $uidArray[$user_id] = $user_id;
+                $product->total_pin = ((int) $product->total_pin) + 1;
             }
 
             $pin->user_id = json_encode($uidArray);
         }
 
-        return $pin->save();
+        $product->save();
+        $pin->save();
+
+        return $product->total_pin;
     }
 
     /**
@@ -518,16 +526,16 @@ class StoreController extends FrontController
             'filename'  => $filename
         ];
     }
-    
+
     /**
      * Delete product temporary images that was uploaded to temp folder
-     * 
+     *
      * @param Illuminate\Http\Request $request
-     * 
+     *
      * @return void
      */
     protected function _deleteProductTempImg($request) {
-        
+
         $tempPath = config('front.temp_path');
 
         foreach ([1, 2, 3, 4] as $one) {
@@ -535,9 +543,9 @@ class StoreController extends FrontController
             $imgToDel = $request->get("product_image_{$one}");
 
             if ($imgToDel !== '' && check_file($tempPath . $imgToDel)) {
-                
+
                 foreach ($this->_productImgSizes as $size) {
-                    
+
                     $nameBySize = str_replace(_const('TOBEREPLACED'), "_{$size}", $imgToDel);
 
                     delete_file($tempPath . $nameBySize);
@@ -547,16 +555,16 @@ class StoreController extends FrontController
             }
         }
     }
-    
+
     /**
      * Rebuild product data, only get necessary infos
-     * 
+     *
      * @param App\Models\Product $product
-     * 
+     *
      * @return array
      */
     protected function _rebuildProductData($product) {
-        
+
         $productPath = config('front.product_path');
         $product->toImage();
 

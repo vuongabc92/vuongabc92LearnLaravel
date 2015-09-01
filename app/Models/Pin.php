@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Container\Container;
 
 class Pin extends Base
 {
@@ -13,4 +14,11 @@ class Pin extends Base
 
     public $timestamps = false;
 
+    public function isPinned() {
+
+        $userId   = Container::getInstance()->make('Illuminate\Contracts\Auth\Guard')->user()->id;
+        $pinUsers = json_decode($this->user_id, true);
+
+        return isset($pinUsers[$userId]);
+    }
 }

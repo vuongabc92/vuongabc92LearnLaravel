@@ -46,68 +46,74 @@ Setting > My store
             <ol class="_fwfl _ls product-tree" id="product-tree" data-pin-uri="{{ route('front_product_pin') }}" data-csrf-token="{{ csrf_token() }}">
                 @set $i = 1
                 @foreach( $products as $product )
-                @set $image = $product->toImage()
-                <li class="{{ (($i++)%3 === 0) ? 'the-3th-product' : '' }}">
-                    <div class="product product-{{ $product->id }}" data-product-id="{{ $product->id }}">
-                        <div class="product-head">
-                            <ul class="product-handle">
-                                <li>
-                                    <button class="product-pin" data-pin-product>
-                                        <i class="fa fa-thumb-tack"></i>
-                                        <b>300</b>
-                                    </button>
-                                </li>
-                                <li>
-                                    <button class="product-share">
-                                        <i class="fa fa-share-alt"></i>
-                                        <b>42</b>
-                                    </button>
-                                </li>
-                                <li>
-                                    <button class="product-comment">
-                                        <i class="fa fa-comments-o"></i>
-                                        <b>100</b>
-                                    </button>
-                                </li>
-                            </ul>
+                    @set $image = $product->toImage()
 
-                            <div class="product-control">
-                                <div class="btn-group">
-                                    <i class="fa fa-gear product-config-btn _r2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
-                                    <ul class="dropdown-menu product-control-drop">
-                                        <li>
-                                            <a href="{{ route('front_find_product_by_id', $product->id) }}" data-edit-product-form class="product-edit" data-toggle="tooltip" data-placement="left" data-original-title="Edit">
-                                                <i class="fa fa-pencil"></i>
-                                            </a>
-                                        </li>
-                                        <li><a href="#" class="product-hide" data-toggle="tooltip" data-placement="left" data-original-title="Hide"><i class="fa fa-genderless"></i></a></li>
-                                        <li>
-                                            <a href="{{ route('front_delete_product') }}" data-delete-product="" class="product-remove" data-toggle="tooltip" data-placement="left" data-original-title="Remove">
-                                                <i class="fa fa-close"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
+                    @if( ! is_null($product->pin) && $product->pin->isPinned())
+                        @set $pinned = 'pinned'
+                    @else
+                        @set $pinned = ''
+                    @endif
+                    <li class="{{ (($i++)%3 === 0) ? 'the-3th-product' : '' }}">
+                        <div class="product product-{{ $product->id }}" data-product-id="{{ $product->id }}">
+                            <div class="product-head">
+                                <ul class="product-handle">
+                                    <li>
+                                        <button class="product-pin {{ $pinned }}" data-pin-product="{{ $product->total_pin }}">
+                                            <i class="fa fa-thumb-tack"></i>
+                                            <b>{{ $product->total_pin }}</b>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="product-share">
+                                            <i class="fa fa-share-alt"></i>
+                                            <b>42</b>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="product-comment">
+                                            <i class="fa fa-comments-o"></i>
+                                            <b>100</b>
+                                        </button>
+                                    </li>
+                                </ul>
+
+                                <div class="product-control">
+                                    <div class="btn-group">
+                                        <i class="fa fa-gear product-config-btn _r2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+                                        <ul class="dropdown-menu product-control-drop">
+                                            <li>
+                                                <a href="{{ route('front_find_product_by_id', $product->id) }}" data-edit-product-form class="product-edit" data-toggle="tooltip" data-placement="left" data-original-title="Edit">
+                                                    <i class="fa fa-pencil"></i>
+                                                </a>
+                                            </li>
+                                            <li><a href="#" class="product-hide" data-toggle="tooltip" data-placement="left" data-original-title="Hide"><i class="fa fa-genderless"></i></a></li>
+                                            <li>
+                                                <a href="{{ route('front_delete_product') }}" data-delete-product="" class="product-remove" data-toggle="tooltip" data-placement="left" data-original-title="Remove">
+                                                    <i class="fa fa-close"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <div class="product-image">
+                                    <img src="{{ ($product->image_1 !== null) ? product_image($product->image_1->big) : '' }}" alt="{{ $product->name }}"/>
+                                </div>
+                                <div class="product-info">
+                                    <span class="product-name-box">
+                                        <a href="#" class="product-name" title="{{ $product->name }}">{{ str_limit($product->name, 70) }}</a>
+                                    </span>
+                                    <div class="_fwfl _mt5">
+                                        <span class="product-price">{{ product_price($product->price) }} <sup>đ</sup></span>
+                                        @if( $product->old_price !== null )
+                                        <span class="product-old-price">{{ product_price($product->old_price) }} <sup>đ</sup></span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="product-body">
-                            <div class="product-image">
-                                <img src="{{ ($product->image_1 !== null) ? product_image($product->image_1->big) : '' }}" alt="{{ $product->name }}"/>
-                            </div>
-                            <div class="product-info">
-                                <span class="product-name-box">
-                                    <a href="#" class="product-name" title="{{ $product->name }}">{{ str_limit($product->name, 70) }}</a>
-                                </span>
-                                <div class="_fwfl _mt5">
-                                    <span class="product-price">{{ product_price($product->price) }} <sup>đ</sup></span>
-                                    @if( $product->old_price !== null )
-                                    <span class="product-old-price">{{ product_price($product->old_price) }} <sup>đ</sup></span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
+                    </li>
                 @endforeach
             </ol>
         </div>
