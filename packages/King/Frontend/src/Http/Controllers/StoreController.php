@@ -319,7 +319,7 @@ class StoreController extends FrontController
 
             if (isset($uidArray[$user_id])) {
                 unset($uidArray[$user_id]);
-                $product->total_pin = ((int) $product->total_pin) - 1;
+                $product->total_pin = ($p = ((int) $product->total_pin) > 0) ? $p - 1 : $p;
             } else {
                 $uidArray[$user_id] = $user_id;
                 $product->total_pin = ((int) $product->total_pin) + 1;
