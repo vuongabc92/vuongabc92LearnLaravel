@@ -1012,13 +1012,16 @@
 
     Plugin.prototype = {
         init: function() {
-            var current   = this.element,
-                modal     = $('#add-product-modal'),
-                form      = $('#save-product-form'),
-                fields    = form.attr('data-save-product').split('|');
+            var current    = this.element,
+                modal      = $('#add-product-modal'),
+                form       = $('#save-product-form'),
+                fields     = form.attr('data-save-product').split('|'),
+                modalTitle = $('#addProductModalLabel');
 
             current.on('click', function(e){
+
                 e.preventDefault();
+                modalTitle.html(modalTitle.data('edit-title'));
 
                 $.ajax({
                     type: 'GET',
@@ -1103,8 +1106,7 @@
     Plugin.prototype = {
         init: function() {
             var current   = this.element,
-                productId = current.parents('.product').data('product-id'),
-                pinSent   = parseInt(current.data('pin-product'));
+                productId = current.parents('.product').data('product-id');
 
             current.on('click', function(e){
                 $.ajax({
@@ -1113,16 +1115,77 @@
                     data:{_token: SETTING.CSRF_TOKEN, product_id: productId} ,
                     error: function(){},
                     success: function(response){
-                        var pinResponse = parseInt(response.data.current_pin);
-                        if (pinResponse > pinSent) {
+                        var data     = response.data,
+                            isPinned = data.is_pinned,
+                            totalPin = data.total_pin;
+                        if (isPinned) {
                             current.addClass('pinned');
                         } else {
                             current.removeClass('pinned');
                         }
-                        current.attr('data-pin-product', pinResponse);
-                        current.children('b').html(pinResponse);
+                        current.children('b').html(totalPin);
                     }
                 });
+            });
+
+        },
+        destroy: function() {
+            $.removeData(this.element[0], pluginName);
+        }
+    };
+
+    $.fn[pluginName] = function(options, params) {
+        return this.each(function() {
+            var instance = $.data(this, pluginName);
+            if (!instance) {
+                $.data(this, pluginName, new Plugin(this, options));
+            } else if (instance[options]) {
+                instance[options](params);
+            } else {
+                window.console && console.log(options ? options + ' method is not exists in ' + pluginName : pluginName + ' plugin has been initialized');
+            }
+        });
+    };
+
+    $.fn[pluginName].defaults = {
+        option: 'value'
+    };
+
+    $(function() {
+        $('[data-' + pluginName + ']')[pluginName]();
+    });
+
+}(jQuery, window));
+
+/**
+ *  @name Delete product image
+ *  @description User pin product
+ *  @version 1.0
+ *  @options
+ *    option
+ *  @events
+ *    event
+ *  @methods
+ *    init
+ *    publicMethod
+ *    destroy
+ */
+;
+(function($, window, undefined) {
+    var pluginName = 'delete-product-image';
+
+    function Plugin(element, options) {
+        this.element = $(element);
+        this.options = $.extend({}, $.fn[pluginName].defaults, options);
+        this.init();
+    }
+
+    Plugin.prototype = {
+        init: function() {
+            var current   = this.element;
+
+            current.on('click', function(e){
+                alert(':D');
             });
 
         },
@@ -1200,7 +1263,9 @@ $(document).ready(function(){
         $('#save-product-form').find('#product-id').val('');
         $('.product-image-hidden').val('');
         $('.add-product-image').css('border', '3px dashed #d5d5d5');
-        $('.add-product-image').html('<i class="fa fa-plus"></i>');
+        $('.add-product-image').html('<span class="_fwfl _fh"><i class="fa fa-plus"></i></span>');
+        var modalTitle = $('#addProductModalLabel');
+        modalTitle.text(modalTitle.data('add-title'));
     }
 
     /**

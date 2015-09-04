@@ -29,7 +29,7 @@ Setting > My store
                     <li><a href="#"><b>{{ _t('store_rating') }} <span class="_fs12">(17)</span></b></a></li>
                     <li><a href="#"><b>{{ _t('store_follow') }} <span class="_fs12">(22)</span></b></a></li>
                     <li data-toggle="modal" data-target="#add-product-modal">
-                        <a href="#" id="add-product-tooltip" data-toggle="tooltip" data-placement="bottom" data-original-title="{{ _t('add_product') }}">
+                        <a href="javascript:;" id="add-product-tooltip" data-toggle="tooltip" data-placement="bottom" data-original-title="{{ _t('add_product') }}">
                             <b><i class="_fs14 fa fa-plus"></i></b>
                         </a>
                     </li>
@@ -58,7 +58,7 @@ Setting > My store
                             <div class="product-head">
                                 <ul class="product-handle">
                                     <li>
-                                        <button class="product-pin {{ $pinned }}" data-pin-product="{{ $product->total_pin }}">
+                                        <button class="product-pin {{ $pinned }}" data-pin-product>
                                             <i class="fa fa-thumb-tack"></i>
                                             <b>{{ $product->total_pin }}</b>
                                         </button>
@@ -98,7 +98,9 @@ Setting > My store
                             </div>
                             <div class="product-body">
                                 <div class="product-image">
-                                    <img src="{{ ($product->image_1 !== null) ? product_image($product->image_1->big) : '' }}" alt="{{ $product->name }}"/>
+                                    <a href="#" data-toggle="modal" data-target="#quick-view-product-modal">
+                                        <img src="{{ ($product->image_1 !== null) ? product_image($product->image_1->big) : '' }}" alt="{{ $product->name }}" />
+                                    </a>
                                 </div>
                                 <div class="product-info">
                                     <span class="product-name-box">
@@ -121,6 +123,7 @@ Setting > My store
 </div>
 
 @include('frontend::inc.save-product-popup')
+@include('frontend::inc.quick-view-product-popup')
 
 @stop
 

@@ -1,12 +1,12 @@
 <!-- Modal -->
-<div class="modal fade" id="add-product-modal" tabindex="-1" role="dialog" aria-labelledby="addProductLabel" aria-hidden="true">
+<div class="modal fade" id="add-product-modal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="_fwfl _bgw _r3 modal-content">
             {!! Form::open(['route' => 'front_save_product', 'method' => 'POST', 'class' => '_fwfl', 'id' => 'save-product-form', 'data-save-product' => 'product_image_1|id|name|price|old_price|description']) !!}
             {!! Form::hidden('id', '', ['id' => 'product-id']) !!}
             <div class=" _fwfl modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title _tg5 _fs17" id="myModalLabel">Add new product</h4>
+                <h4 class="modal-title _tg5 _fs17" id="addProductModalLabel" data-add-title="Add new product" data-edit-title="Edit product">Add new product</h4>
             </div>
             <div class="_fwfl modal-body">
                 <div class="_fwfl setting-form-group">
@@ -24,25 +24,24 @@
                     </div>
                     <div class="_fwfl">
                         <div class="_r3 add-product-image product-img-1" data-event-trigger="#product-image1-file" data-event="click|click">
-<!--                            <span class="_fwfl _fh">
+                            <span class="_fwfl _fh">
                                 <i class="fa fa-plus"></i>
-                            </span>-->
-                            <img src="http://wiki.laravel5.dev/uploads/images/products/product_281cbdcc6cb407c0_thumb.jpg" class="_fwfl _fh">
-                            <div class="edit-product-img">
-                                <span class="_fwfl _fh">
-                                    <b class="fa fa-pencil"></b>
-                                    <b class="fa fa-remove"></b>
-                                </span>
-                            </div>
+                            </span>
                         </div>
                         <div class="_r3 add-product-image product-img-2" data-event-trigger="#product-image2-file" data-event="click|click">
-                            <i class="fa fa-plus"></i>
+                            <span class="_fwfl _fh">
+                                <i class="fa fa-plus"></i>
+                            </span>
                         </div>
                         <div class="_r3 add-product-image product-img-3" data-event-trigger="#product-image3-file" data-event="click|click">
-                            <i class="fa fa-plus"></i>
+                            <span class="_fwfl _fh">
+                                <i class="fa fa-plus"></i>
+                            </span>
                         </div>
                         <div class="_r3 add-product-image product-img-4 add-product-image-last" data-event-trigger="#product-image4-file" data-event="click|click">
-                            <i class="fa fa-plus"></i>
+                            <span class="_fwfl _fh">
+                                <i class="fa fa-plus"></i>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -72,7 +71,7 @@
                 </div>
             </div>
             <div class="modal-footer _fwfl">
-                <button type="reset" class="_fr btn _btn _btn-gray add-product-reset-btn" data-reset-form="#save-product-form">{{ _t('cancel') }}</button>
+                <button type="reset" class="_fr btn _btn _btn-gray add-product-reset-btn" data-reset-form="#save-product-form" data-dismiss="modal">{{ _t('cancel') }}</button>
                 <button type="submit" class="_fr _mr10 btn _btn _btn-blue1 _save-btn">
                     <img class="loading-in-btn" src="{{ asset('packages/king/frontend/images/loading-white-blue-24x24.gif') }}" />
                     <b class="btn-text">{{ _t('save') }}</b>
