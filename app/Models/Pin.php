@@ -13,7 +13,7 @@ class Pin extends Base
     protected $table = 'pin';
 
     public $timestamps = false;
-
+    
     public function isPinned() {
 
         $userId   = Container::getInstance()->make('Illuminate\Contracts\Auth\Guard')->user()->id;

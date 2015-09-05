@@ -119,9 +119,7 @@ Setting > My store
         </div>
     </div>
 </div>
-
 @include('frontend::inc.save-product-popup')
-
 @stop
 
 @section('js')
