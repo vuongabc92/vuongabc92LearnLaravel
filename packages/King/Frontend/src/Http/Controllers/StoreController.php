@@ -288,7 +288,7 @@ class StoreController extends FrontController
                 return pong(0, _t('opp'), 500);
             }
 
-            return pong(1, ['data' => ['current_pin' => $pin]]);
+            return pong(1, ['data' => ['is_pinned' => $pin['isPinned'], 'total_pin' => $pin['totalPin']]]);
         }
     }
 
@@ -304,14 +304,15 @@ class StoreController extends FrontController
 
         $pin     = Pin::where('product_id', $product_id)->first();
         $product = product($product_id);
+        $pinned  = false;
 
         if ($pin === null) {
 
-            $pin             = new Pin();
-            $pin->product_id = $product_id;
-            $pin->user_id    = json_encode([$user_id => $user_id]);
-
+            $pin                = new Pin();
+            $pin->product_id    = $product_id;
+            $pin->user_id       = json_encode([$user_id => $user_id]);
             $product->total_pin = ((int) $product->total_pin) + 1;
+            $pinned             = true;
 
         } else {
 
@@ -323,6 +324,7 @@ class StoreController extends FrontController
             } else {
                 $uidArray[$user_id] = $user_id;
                 $product->total_pin = ((int) $product->total_pin) + 1;
+                $pinned             = true;
             }
 
             $pin->user_id = json_encode($uidArray);
@@ -331,7 +333,7 @@ class StoreController extends FrontController
         $product->save();
         $pin->save();
 
-        return $product->total_pin;
+        return ['isPinned' => $pinned, 'totalPin' => $product->total_pin];
     }
 
     /**
@@ -500,7 +502,7 @@ class StoreController extends FrontController
                 'width'  => _const('PRODUCT_THUMB'),
                 'height' => _const('PRODUCT_THUMB')
             ],
-                ], true);
+        ], true);
 
         // 3
         $upload = new Upload($file);
