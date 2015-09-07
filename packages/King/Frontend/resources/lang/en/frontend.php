@@ -134,5 +134,17 @@ return [
     'product_oldprice_max' => 'Old price is too long.',
     'product_desc_req' => 'Desciption is required.',
     'product_desc_min' => 'Desciption is too short.',
-    'product_order_wrong' => 'Prouduct\'s order is incorrect.'
+    'product_order_wrong' => 'Prouduct\'s order is incorrect.',
+    //Store
+    'store_title' => 'Setting > My store',
+    'product_edit' => 'Edit',
+    'product_hide' => 'Edit',
+    'product_remove' => 'Remove',
+    'add_new_product' => 'Add new product',
+    'edit_product' => 'Edit product',
+    'product_image' => 'Image',
+    'product_name' => 'Name',
+    'product_price' => 'Price',
+    'product_old_price' => 'Old price',
+    'product_desc' => 'Description',
 ];

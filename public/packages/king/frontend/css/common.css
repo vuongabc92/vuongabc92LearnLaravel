@@ -113,6 +113,10 @@ button._btn-sm{height: 30px;line-height:17px;}
 
 ._tb{color: #007aff;}
 
+._tdn{text-decoration: none;}
+._tdu{text-decoration: underline;}
+._tdt{text-decoration: line-through;}
+
 ._bgw{background-color: #fff;}
 
 ._ma{margin: auto;}

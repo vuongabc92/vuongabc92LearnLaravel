@@ -498,11 +498,15 @@ class StoreController extends FrontController
                 'width'  => _const('PRODUCT_BIG'),
                 'height' => _const('PRODUCT_BIG')
             ],
+            'medium' => [
+                'width'  => _const('PRODUCT_MEDIUM'),
+                'height' => _const('PRODUCT_MEDIUM')
+            ],
             'thumb' => [
                 'width'  => _const('PRODUCT_THUMB'),
                 'height' => _const('PRODUCT_THUMB')
             ],
-        ], true);
+        ], $keepOriginal = false);
 
         // 3
         $upload = new Upload($file);

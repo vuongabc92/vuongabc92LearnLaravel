@@ -6,13 +6,13 @@
             {!! Form::hidden('id', '', ['id' => 'product-id']) !!}
             <div class=" _fwfl modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title _tg5 _fs17" id="addProductModalLabel" data-add-title="Add new product" data-edit-title="Edit product">Add new product</h4>
+                <h4 class="modal-title _tg5 _fs17" id="addProductModalLabel" data-add-title="{{ _t('add_new_product') }}" data-edit-title="{{ _t('edit_product') }}">{{ _t('add_new_product') }}</h4>
             </div>
             <div class="_fwfl modal-body">
                 <div class="_fwfl setting-form-group">
                     <div class="_fwfl">
-                        <label class="_fl setting-form-label" data-title='Image <span class="_tr6">*</span>'>
-                            <span class="_fl">Image <span class="_tr6">*</span></span>
+                        <label class="_fl setting-form-label" data-title='{{ _t('product_image') }} <span class="_tr6">*</span>'>
+                            <span class="_fl">{{ _t('product_image') }} <span class="_tr6">*</span></span>
                         </label>
                         <img class="_fl _ml10 _mt2 _dn product-img-loading" src="{{ asset('packages/king/frontend/images/loading-blue-white-16x16.gif') }}" />
                         <span class="_fr _fs12 _mt3 _tr6 add-product-image-error"></span>
@@ -46,26 +46,26 @@
                     </div>
                 </div>
                 <div class="_fwfl setting-form-group">
-                    <label class="_fwfl setting-form-label" for="name" data-title="Name <span class='_tr6'>*</span>">
-                        Name <span class="_tr6">*</span>
+                    <label class="_fwfl setting-form-label" for="name" data-title="{{ _t('product_name') }} <span class='_tr6'>*</span>">
+                        {{ _t('product_name') }} <span class="_tr6">*</span>
                     </label>
                     {!! Form::text('name', '', ['class' => 'setting-form-field', 'id' => 'name', 'maxlength' => '250']) !!}
                 </div>
                 <div class="_fwfl setting-form-group">
-                    <label class="_fwfl setting-form-label" for="price" data-title="Price <span class='_tr6'>*</span>">
-                        Price <span class="_tr6">*</span>
+                    <label class="_fwfl setting-form-label" for="price" data-title="{{ _t('product_price') }} <span class='_tr6'>*</span>">
+                        {{ _t('product_price') }} <span class="_tr6">*</span>
                     </label>
                     {!! Form::text('price', '', ['class' => 'setting-form-field', 'id' => 'price', 'maxlength' => '250']) !!}
                 </div>
                 <div class="_fwfl setting-form-group">
-                    <label class="_fwfl setting-form-label" for="old-price" data-title="Old price">
-                        Old price
+                    <label class="_fwfl setting-form-label" for="old-price" data-title="{{ _t('product_old_price') }}">
+                        {{ _t('product_old_price') }}
                     </label>
                     {!! Form::text('old_price', '', ['class' => 'setting-form-field', 'id' => 'old-price', 'maxlength' => '250']) !!}
                 </div>
                 <div class="_fwfl setting-form-group">
-                    <label class="_fwfl setting-form-label" for="description" data-title="Description <span class='_tr6'>*</span>">
-                        Description <span class="_tr6">*</span>
+                    <label class="_fwfl setting-form-label" for="description" data-title="{{ _t('product_desc') }} <span class='_tr6'>*</span>">
+                        {{ _t('product_desc') }} <span class="_tr6">*</span>
                     </label>
                     {!! Form::textarea('description', '', ['class' => 'product-description setting-form-field', 'id' => 'description', 'row' => '4']) !!}
                 </div>

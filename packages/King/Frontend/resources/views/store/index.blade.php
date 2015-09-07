@@ -1,7 +1,7 @@
 @extends('frontend::layouts._frontend')
 
 @section('title')
-Setting > My store
+{{ _t('store_title') }}
 @stop
 
 @section('content')
@@ -82,13 +82,13 @@ Setting > My store
                                         <i class="fa fa-gear product-config-btn _r2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
                                         <ul class="dropdown-menu product-control-drop">
                                             <li>
-                                                <a href="{{ route('front_find_product_by_id', $product->id) }}" data-edit-product-form class="product-edit" data-toggle="tooltip" data-placement="left" data-original-title="Edit">
+                                                <a href="{{ route('front_find_product_by_id', $product->id) }}" data-edit-product-form class="product-edit" data-toggle="tooltip" data-placement="left" data-original-title="{{ _t('product_edit') }}">
                                                     <i class="fa fa-pencil"></i>
                                                 </a>
                                             </li>
-                                            <li><a href="#" class="product-hide" data-toggle="tooltip" data-placement="left" data-original-title="Hide"><i class="fa fa-genderless"></i></a></li>
+                                            <li><a href="#" class="product-hide" data-toggle="tooltip" data-placement="left" data-original-title="{{ _t('product_hide') }}"><i class="fa fa-genderless"></i></a></li>
                                             <li>
-                                                <a href="{{ route('front_delete_product') }}" data-delete-product="" class="product-remove" data-toggle="tooltip" data-placement="left" data-original-title="Remove">
+                                                <a href="{{ route('front_delete_product') }}" data-delete-product="" class="product-remove" data-toggle="tooltip" data-placement="left" data-original-title="{{ _t('product_remove') }}">
                                                     <i class="fa fa-close"></i>
                                                 </a>
                                             </li>
@@ -99,7 +99,7 @@ Setting > My store
                             <div class="product-body">
                                 <div class="product-image">
                                     <a href="#" data-toggle="modal" data-target="#quick-view-product-modal">
-                                        <img src="{{ ($product->image_1 !== null) ? product_image($product->image_1->big) : '' }}" alt="{{ $product->name }}" />
+                                        <img src="{{ ($product->image_1 !== null) ? product_image($product->image_1->medium) : '' }}" alt="{{ $product->name }}" />
                                     </a>
                                 </div>
                                 <div class="product-info">

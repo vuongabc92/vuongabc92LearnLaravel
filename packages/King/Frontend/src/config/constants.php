@@ -20,7 +20,8 @@ return [
     'COVER_MAX_FILE_SIZE' => 10000,
 
     'PRODUCT_PREFIX' => 'product_',
-    'PRODUCT_BIG' => 310,
+    'PRODUCT_BIG' => 570,
+    'PRODUCT_MEDIUM' => 310,
     'PRODUCT_THUMB' => 200,
     'PRODUCT_MAX_FILE_SIZE' => 10000,
 
