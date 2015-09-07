@@ -913,7 +913,8 @@
                         that.showFormLabels(labels, messages);
                     },
                     success: function(response){
-                        var messages = response.messages;
+                        var messages = response.messages,
+                            data     = response.data;
 
                         that.loading(false, img, text, check, true);
                         current[0].reset();
@@ -923,6 +924,7 @@
                         $('#add-product-modal').modal('hide');
 
                         that.showFormLabels(labels, messages);
+                        that.refreshProduct(data);
                     }
                 });
 
@@ -958,6 +960,19 @@
                     }, 3000);
                 }
             }
+        },
+        refreshProduct: function(data){
+            var id = data.id,
+                name = data.name,
+                price = data.price,
+                oldPrice = data.old_price,
+                image = data.image,
+                productElement = $('.' + id);
+
+                productElement.find('.product-image').find('img').attr('src', image);
+                productElement.find('.product-name').html(name);
+                productElement.find('.product-price').find('b').html(price);
+                productElement.find('.product-old-price').find('b').html(oldPrice);
         },
         destroy: function() {
             $.removeData(this.element[0], pluginName);

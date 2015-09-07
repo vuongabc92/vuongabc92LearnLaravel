@@ -54,7 +54,7 @@
                         @set $pinned = ''
                     @endif
                     <li class="{{ (($i++)%3 === 0) ? 'the-3th-product' : '' }}">
-                        <div class="product product-{{ $product->id }}" data-product-id="{{ $product->id }}">
+                        <div class="product product-{{ $product->id }} {{ $product->id }}" data-product-id="{{ $product->id }}">
                             <div class="product-head">
                                 <ul class="product-handle">
                                     <li>
@@ -107,9 +107,9 @@
                                         <a href="#" class="product-name" title="{{ $product->name }}">{{ str_limit($product->name, 70) }}</a>
                                     </span>
                                     <div class="_fwfl _mt5">
-                                        <span class="product-price">{{ product_price($product->price) }} <sup>đ</sup></span>
+                                        <span class="product-price"><b class="_fwn">{{ product_price($product->price) }}</b> <sup>đ</sup></span>
                                         @if( $product->old_price !== null )
-                                        <span class="product-old-price">{{ product_price($product->old_price) }} <sup>đ</sup></span>
+                                        <span class="product-old-price"><b class="_fwn">{{ product_price($product->old_price) }}</b> <sup>đ</sup></span>
                                         @endif
                                     </div>
                                 </div>

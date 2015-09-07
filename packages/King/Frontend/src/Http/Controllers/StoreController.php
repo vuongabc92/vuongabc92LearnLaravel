@@ -121,7 +121,16 @@ class StoreController extends FrontController
                 return pong(0, $validator->errors()->first(), 500);
             }
 
-            return pong(1, _t('saved_info'));
+            return pong(1, [
+                'messages' => _t('saved_info'),
+                'data' => [
+                    'id'        => $product->id,
+                    'name'      => $product->name,
+                    'price'     => $product->price,
+                    'old_price' => $product->old_price,
+                    'image'     => (($i = $product->toImage()->image_1) !== null) ? product_image($i->medium) : ''
+                ]
+            ]);
         }
     }
 
