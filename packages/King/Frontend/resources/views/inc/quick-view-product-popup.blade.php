@@ -8,7 +8,12 @@
             </div>
             <div class="_fwfl modal-body">
                 <div class="_fwfl product-carousel">
-                    
+                    <div id="product-carousel" class="owl-carousel">
+                        <div class="item"><img class="lazyOwl" data-src="http://wiki.laravel5.dev/uploads/images/products/1/product_a6433dd1d03dd40d_big.jpg" /></div>
+                        <div class="item"><img class="lazyOwl" data-src="http://wiki.laravel5.dev/uploads/images/products/1/product_e53e2bf3242cf0c4_big.jpg" /></div>
+                        <div class="item"><img class="lazyOwl" data-src="http://wiki.laravel5.dev/uploads/images/products/1/product_a6433dd1d03dd40d_big.jpg" /></div>
+                        <div class="item"><img class="lazyOwl" data-src="http://wiki.laravel5.dev/uploads/images/products/1/product_e53e2bf3242cf0c4_big.jpg" /></div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer _fwfl">

@@ -16,7 +16,7 @@ body{background-color:#f5f8fa;}
 
 /** Header */
 .header{height:55px;border-bottom:solid 1px #007aff;padding:0 15px;position:fixed;z-index:1001;}
-.header-inside{display:none;}
+/*.header-inside{display:none;}*/
 .head-left-col{width:20%;}
 .head-right-col{width:80%;}
 .head-logo-nav{width:100%;height:34px;background-color:#007aff;}
@@ -132,7 +132,7 @@ body{background-color:#f5f8fa;}
 .product-control-drop>li>a.product-edit:hover{color:#2ab27b;}
 
 /* Product quick view modal */
-.product-carousel{height:300px;background-color:#ddd;}
+.product-carousel{height:auto;}
 
 @media screen and (min-width: 320px){
     .header-search-form{width:90%;}

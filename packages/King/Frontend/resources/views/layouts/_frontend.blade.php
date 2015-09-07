@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{ asset('packages/king/frontend/css/bootstrap.css') }}">
         <link rel="stylesheet" href="{{ asset('packages/king/frontend/css/font-awesome.css') }}">
+        @yield('head_css')
         <link rel="stylesheet" href="{{ asset('packages/king/frontend/css/common.css') }}">
         <link rel="stylesheet" href="{{ asset('packages/king/frontend/css/style.css') }}">
     </head>
@@ -131,8 +132,8 @@
         <script src="{{ asset('packages/king/frontend/js/jquery-ui-1.11.4.min.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/bootstrap.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/webtoolkit.aim.js') }}"></script>
+        @yield('js')
         <script src="{{ asset('packages/king/frontend/js/setting.js') }}"></script>
         <script src="{{ asset('packages/king/frontend/js/script.js') }}"></script>
-        @yield('js')
     </body>
 </html>

@@ -126,6 +126,7 @@ Setting > My store
 @stop
 
 @section('js')
+<script src="{{ asset('packages/king/frontend/js/owl.carousel.js') }}"></script>
 <script>
 
     $('#add-product-tooltip').tooltip();
@@ -133,6 +134,20 @@ Setting > My store
     $('.product-edit').tooltip();
     $('.product-hide').tooltip();
     $('.product-remove').tooltip();
+    $(document).ready(function() {
+        $("#product-carousel").owlCarousel({
+            singleItem : true,
+            lazyLoad : true,
+            pagination: false,
+//            navigation : true,
+//            navigationText : ["prev","next"]
+        });
+    });
 
 </script>
+@stop
+
+@section('head_css')
+<link rel="stylesheet" href="{{ asset('packages/king/frontend/css/owl.carousel.css') }}">
+<link rel="stylesheet" href="{{ asset('packages/king/frontend/css/owl.theme.css') }}">
 @stop
