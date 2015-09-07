@@ -30,7 +30,7 @@
                 <div class="quick-view-modal-body">
                     <div class="_fwfl product-carousel">
                         <div id="product-carousel" class="owl-carousel">
-                            <div class="item"><img class="lazyOwl" data-src="http://wiki.laravel5.dev/uploads/images/products/1/product_e28a1edbb1b7b4fe_big.jpg" /></div>
+                            <div class="item"><img class="lazyOwl" data-src="http://wiki.laravel5.dev/uploads/images/products/1/product_f7f6385ca5560f54_big.jpg" /></div>
                             <div class="item"><img class="lazyOwl" data-src="http://wiki.laravel5.dev/uploads/images/products/1/product_e28a1edbb1b7b4fe_big.jpg" /></div>
                             <div class="item"><img class="lazyOwl" data-src="http://wiki.laravel5.dev/uploads/images/products/1/product_e28a1edbb1b7b4fe_big.jpg" /></div>
                             <div class="item"><img class="lazyOwl" data-src="http://wiki.laravel5.dev/uploads/images/products/1/product_e28a1edbb1b7b4fe_big.jpg" /></div>

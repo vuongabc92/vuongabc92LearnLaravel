@@ -410,8 +410,8 @@ class StoreController extends FrontController
     protected function _deleteOldImages($newImages, $oldImages) {
 
         $oldImages   = new Collection(json_decode($oldImages));
-        $productPath = config('front.product_path');
-
+        $productPath = config('front.product_path') . store()->id . '/';
+        
         if ($oldImages->count()) {
             foreach ($newImages as $k => $image) {
                 if (isset($oldImages[$k])) {
